@@ -1,0 +1,115 @@
+# ══════════════════════════════════════════════════════════════
+# Project Ability — .gitignore
+# Modular Cross-Disability Communication Ecosystem
+# ══════════════════════════════════════════════════════════════
+
+# ── OS Generated ──────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── IDE & Editors ─────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+venv/
+.venv/
+env/
+.env
+.env.local
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── C/C++ (Arduino IDE / ESP32) ───────────────────────────────
+*.o
+*.obj
+*.elf
+*.bin
+*.hex
+*.map
+*.d
+*.lst
+build/
+sdkconfig.old
+
+# ── Machine Learning ─────────────────────────────────────────
+# Large model files (track with Git LFS or download separately)
+*.h5
+*.hdf5
+*.tflite
+*.onnx
+*.pt
+*.pth
+*.pkl
+*.joblib
+CodeBase/ml/models/trained/
+CodeBase/ml/datasets/raw/
+
+# ── Logs & Temporary ─────────────────────────────────────────
+*.log
+*.tmp
+*.bak
+*.cache
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+.tox/
+
+# ── Secrets & Credentials ────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.cert
+secrets/
+credentials/
+mqtt_credentials.json
+
+# ── Node.js (if used for web UI) ─────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Documentation Build ──────────────────────────────────────
+docs/_build/
+site/
+
+# ── Jupyter Notebooks ────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Project-Specific Ignores ─────────────────────────────────
+# Avatar video clips (large, tracked separately)
+CodeBase/assets/avatar/clips/*.mp4
+CodeBase/assets/avatar/clips/*.webm
+
+# Recorded test data
+CodeBase/tests/recordings/
+
+# Local configuration overrides
+*.local.yaml
+*.local.json
+config.local.*

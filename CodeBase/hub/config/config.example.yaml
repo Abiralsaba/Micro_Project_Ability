@@ -1,0 +1,82 @@
+# ══════════════════════════════════════════════════════════════
+# Central Hub Configuration — Example
+# Copy to config.yaml and edit with your settings
+# ══════════════════════════════════════════════════════════════
+
+hub:
+  id: "hub_home_001"
+  name: "Home Hub"
+  location: "Dhaka, Bangladesh"
+
+# ── Local MQTT Broker (runs on this hub) ─────────────────────
+local_mqtt:
+  host: "localhost"
+  port: 1883
+  keepalive: 60
+
+# ── Remote MQTT (cloud relay) ────────────────────────────────
+remote_mqtt:
+  host: "mqtt.your-server.com"
+  port: 8883
+  use_tls: true
+  # username: "your_hub_username"
+  # password: "your_hub_password"
+  # ca_cert: "/path/to/ca.crt"
+  # client_cert: "/path/to/client.crt"
+  # client_key: "/path/to/client.key"
+
+# ── Registered Modules ───────────────────────────────────────
+modules:
+  - id: "glove_user_01"
+    type: "glove"
+    user_name: "Rahim"
+    profile: "deaf"
+    mode: "sign_language"
+
+  - id: "braille_user_01"
+    type: "braille"
+    user_name: "Fatima"
+    profile: "blind"
+
+  # - id: "gaze_user_01"
+  #   type: "gaze"
+  #   user_name: "Karim"
+  #   profile: "parkinsons"
+  #   dwell_time_ms: 800
+
+  # - id: "voice_user_01"
+  #   type: "voice"
+  #   user_name: "Sara"
+  #   profile: "hearing"
+
+# ── Speech Engines ───────────────────────────────────────────
+stt:
+  engine: "vosk"                # "vosk" or "whisper"
+  model_path: "/opt/vosk/model"
+  language: "en"
+
+tts:
+  engine: "piper"
+  model_path: "/opt/piper/model"
+  voice: "en_US-lessac-medium"
+  rate: 1.0
+
+# ── Security ─────────────────────────────────────────────────
+security:
+  encryption: "AES-256-GCM"
+  key_exchange: "ECDH-P256"
+  # keys_dir: "/etc/ability/keys"
+
+# ── Health Monitoring ────────────────────────────────────────
+health:
+  spo2_alert_threshold: 90      # Alert if SpO2 drops below
+  heart_rate_low: 50
+  heart_rate_high: 120
+  fall_detection: true
+
+# ── Logging ──────────────────────────────────────────────────
+logging:
+  level: "INFO"                 # DEBUG, INFO, WARNING, ERROR
+  file: "/var/log/ability/hub.log"
+  max_size_mb: 50
+  backup_count: 5
