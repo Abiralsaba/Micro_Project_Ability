@@ -113,3 +113,8 @@ CodeBase/tests/recordings/
 *.local.yaml
 *.local.json
 config.local.*
+
+# Documentation and Rules
+PROJECT_BRAIN.md
+.agents/
+plan/MASTER_PLAN.md
