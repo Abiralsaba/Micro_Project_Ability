@@ -64,17 +64,7 @@ graph TD
 * **Output:** Synthesized Speech
 * **Role:** Bridges the gap between the disabled community and the general public.
 
----
 
-## 🔬 Research & Novelty
-
-This project is actively being developed for publication in high-impact journals (e.g., IEEE Internet of Things Journal). Key research contributions include:
-1. **O(n) Scalability in Cross-Disability Comm:** Solving the $O(n^2)$ translation problem via a universal `TEXT` intermediate layer.
-2. **Hybrid Fusion Sign Language Translation:** Combining wearable IMU/Flex data with vision-based MediaPipe landmarks on edge hardware (RPi Zero 2W).
-3. **Low-Cost Mechanical Braille Output:** A highly affordable, 3D-printable 2-servo cam-profiled rack mechanism.
-4. **Offline, Privacy-First IoT Architecture:** Full local translation and processing without cloud dependency.
-
----
 
 ## 📁 Repository Structure
 
