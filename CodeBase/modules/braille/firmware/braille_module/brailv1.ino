@@ -31,18 +31,18 @@
 
 // ── Servo Pin Definitions ───────────────────────────────────
 // Change these if you wire to different GPIO pins
-#define LEFT_SERVO_PIN   13   // MG90S — controls left rack → Dots 1,2,3
-#define RIGHT_SERVO_PIN  12   // MG90S — controls right rack → Dots 4,5,6
+#define LEFT_SERVO_PIN 13  // MG90S — controls left rack → Dots 1,2,3
+#define RIGHT_SERVO_PIN 12 // MG90S — controls right rack → Dots 4,5,6
 
 // ── Servo Pulse Width (microseconds) for MG90S ─────────────
 // MG90S typical range: 500µs (0°) to 2400µs (180°)
-#define SERVO_MIN_US  500
-#define SERVO_MAX_US  2400
+#define SERVO_MIN_US 500
+#define SERVO_MAX_US 2400
 
 // ── Timing (milliseconds) ──────────────────────────────────
-#define CHAR_HOLD_TIME   5000   // How long to hold each letter (ms)
-#define CHAR_GAP_TIME    500    // Pause between letters (ms)
-#define SERVO_MOVE_TIME  300    // Time for servo to reach position (ms)
+#define CHAR_HOLD_TIME 5000 // How long to hold each letter (ms)
+#define CHAR_GAP_TIME 500   // Pause between letters (ms)
+#define SERVO_MOVE_TIME 300 // Time for servo to reach position (ms)
 
 // ══════════════════════════════════════════════════════════════
 // SERVO ANGLE LOOKUP TABLE — 8 cam positions per rack
@@ -69,33 +69,32 @@
 //
 // Left servo cam angles (22° per step, +22° offset)
 const int CAM_ANGLES[8] = {
-   22,     // 000 → no dots raised
-   44,     // 001 → dot 1 only
-   66,     // 010 → dot 2 only
-   88,     // 011 → dots 1, 2
-  110,     // 100 → dot 3 only
-  132,     // 101 → dots 1, 3
-  154,     // 110 → dots 2, 3
-  176      // 111 → all three dots
+    22,  // 000 → no dots raised
+    44,  // 001 → dot 1 only
+    66,  // 010 → dot 2 only
+    88,  // 011 → dots 1, 2
+    110, // 100 → dot 3 only
+    132, // 101 → dots 1, 3
+    154, // 110 → dots 2, 3
+    176  // 111 → all three dots
 };
 
-// Right servo cam angles — the same slider part is used but FLIPPED,
-// so the physical dot order is reversed (6,5,4 instead of 4,5,6).
+// Right servo cam angles — starts at 180° (home) and DECREASES.
+// The same slider part is used but FLIPPED, so the cam must approach
+// from the opposite direction. Lower angle = more dots engaged.
 // After the bit swap in displayBraillePattern(), the indices map to:
 //   0=none, 1=dot6, 2=dot5, 3=dots5,6, 4=dot4, 5=dots4,6, 6=dots4,5, 7=all
-// Step size ~20° (increased from ~15° to push cam further into each detent).
 //
-// ⚠️  CALIBRATION: If dots don't align perfectly, adjust these
-//     values by ±3° per position.
+// ⚠️  CALIBRATION: These values are hand-tuned to match the physical cam.
 const int RIGHT_CAM_ANGLES[8] = {
-   22,     // 000 → no dots raised
-   79,     // 001 → dot 6 only
-  101,     // 010 → dot 5 only
-  123,     // 011 → dots 5, 6
-  145,     // 100 → dot 4 only
-  167,     // 101 → dots 4, 6
-  180,     // 110 → dots 4, 5  (capped)
-  180      // 111 → all three dots (capped)
+    185, // 000 → no dots raised  (home)
+    26,  // 001 → dot 6 only
+    136, // 010 → dot 5 only
+    48,  // 011 → dots 5, 6
+    180, // 100 → dot 4 only
+    114, // 101 → dots 4, 6
+    92,  // 110 → dots 4, 5
+    70   // 111 → all three dots
 };
 
 // ══════════════════════════════════════════════════════════════
@@ -120,34 +119,62 @@ uint8_t charToBraille(char c) {
   // Braille patterns for a-z (standard Grade 1 Braille)
   // Each value is the 6-bit pattern: [d6 d5 d4 | d3 d2 d1]
   switch (c) {
-    case 'a': return 0b000001;  // dot 1
-    case 'b': return 0b000011;  // dots 1,2
-    case 'c': return 0b001001;  // dots 1,4
-    case 'd': return 0b011001;  // dots 1,4,5
-    case 'e': return 0b010001;  // dots 1,5
-    case 'f': return 0b001011;  // dots 1,2,4
-    case 'g': return 0b011011;  // dots 1,2,4,5
-    case 'h': return 0b010011;  // dots 1,2,5
-    case 'i': return 0b001010;  // dots 2,4
-    case 'j': return 0b011010;  // dots 2,4,5
-    case 'k': return 0b000101;  // dots 1,3
-    case 'l': return 0b000111;  // dots 1,2,3
-    case 'm': return 0b001101;  // dots 1,3,4
-    case 'n': return 0b011101;  // dots 1,3,4,5
-    case 'o': return 0b010101;  // dots 1,3,5
-    case 'p': return 0b001111;  // dots 1,2,3,4
-    case 'q': return 0b011111;  // dots 1,2,3,4,5
-    case 'r': return 0b010111;  // dots 1,2,3,5
-    case 's': return 0b001110;  // dots 2,3,4
-    case 't': return 0b011110;  // dots 2,3,4,5
-    case 'u': return 0b100101;  // dots 1,3,6
-    case 'v': return 0b100111;  // dots 1,2,3,6
-    case 'w': return 0b111010;  // dots 2,4,5,6
-    case 'x': return 0b101101;  // dots 1,3,4,6
-    case 'y': return 0b111101;  // dots 1,3,4,5,6
-    case 'z': return 0b110101;  // dots 1,3,5,6
-    case ' ': return 0b000000;  // space = no dots
-    default:  return 0xFF;      // unsupported character
+  case 'a':
+    return 0b000001; // dot 1
+  case 'b':
+    return 0b000011; // dots 1,2
+  case 'c':
+    return 0b001001; // dots 1,4
+  case 'd':
+    return 0b011001; // dots 1,4,5
+  case 'e':
+    return 0b010001; // dots 1,5
+  case 'f':
+    return 0b001011; // dots 1,2,4
+  case 'g':
+    return 0b011011; // dots 1,2,4,5
+  case 'h':
+    return 0b010011; // dots 1,2,5
+  case 'i':
+    return 0b001010; // dots 2,4
+  case 'j':
+    return 0b011010; // dots 2,4,5
+  case 'k':
+    return 0b000101; // dots 1,3
+  case 'l':
+    return 0b000111; // dots 1,2,3
+  case 'm':
+    return 0b001101; // dots 1,3,4
+  case 'n':
+    return 0b011101; // dots 1,3,4,5
+  case 'o':
+    return 0b010101; // dots 1,3,5
+  case 'p':
+    return 0b001111; // dots 1,2,3,4
+  case 'q':
+    return 0b011111; // dots 1,2,3,4,5
+  case 'r':
+    return 0b010111; // dots 1,2,3,5
+  case 's':
+    return 0b001110; // dots 2,3,4
+  case 't':
+    return 0b011110; // dots 2,3,4,5
+  case 'u':
+    return 0b100101; // dots 1,3,6
+  case 'v':
+    return 0b100111; // dots 1,2,3,6
+  case 'w':
+    return 0b111010; // dots 2,4,5,6
+  case 'x':
+    return 0b101101; // dots 1,3,4,6
+  case 'y':
+    return 0b111101; // dots 1,3,4,5,6
+  case 'z':
+    return 0b110101; // dots 1,3,5,6
+  case ' ':
+    return 0b000000; // space = no dots
+  default:
+    return 0xFF; // unsupported character
   }
 }
 
@@ -164,7 +191,7 @@ String inputBuffer = "";
 void setup() {
   // Start serial communication
   Serial.begin(115200);
-  delay(1000);  // Give serial monitor time to connect
+  delay(1000); // Give serial monitor time to connect
 
   Serial.println();
   Serial.println("══════════════════════════════════════════════");
@@ -195,9 +222,9 @@ void setup() {
   // so the cam mechanism is always in sync.
   Serial.println("[Init] Moving servos to home position...");
   leftServo.write(22);   // Left home = 22°
-  rightServo.write(22);  // Right home = 22°
-  delay(1000);  // Wait for servos to physically reach home
-  Serial.println("[Init] ✓ Both servos at home position (22°).");
+  rightServo.write(180); // Right home = 180°
+  delay(1000);           // Wait for servos to physically reach home
+  Serial.println("[Init] ✓ Servos at home (L:22°  R:180°).");
 
   Serial.println();
   Serial.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -221,7 +248,7 @@ void loop() {
   if (Serial.available() > 0) {
     // Read the entire line (until newline)
     inputBuffer = Serial.readStringUntil('\n');
-    inputBuffer.trim();  // Remove whitespace / carriage return
+    inputBuffer.trim(); // Remove whitespace / carriage return
 
     if (inputBuffer.length() > 0) {
       Serial.println();
@@ -233,14 +260,11 @@ void loop() {
       // ── Special Commands ──────────────────────────────────
       if (inputBuffer.equalsIgnoreCase("test")) {
         runTestAllLetters();
-      }
-      else if (inputBuffer.equalsIgnoreCase("home")) {
+      } else if (inputBuffer.equalsIgnoreCase("home")) {
         homeServos();
-      }
-      else if (inputBuffer.equalsIgnoreCase("sweep")) {
+      } else if (inputBuffer.equalsIgnoreCase("sweep")) {
         runSweepTest();
-      }
-      else {
+      } else {
         // ── Normal word/sentence input ──────────────────────
         displayWord(inputBuffer);
       }
@@ -313,19 +337,18 @@ void displayBraillePattern(uint8_t pattern) {
   // Split 6-bit pattern into two 3-bit column values
   // Left column  = bits 0,1,2 → dots 1, 2, 3
   // Right column = bits 3,4,5 → dots 4, 5, 6
-  uint8_t leftPattern  = pattern & 0x07;         // bits 0-2
-  uint8_t rightPattern = (pattern >> 3) & 0x07;  // bits 3-5
+  uint8_t leftPattern = pattern & 0x07;         // bits 0-2
+  uint8_t rightPattern = (pattern >> 3) & 0x07; // bits 3-5
 
   // The right slider is the same part as the left but FLIPPED,
   // so cam bit0 → dot6 and cam bit2 → dot4 (reversed).
   // Swap bits 0 and 2 of rightPattern to correct for this.
-  rightPattern = ((rightPattern & 0x01) << 2)   // dot4 bit → cam bit2
-               |  (rightPattern & 0x02)          // dot5 stays
-               | ((rightPattern & 0x04) >> 2);   // dot6 bit → cam bit0
+  rightPattern = ((rightPattern & 0x01) << 2)    // dot4 bit → cam bit2
+                 | (rightPattern & 0x02)         // dot5 stays
+                 | ((rightPattern & 0x04) >> 2); // dot6 bit → cam bit0
 
-  // Look up cam angle — left and right use DIFFERENT tables
-  // because the right cam has smaller step sizes (~15° vs ~22°)
-  int leftAngle  = CAM_ANGLES[leftPattern];
+  // Look up cam angle — left goes UP from 22°, right goes DOWN from 180°
+  int leftAngle = CAM_ANGLES[leftPattern];
   int rightAngle = RIGHT_CAM_ANGLES[rightPattern];
 
   // Drive servos to position
@@ -348,7 +371,7 @@ void displayBraillePattern(uint8_t pattern) {
 // ══════════════════════════════════════════════════════════════
 void homeServos() {
   leftServo.write(22);   // Left home = 22°
-  rightServo.write(22);  // Right home = 22°
+  rightServo.write(180); // Right home = 180°
   delay(SERVO_MOVE_TIME);
 }
 
@@ -367,12 +390,14 @@ void printBrailleInfo(char c, uint8_t pattern) {
   bool first = true;
   for (int d = 0; d < 6; d++) {
     if (pattern & (1 << d)) {
-      if (!first) Serial.print(",");
+      if (!first)
+        Serial.print(",");
       Serial.print(d + 1);
       first = false;
     }
   }
-  if (first) Serial.print("(none)");
+  if (first)
+    Serial.print("(none)");
 
   // Print visual Braille cell
   Serial.print("  Cell: ");
