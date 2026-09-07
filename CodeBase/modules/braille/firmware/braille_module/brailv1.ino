@@ -40,7 +40,7 @@
 #define SERVO_MAX_US  2400
 
 // ── Timing (milliseconds) ──────────────────────────────────
-#define CHAR_HOLD_TIME   2000   // How long to hold each letter (ms)
+#define CHAR_HOLD_TIME   5000   // How long to hold each letter (ms)
 #define CHAR_GAP_TIME    500    // Pause between letters (ms)
 #define SERVO_MOVE_TIME  300    // Time for servo to reach position (ms)
 
@@ -67,15 +67,35 @@
 //     actual cam positions. Start with these values and
 //     fine-tune by testing each position.
 //
+// Left servo cam angles (22° per step, +22° offset)
 const int CAM_ANGLES[8] = {
-    0,     // 000 → no dots raised
-   22,     // 001 → dot 1 only
-   44,     // 010 → dot 2 only
-   66,     // 011 → dots 1, 2
-   88,     // 100 → dot 3 only
-  110,     // 101 → dots 1, 3
-  132,     // 110 → dots 2, 3
-  154      // 111 → all three dots
+   22,     // 000 → no dots raised
+   44,     // 001 → dot 1 only
+   66,     // 010 → dot 2 only
+   88,     // 011 → dots 1, 2
+  110,     // 100 → dot 3 only
+  132,     // 101 → dots 1, 3
+  154,     // 110 → dots 2, 3
+  176      // 111 → all three dots
+};
+
+// Right servo cam angles — the same slider part is used but FLIPPED,
+// so the physical dot order is reversed (6,5,4 instead of 4,5,6).
+// After the bit swap in displayBraillePattern(), the indices map to:
+//   0=none, 1=dot6, 2=dot5, 3=dots5,6, 4=dot4, 5=dots4,6, 6=dots4,5, 7=all
+// Step size ~20° (increased from ~15° to push cam further into each detent).
+//
+// ⚠️  CALIBRATION: If dots don't align perfectly, adjust these
+//     values by ±3° per position.
+const int RIGHT_CAM_ANGLES[8] = {
+   22,     // 000 → no dots raised
+   79,     // 001 → dot 6 only
+  101,     // 010 → dot 5 only
+  123,     // 011 → dots 5, 6
+  145,     // 100 → dot 4 only
+  167,     // 101 → dots 4, 6
+  180,     // 110 → dots 4, 5  (capped)
+  180      // 111 → all three dots (capped)
 };
 
 // ══════════════════════════════════════════════════════════════
@@ -173,11 +193,11 @@ void setup() {
   // ── INITIALIZE TO 0° (HOME POSITION) ─────────────────────
   // This is critical — the servos must start at a known position
   // so the cam mechanism is always in sync.
-  Serial.println("[Init] Moving both servos to 0° (home position)...");
-  leftServo.write(0);
-  rightServo.write(0);
-  delay(1000);  // Wait for servos to physically reach 0°
-  Serial.println("[Init] ✓ Both servos at 0° — home position set.");
+  Serial.println("[Init] Moving servos to home position...");
+  leftServo.write(22);   // Left home = 22°
+  rightServo.write(22);  // Right home = 22°
+  delay(1000);  // Wait for servos to physically reach home
+  Serial.println("[Init] ✓ Both servos at home position (22°).");
 
   Serial.println();
   Serial.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -296,9 +316,17 @@ void displayBraillePattern(uint8_t pattern) {
   uint8_t leftPattern  = pattern & 0x07;         // bits 0-2
   uint8_t rightPattern = (pattern >> 3) & 0x07;  // bits 3-5
 
-  // Look up cam angle for each column
+  // The right slider is the same part as the left but FLIPPED,
+  // so cam bit0 → dot6 and cam bit2 → dot4 (reversed).
+  // Swap bits 0 and 2 of rightPattern to correct for this.
+  rightPattern = ((rightPattern & 0x01) << 2)   // dot4 bit → cam bit2
+               |  (rightPattern & 0x02)          // dot5 stays
+               | ((rightPattern & 0x04) >> 2);   // dot6 bit → cam bit0
+
+  // Look up cam angle — left and right use DIFFERENT tables
+  // because the right cam has smaller step sizes (~15° vs ~22°)
   int leftAngle  = CAM_ANGLES[leftPattern];
-  int rightAngle = CAM_ANGLES[rightPattern];
+  int rightAngle = RIGHT_CAM_ANGLES[rightPattern];
 
   // Drive servos to position
   leftServo.write(leftAngle);
@@ -319,9 +347,9 @@ void displayBraillePattern(uint8_t pattern) {
 // HOME SERVOS — return both to 0° (known position)
 // ══════════════════════════════════════════════════════════════
 void homeServos() {
-  leftServo.write(0);
-  rightServo.write(0);
-  delay(SERVO_MOVE_TIME);  // Wait for servos to reach 0°
+  leftServo.write(22);   // Left home = 22°
+  rightServo.write(22);  // Right home = 22°
+  delay(SERVO_MOVE_TIME);
 }
 
 // ══════════════════════════════════════════════════════════════
