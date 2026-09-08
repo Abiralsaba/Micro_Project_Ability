@@ -69,32 +69,30 @@
 //
 // Left servo cam angles (22° per step, +22° offset)
 const int CAM_ANGLES[8] = {
-    22,  // 000 → no dots raised
-    44,  // 001 → dot 1 only
-    66,  // 010 → dot 2 only
+    32,  // 000 → no dots raised
+    66,  // 001 → dot 1 only
+    180, // 010 → dot 2 only
     88,  // 011 → dots 1, 2
-    110, // 100 → dot 3 only
-    132, // 101 → dots 1, 3
-    154, // 110 → dots 2, 3
-    176  // 111 → all three dots
+    154, // 100 → dot 3 only
+    152, // 101 → dots 1, 3
+    132, // 110 → dots 2, 3
+    105  // 111 → all three dots
 };
 
-// Right servo cam angles — starts at 180° (home) and DECREASES.
-// The same slider part is used but FLIPPED, so the cam must approach
-// from the opposite direction. Lower angle = more dots engaged.
+// Right servo cam angles — starts at 22° (home) and INCREASES.
 // After the bit swap in displayBraillePattern(), the indices map to:
 //   0=none, 1=dot6, 2=dot5, 3=dots5,6, 4=dot4, 5=dots4,6, 6=dots4,5, 7=all
 //
 // ⚠️  CALIBRATION: These values are hand-tuned to match the physical cam.
 const int RIGHT_CAM_ANGLES[8] = {
-    185, // 000 → no dots raised  (home)
-    26,  // 001 → dot 6 only
-    136, // 010 → dot 5 only
-    48,  // 011 → dots 5, 6
-    180, // 100 → dot 4 only
-    114, // 101 → dots 4, 6
-    92,  // 110 → dots 4, 5
-    70   // 111 → all three dots
+    22,  // 000 → no dots raised  (home)
+    44,  // 001 → dot 6 only
+    170, // 010 → dot 5 only
+    66,  // 011 → dots 5, 6
+    148, // 100 → dot 4 only
+    152, // 101 → dots 4, 6
+    132, // 110 → dots 4, 5
+    105  // 111 → all three dots
 };
 
 // ══════════════════════════════════════════════════════════════
@@ -217,14 +215,14 @@ void setup() {
   Serial.print("[Servo] Right MG90S attached on GPIO ");
   Serial.println(RIGHT_SERVO_PIN);
 
-  // ── INITIALIZE TO 0° (HOME POSITION) ─────────────────────
+  // ── INITIALIZE TO HOME POSITION (22°) ─────────────────────
   // This is critical — the servos must start at a known position
   // so the cam mechanism is always in sync.
   Serial.println("[Init] Moving servos to home position...");
-  leftServo.write(22);   // Left home = 22°
-  rightServo.write(180); // Right home = 180°
-  delay(1000);           // Wait for servos to physically reach home
-  Serial.println("[Init] ✓ Servos at home (L:22°  R:180°).");
+  leftServo.write(22);  // Left home = 22°
+  rightServo.write(22); // Right home = 22°
+  delay(1000);          // Wait for servos to physically reach home
+  Serial.println("[Init] ✓ Both servos at home position (22°).");
 
   Serial.println();
   Serial.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -347,7 +345,7 @@ void displayBraillePattern(uint8_t pattern) {
                  | (rightPattern & 0x02)         // dot5 stays
                  | ((rightPattern & 0x04) >> 2); // dot6 bit → cam bit0
 
-  // Look up cam angle — left goes UP from 22°, right goes DOWN from 180°
+  // Look up cam angle — both go UP from 22°
   int leftAngle = CAM_ANGLES[leftPattern];
   int rightAngle = RIGHT_CAM_ANGLES[rightPattern];
 
@@ -370,8 +368,8 @@ void displayBraillePattern(uint8_t pattern) {
 // HOME SERVOS — return both to 0° (known position)
 // ══════════════════════════════════════════════════════════════
 void homeServos() {
-  leftServo.write(22);   // Left home = 22°
-  rightServo.write(180); // Right home = 180°
+  leftServo.write(22);  // Left home = 22°
+  rightServo.write(22); // Right home = 22°
   delay(SERVO_MOVE_TIME);
 }
 
