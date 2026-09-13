@@ -1,4 +1,9 @@
+#include <WiFi.h>
+#include <WebServer.h>
 #include <ESP32Servo.h>
+
+const char* AP_SSID = "BrailleModule";
+const char* AP_PASS = "braille123";
 
 #define M1_LEFT_PIN   13
 #define M1_RIGHT_PIN  12
@@ -72,7 +77,447 @@ Servo m4Right;
 
 bool moduleOK[NUM_MODULES] = { false, false, false, false };
 
-String inputBuffer = "";
+WebServer server(80);
+
+String currentStatus = "Ready";
+String lastWord = "";
+bool isBusy = false;
+String pendingWord = "";
+bool hasPending = false;
+
+const char HTML_PAGE[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Braille Module</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:#0a0a0f;
+  color:#e0e0e0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:420px;
+}
+.header{
+  text-align:center;
+  padding:30px 0 20px;
+}
+.header h1{
+  font-size:22px;
+  font-weight:700;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:1px;
+}
+.header p{
+  font-size:13px;
+  color:#666;
+  margin-top:6px;
+}
+.card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:24px;
+  margin-bottom:16px;
+  backdrop-filter:blur(10px);
+}
+.status-bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 16px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  margin-bottom:16px;
+}
+.status-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 8px #22c55e80;
+  flex-shrink:0;
+}
+.status-dot.busy{
+  background:#f59e0b;
+  box-shadow:0 0 8px #f59e0b80;
+  animation:pulse 1s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.4}
+}
+.status-text{
+  font-size:14px;
+  color:#aaa;
+}
+.status-text span{
+  color:#e0e0e0;
+  font-weight:500;
+}
+.input-group{
+  display:flex;
+  gap:10px;
+  margin-bottom:16px;
+}
+input[type="text"]{
+  flex:1;
+  padding:14px 18px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.06);
+  color:#fff;
+  font-size:16px;
+  outline:none;
+  transition:border-color 0.2s;
+}
+input[type="text"]:focus{
+  border-color:#60a5fa;
+}
+input[type="text"]::placeholder{
+  color:#555;
+}
+.btn{
+  padding:14px 24px;
+  border-radius:12px;
+  border:none;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.2s;
+  letter-spacing:0.5px;
+}
+.btn-send{
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff;
+}
+.btn-send:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 15px rgba(59,130,246,0.4);
+}
+.btn-send:active{
+  transform:translateY(0);
+}
+.btn-send:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+.quick-btns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.btn-quick{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.04);
+  color:#aaa;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-quick:hover{
+  background:rgba(255,255,255,0.08);
+  color:#fff;
+  border-color:rgba(255,255,255,0.15);
+}
+.btn-quick:active{
+  transform:scale(0.97);
+}
+.modules{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:16px;
+}
+.module-box{
+  text-align:center;
+  padding:12px 4px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+}
+.module-box .num{
+  font-size:11px;
+  color:#666;
+  margin-bottom:4px;
+}
+.module-box .letter{
+  font-size:28px;
+  font-weight:700;
+  color:#60a5fa;
+  min-height:36px;
+  line-height:36px;
+}
+.module-box .letter.empty{
+  color:#333;
+}
+.braille-cell{
+  display:inline-grid;
+  grid-template-columns:1fr 1fr;
+  gap:3px;
+  margin-top:6px;
+}
+.braille-cell .dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#222;
+  border:1px solid #333;
+}
+.braille-cell .dot.active{
+  background:#60a5fa;
+  border-color:#60a5fa;
+  box-shadow:0 0 4px #60a5fa80;
+}
+.log{
+  margin-top:16px;
+  padding:12px;
+  border-radius:10px;
+  background:rgba(0,0,0,0.3);
+  font-family:'Courier New',monospace;
+  font-size:12px;
+  color:#666;
+  max-height:120px;
+  overflow-y:auto;
+  line-height:1.6;
+}
+.footer{
+  text-align:center;
+  padding:20px;
+  font-size:11px;
+  color:#333;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>BRAILLE MODULE</h1>
+    <p>4-Module Display Controller</p>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="status-text">Status: <span id="statusText">Ready</span></div>
+  </div>
+
+  <div class="card">
+    <div class="input-group">
+      <input type="text" id="textInput" placeholder="Type text here..." maxlength="50" autocomplete="off">
+      <button class="btn btn-send" id="sendBtn" onclick="sendText()">Send</button>
+    </div>
+    <div class="quick-btns">
+      <button class="btn-quick" onclick="sendQuick('home')">Home</button>
+      <button class="btn-quick" onclick="sendQuick('test')">Test A-Z</button>
+      <button class="btn-quick" onclick="sendQuick('diag')">Diagnostics</button>
+      <button class="btn-quick" onclick="sendQuick('sweep')">Sweep</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="modules" id="modules">
+      <div class="module-box">
+        <div class="num">M1</div>
+        <div class="letter empty" id="m1letter">-</div>
+        <div class="braille-cell" id="m1dots">
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+      <div class="module-box">
+        <div class="num">M2</div>
+        <div class="letter empty" id="m2letter">-</div>
+        <div class="braille-cell" id="m2dots">
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+      <div class="module-box">
+        <div class="num">M3</div>
+        <div class="letter empty" id="m3letter">-</div>
+        <div class="braille-cell" id="m3dots">
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+      <div class="module-box">
+        <div class="num">M4</div>
+        <div class="letter empty" id="m4letter">-</div>
+        <div class="braille-cell" id="m4dots">
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="log" id="log">Waiting for input...</div>
+
+  <div class="footer">
+    Project Ability - Braille Module v2
+  </div>
+</div>
+
+<script>
+const brailleMap = {
+  'a':0b000001,'b':0b000011,'c':0b001001,'d':0b011001,'e':0b010001,
+  'f':0b001011,'g':0b011011,'h':0b010011,'i':0b001010,'j':0b011010,
+  'k':0b000101,'l':0b000111,'m':0b001101,'n':0b011101,'o':0b010101,
+  'p':0b001111,'q':0b011111,'r':0b010111,'s':0b001110,'t':0b011110,
+  'u':0b100101,'v':0b100111,'w':0b111010,'x':0b101101,'y':0b111101,
+  'z':0b110101,' ':0b000000
+};
+
+function sendText() {
+  const input = document.getElementById('textInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  fetch('/send?text=' + encodeURIComponent(text))
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok) {
+        addLog('Sent: "' + text + '"');
+        input.value = '';
+        updateModuleDisplay(text);
+      } else {
+        addLog('Busy! Try again.');
+      }
+      pollStatus();
+    })
+    .catch(() => addLog('Error sending'));
+}
+
+function sendQuick(cmd) {
+  fetch('/send?text=' + cmd)
+    .then(r => r.json())
+    .then(d => {
+      addLog('Command: ' + cmd);
+      pollStatus();
+    })
+    .catch(() => addLog('Error'));
+}
+
+function updateModuleDisplay(text) {
+  text = text.toLowerCase();
+  for (let i = 0; i < 4; i++) {
+    const letter = document.getElementById('m' + (i+1) + 'letter');
+    const dotsEl = document.getElementById('m' + (i+1) + 'dots');
+    const dots = dotsEl.querySelectorAll('.dot');
+
+    if (i < text.length) {
+      const ch = text[i];
+      letter.textContent = ch.toUpperCase();
+      letter.classList.remove('empty');
+      const pattern = brailleMap[ch] || 0;
+      const dotOrder = [0, 3, 1, 4, 2, 5];
+      for (let d = 0; d < 6; d++) {
+        dots[d].classList.toggle('active', (pattern >> dotOrder[d]) & 1);
+      }
+    } else {
+      letter.textContent = '-';
+      letter.classList.add('empty');
+      for (let d = 0; d < 6; d++) {
+        dots[d].classList.remove('active');
+      }
+    }
+  }
+}
+
+function pollStatus() {
+  fetch('/status')
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('statusText').textContent = d.status;
+      const dot = document.getElementById('statusDot');
+      const btn = document.getElementById('sendBtn');
+      if (d.busy) {
+        dot.classList.add('busy');
+        btn.disabled = true;
+        setTimeout(pollStatus, 1000);
+      } else {
+        dot.classList.remove('busy');
+        btn.disabled = false;
+      }
+    })
+    .catch(() => {});
+}
+
+function addLog(msg) {
+  const log = document.getElementById('log');
+  const time = new Date().toLocaleTimeString();
+  log.innerHTML += '<br>[' + time + '] ' + msg;
+  log.scrollTop = log.scrollHeight;
+}
+
+document.getElementById('textInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') sendText();
+});
+
+setInterval(pollStatus, 3000);
+</script>
+</body>
+</html>
+)rawliteral";
+
+void handleRoot() {
+  server.send(200, "text/html", HTML_PAGE);
+}
+
+void handleSend() {
+  if (!server.hasArg("text")) {
+    server.send(400, "application/json", "{\"ok\":false,\"error\":\"no text\"}");
+    return;
+  }
+
+  String text = server.arg("text");
+  text.trim();
+
+  if (text.length() == 0) {
+    server.send(400, "application/json", "{\"ok\":false,\"error\":\"empty\"}");
+    return;
+  }
+
+  if (isBusy) {
+    server.send(200, "application/json", "{\"ok\":false,\"error\":\"busy\"}");
+    return;
+  }
+
+  pendingWord = text;
+  hasPending = true;
+
+  server.send(200, "application/json", "{\"ok\":true}");
+
+  Serial.print("Web input: ");
+  Serial.println(text);
+}
+
+void handleStatus() {
+  String json = "{\"status\":\"" + currentStatus + "\",\"busy\":" + (isBusy ? "true" : "false") + ",\"last\":\"" + lastWord + "\"}";
+  server.send(200, "application/json", json);
+}
 
 void writeLeftServo(int module, int angle) {
   switch (module) {
@@ -138,9 +583,22 @@ void setup() {
   delay(1000);
 
   Serial.println();
-  Serial.println("BRAILLE 4-MODULE DISPLAY");
-  Serial.println("Servos: 8x MG90S (2 per module x 4 modules)");
+  Serial.println("BRAILLE 4-MODULE DISPLAY (WiFi)");
   Serial.println();
+
+  WiFi.softAP(AP_SSID, AP_PASS);
+  Serial.print("WiFi AP started: ");
+  Serial.println(AP_SSID);
+  Serial.print("Password: ");
+  Serial.println(AP_PASS);
+  Serial.print("IP: ");
+  Serial.println(WiFi.softAPIP());
+
+  server.on("/", handleRoot);
+  server.on("/send", handleSend);
+  server.on("/status", handleStatus);
+  server.begin();
+  Serial.println("Web server started on port 80");
 
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
@@ -192,57 +650,67 @@ void setup() {
     if (moduleOK[m]) okCount++;
   }
 
-  Serial.println();
   Serial.print(okCount);
   Serial.println("/4 modules attached.");
 
-  Serial.println();
   Serial.println("Moving all servos to home (22)...");
   homeAllServos();
   delay(1000);
   Serial.println("All servos at home.");
 
   Serial.println();
-  Serial.println("Module 1: Left=GPIO13, Right=GPIO12");
-  Serial.println("Module 2: Left=GPIO14, Right=GPIO27");
-  Serial.println("Module 3: Left=GPIO26, Right=GPIO25");
-  Serial.println("Module 4: Left=GPIO33, Right=GPIO32");
-
-  Serial.println();
-  Serial.println("READY! Type a word to display.");
-  Serial.println("Commands: test, home, sweep, diag");
+  Serial.println("READY!");
+  Serial.println("Connect to WiFi: " + String(AP_SSID));
+  Serial.println("Open browser: http://192.168.4.1");
+  Serial.println("Serial commands also work: test, home, sweep, diag");
   Serial.println();
 }
 
 void loop() {
+  server.handleClient();
+
+  if (hasPending) {
+    hasPending = false;
+    processInput(pendingWord);
+  }
+
   if (Serial.available() > 0) {
-    inputBuffer = Serial.readStringUntil('\n');
-    inputBuffer.trim();
-
-    if (inputBuffer.length() > 0) {
-      Serial.println();
-      Serial.print("Received: ");
-      Serial.println(inputBuffer);
-      Serial.println();
-
-      if (inputBuffer.equalsIgnoreCase("test")) {
-        runTestAllLetters();
-      } else if (inputBuffer.equalsIgnoreCase("home")) {
-        homeAllServos();
-        Serial.println("All servos at 22.");
-      } else if (inputBuffer.equalsIgnoreCase("sweep")) {
-        runSweepTest();
-      } else if (inputBuffer.equalsIgnoreCase("diag")) {
-        runDiagnostics();
-      } else {
-        displayWord(inputBuffer);
-      }
-
-      Serial.println();
-      Serial.println("Ready for next input...");
-      Serial.println();
+    String serialInput = Serial.readStringUntil('\n');
+    serialInput.trim();
+    if (serialInput.length() > 0) {
+      Serial.print("Serial input: ");
+      Serial.println(serialInput);
+      processInput(serialInput);
     }
   }
+}
+
+void processInput(String text) {
+  if (isBusy) return;
+  isBusy = true;
+
+  if (text.equalsIgnoreCase("test")) {
+    currentStatus = "Running test...";
+    runTestAllLetters();
+  } else if (text.equalsIgnoreCase("home")) {
+    currentStatus = "Homing...";
+    homeAllServos();
+    Serial.println("All servos at 22.");
+  } else if (text.equalsIgnoreCase("sweep")) {
+    currentStatus = "Sweeping...";
+    runSweepTest();
+  } else if (text.equalsIgnoreCase("diag")) {
+    currentStatus = "Diagnostics...";
+    runDiagnostics();
+  } else {
+    lastWord = text;
+    currentStatus = "Displaying: " + text;
+    displayWord(text);
+  }
+
+  currentStatus = "Ready";
+  isBusy = false;
+  Serial.println("Ready for next input...");
 }
 
 void displayWord(String word) {
@@ -256,11 +724,12 @@ void displayWord(String word) {
   Serial.print(" chars, ");
   Serial.print(totalBatches);
   Serial.println(" batch(es)");
-  Serial.println();
 
   for (int batch = 0; batch < totalBatches; batch++) {
     int startIdx = batch * NUM_MODULES;
     int charsInBatch = min(NUM_MODULES, totalChars - startIdx);
+
+    currentStatus = "Batch " + String(batch + 1) + "/" + String(totalBatches);
 
     Serial.print("Batch ");
     Serial.print(batch + 1);
@@ -295,7 +764,6 @@ void displayWord(String word) {
       }
     }
 
-    Serial.println();
     Serial.println("  Driving modules...");
 
     for (int m = 0; m < NUM_MODULES; m++) {
@@ -359,7 +827,6 @@ void printBrailleInfo(char c, uint8_t pattern) {
 
 void runTestAllLetters() {
   Serial.println("Running a-z in groups of 4...");
-  Serial.println();
 
   for (int i = 0; i < 26; i += NUM_MODULES) {
     int charsInBatch = min(NUM_MODULES, 26 - i);
@@ -381,13 +848,10 @@ void runTestAllLetters() {
     }
 
     delay(SERVO_MOVE_TIME);
-    Serial.print("  Holding 5 seconds...");
     delay(CHAR_HOLD_TIME);
-    Serial.println(" done.");
 
     homeAllServos();
     delay(BATCH_GAP_TIME);
-    Serial.println();
   }
 
   Serial.println("All 26 letters complete!");
@@ -395,7 +859,6 @@ void runTestAllLetters() {
 
 void runDiagnostics() {
   Serial.println("Testing each module individually...");
-  Serial.println();
 
   for (int m = 0; m < NUM_MODULES; m++) {
     Serial.print("Module ");
@@ -408,34 +871,22 @@ void runDiagnostics() {
 
     Serial.println(":");
 
-    Serial.print("  Left -> 90... ");
     writeLeftServo(m, 90);
     delay(500);
-    Serial.println("done.");
-
-    Serial.print("  Left -> 22... ");
     writeLeftServo(m, 22);
     delay(500);
-    Serial.println("done.");
 
-    Serial.print("  Right -> 90... ");
     writeRightServo(m, 90);
     delay(500);
-    Serial.println("done.");
-
-    Serial.print("  Right -> 22... ");
     writeRightServo(m, 22);
     delay(500);
-    Serial.println("done.");
 
-    Serial.print("  Braille 'a' test... ");
     driveModule(m, charToBraille('a'));
     delay(2000);
     homeModule(m);
     delay(300);
-    Serial.println("done.");
 
-    Serial.println();
+    Serial.println("  done.");
   }
 
   Serial.println("Diagnostics complete.");
@@ -443,13 +894,12 @@ void runDiagnostics() {
 
 void runSweepTest() {
   Serial.println("Sweeping all servos...");
-  Serial.println();
 
   for (int m = 0; m < NUM_MODULES; m++) {
     if (!moduleOK[m]) {
       Serial.print("Module ");
       Serial.print(m + 1);
-      Serial.println(" SKIPPED (not attached)");
+      Serial.println(" SKIPPED");
       continue;
     }
 
@@ -457,7 +907,6 @@ void runSweepTest() {
     Serial.print(m + 1);
     Serial.println(":");
 
-    Serial.println("  Left: 0 -> 180");
     for (int angle = 0; angle <= 180; angle += 10) {
       writeLeftServo(m, angle);
       delay(150);
@@ -468,7 +917,6 @@ void runSweepTest() {
     }
     Serial.println("  Left done.");
 
-    Serial.println("  Right: 0 -> 180");
     for (int angle = 0; angle <= 180; angle += 10) {
       writeRightServo(m, angle);
       delay(150);
@@ -478,9 +926,8 @@ void runSweepTest() {
       delay(150);
     }
     Serial.println("  Right done.");
-    Serial.println();
   }
 
   homeAllServos();
-  Serial.println("Sweep complete. All servos at 22.");
+  Serial.println("Sweep complete.");
 }
