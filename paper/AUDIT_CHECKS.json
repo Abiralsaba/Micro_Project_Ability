@@ -1,0 +1,155 @@
+{
+  "audit_date": "2026-09-15",
+  "scope": "static source checks; not a hardware test",
+  "original_file_count": 56,
+  "arduino_sketch_files": 6,
+  "python_source_files": 0,
+  "braille_alphabet_mismatches": [
+    {
+      "letter": "b",
+      "encoded_pattern": "0x3",
+      "network_decoder_output": ","
+    },
+    {
+      "letter": "c",
+      "encoded_pattern": "0x9",
+      "network_decoder_output": "s"
+    },
+    {
+      "letter": "d",
+      "encoded_pattern": "0x19",
+      "network_decoder_output": "r"
+    },
+    {
+      "letter": "e",
+      "encoded_pattern": "0x11",
+      "network_decoder_output": "j"
+    },
+    {
+      "letter": "f",
+      "encoded_pattern": "0xb",
+      "network_decoder_output": "!"
+    },
+    {
+      "letter": "g",
+      "encoded_pattern": "0x1b",
+      "network_decoder_output": "("
+    },
+    {
+      "letter": "h",
+      "encoded_pattern": "0x13",
+      "network_decoder_output": "?"
+    },
+    {
+      "letter": "i",
+      "encoded_pattern": "0xa",
+      "network_decoder_output": "f"
+    },
+    {
+      "letter": "j",
+      "encoded_pattern": "0x1a",
+      "network_decoder_output": "l"
+    },
+    {
+      "letter": "k",
+      "encoded_pattern": "0x5",
+      "network_decoder_output": ";"
+    },
+    {
+      "letter": "l",
+      "encoded_pattern": "0x7",
+      "network_decoder_output": "-"
+    },
+    {
+      "letter": "m",
+      "encoded_pattern": "0xd",
+      "network_decoder_output": "e"
+    },
+    {
+      "letter": "n",
+      "encoded_pattern": "0x1d",
+      "network_decoder_output": ")"
+    },
+    {
+      "letter": "o",
+      "encoded_pattern": "0x15",
+      "network_decoder_output": "."
+    },
+    {
+      "letter": "p",
+      "encoded_pattern": "0xf",
+      "network_decoder_output": "h"
+    },
+    {
+      "letter": "q",
+      "encoded_pattern": "0x1f",
+      "network_decoder_output": "\\'"
+    },
+    {
+      "letter": "r",
+      "encoded_pattern": "0x17",
+      "network_decoder_output": "\""
+    },
+    {
+      "letter": "s",
+      "encoded_pattern": "0xe",
+      "network_decoder_output": ":"
+    },
+    {
+      "letter": "t",
+      "encoded_pattern": "0x1e",
+      "network_decoder_output": "u"
+    },
+    {
+      "letter": "u",
+      "encoded_pattern": "0x25",
+      "network_decoder_output": "3"
+    },
+    {
+      "letter": "v",
+      "encoded_pattern": "0x27",
+      "network_decoder_output": "4"
+    },
+    {
+      "letter": "w",
+      "encoded_pattern": "0x3a",
+      "network_decoder_output": " "
+    },
+    {
+      "letter": "x",
+      "encoded_pattern": "0x2d",
+      "network_decoder_output": "7"
+    },
+    {
+      "letter": "y",
+      "encoded_pattern": "0x3d",
+      "network_decoder_output": " "
+    },
+    {
+      "letter": "z",
+      "encoded_pattern": "0x35",
+      "network_decoder_output": " "
+    }
+  ],
+  "alphabet_mismatch_count": 25,
+  "v1_v2_equal_ignoring_whitespace": true,
+  "braille_sketch_entry_point_counts": {
+    "demomodule.ino": 2,
+    "braille_module.ino": 2,
+    "v2working.ino": 2,
+    "brailv1.ino": 2
+  },
+  "calculated_voice_pcm_bits_per_second": 256000,
+  "calculated_voice_full_block_bytes": 2048,
+  "configured_voice_mqtt_buffer_bytes": 2048,
+  "voice_topic_bytes": 33,
+  "four_ads_conversions_lower_bound_ms": 16.0,
+  "uart_max_bytes_per_frame_at_100hz_8n1": 115.2,
+  "amp_json_parseable": true,
+  "build_tools": {
+    "arduino-cli": null,
+    "pio": null
+  },
+  "hardware_experiments_performed_by_auditor": false,
+  "owner_report": "Reply all interpreted as all module types and the hub physically built and tested; measurement records not provided."
+}

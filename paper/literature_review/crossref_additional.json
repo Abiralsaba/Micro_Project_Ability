@@ -1,0 +1,3562 @@
+[
+  {
+    "kind": "doi",
+    "query": "10.1109/HAPTICS52432.2022.9765570",
+    "api_url": "https://api.crossref.org/works/10.1109%2FHAPTICS52432.2022.9765570",
+    "metadata": {
+      "indexed": {
+        "date-parts": [
+          [
+            2026,
+            2,
+            1
+          ]
+        ],
+        "date-time": "2026-02-01T04:11:34Z",
+        "timestamp": 1769919094590,
+        "version": "3.49.0"
+      },
+      "reference-count": 20,
+      "publisher": "IEEE",
+      "license": [
+        {
+          "start": {
+            "date-parts": [
+              [
+                2022,
+                3,
+                21
+              ]
+            ],
+            "date-time": "2022-03-21T00:00:00Z",
+            "timestamp": 1647820800000
+          },
+          "content-version": "stm-asf",
+          "delay-in-days": 0,
+          "URL": "https://doi.org/10.15223/policy-029"
+        },
+        {
+          "start": {
+            "date-parts": [
+              [
+                2022,
+                3,
+                21
+              ]
+            ],
+            "date-time": "2022-03-21T00:00:00Z",
+            "timestamp": 1647820800000
+          },
+          "content-version": "stm-asf",
+          "delay-in-days": 0,
+          "URL": "https://doi.org/10.15223/policy-037"
+        }
+      ],
+      "content-domain": {
+        "domain": [],
+        "crossmark-restriction": false
+      },
+      "short-container-title": [],
+      "published-print": {
+        "date-parts": [
+          [
+            2022,
+            3,
+            21
+          ]
+        ]
+      },
+      "DOI": "10.1109/haptics52432.2022.9765570",
+      "type": "proceedings-article",
+      "created": {
+        "date-parts": [
+          [
+            2022,
+            5,
+            5
+          ]
+        ],
+        "date-time": "2022-05-05T20:12:22Z",
+        "timestamp": 1651781542000
+      },
+      "page": "1-6",
+      "source": "Crossref",
+      "is-referenced-by-count": 2,
+      "title": [
+        "Vibration-based communication for deafblind people"
+      ],
+      "prefix": "10.1109",
+      "author": [
+        {
+          "given": "David C.",
+          "family": "Kutner",
+          "sequence": "first",
+          "affiliation": [
+            {
+              "name": "Durham University,Department of Computer Science,UK"
+            }
+          ],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Suncica",
+          "family": "Hadzidedic",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Durham University,Department of Computer Science,UK"
+            }
+          ],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        }
+      ],
+      "member": "263",
+      "reference": [
+        {
+          "key": "ref10",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/TOH.2009.3"
+        },
+        {
+          "key": "ref11",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1007/978-3-319-08599-9_59"
+        },
+        {
+          "key": "ref12",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.4103/kjo.kjo_81_19"
+        },
+        {
+          "key": "ref13",
+          "first-page": "445",
+          "article-title": "User-centered design",
+          "volume": "37",
+          "author": "abras",
+          "year": "2004",
+          "journal-title": "Bainbridge W Encyclopedia of Human-Computer Interaction Thousand Oaks Sage Publications"
+        },
+        {
+          "key": "ref14",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1364/JOSAA.7.002002"
+        },
+        {
+          "key": "ref15",
+          "author": "ogden",
+          "year": "1935",
+          "journal-title": "Basic English"
+        },
+        {
+          "key": "ref16",
+          "author": "lazar",
+          "year": "2017",
+          "journal-title": "Research Methods in Human-computer Interaction"
+        },
+        {
+          "key": "ref17",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.11648/j.ajtas.20160501.11"
+        },
+        {
+          "key": "ref18",
+          "year": "0",
+          "journal-title": "VG1040003D Vybronics Inc-Motors Solenoids Driver Boards/Modules-DigiKey"
+        },
+        {
+          "key": "ref19",
+          "article-title": "SUS: a &#x201C;quick and dirty&#x201D; usability scale",
+          "volume": "189",
+          "author": "brooke",
+          "year": "1996",
+          "journal-title": "Usability Evaluation in Industry"
+        },
+        {
+          "key": "ref4",
+          "year": "2009",
+          "journal-title": "M 1677 International Morse code"
+        },
+        {
+          "key": "ref3",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1093/deafed/ent022"
+        },
+        {
+          "key": "ref6",
+          "first-page": "32",
+          "article-title": "A wearable device supporting multiple touch-and gesture-based languages for the deaf-blind",
+          "author": "caporusso",
+          "year": "2017",
+          "journal-title": "International Conference on Applied Human Factors and Ergonomics"
+        },
+        {
+          "key": "ref5",
+          "author": "charlton",
+          "year": "2000",
+          "journal-title": "Nothing about Us Without Us Disability Oppression and Empowerment"
+        },
+        {
+          "key": "ref8",
+          "first-page": "2",
+          "article-title": "Web accessibility by Morse Code modulated haptics for deaf-blind",
+          "author": "norberg",
+          "year": "2014",
+          "journal-title": "The Fifth International Conference on Disability Virtual Reality and Associated Technologies"
+        },
+        {
+          "key": "ref7",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/3402935"
+        },
+        {
+          "key": "ref2",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1016/S0140-6736(03)15074-X"
+        },
+        {
+          "key": "ref1",
+          "article-title": "WFDB global report on persons with deafblindness",
+          "author": "jensen",
+          "year": "2018",
+          "journal-title": "World Federation of the Deaf"
+        },
+        {
+          "key": "ref9",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1682/JRRD.2008.11.0150"
+        },
+        {
+          "key": "ref20",
+          "article-title": "Item benchmarks for the system usability scale",
+          "volume": "13",
+          "author": "lewis",
+          "year": "2018",
+          "journal-title": "Journal of Usability Studies"
+        }
+      ],
+      "event": {
+        "name": "2022 IEEE Haptics Symposium (HAPTICS)",
+        "location": "Santa Barbara, CA, USA",
+        "start": {
+          "date-parts": [
+            [
+              2022,
+              3,
+              21
+            ]
+          ]
+        },
+        "end": {
+          "date-parts": [
+            [
+              2022,
+              3,
+              24
+            ]
+          ]
+        }
+      },
+      "container-title": [
+        "2022 IEEE Haptics Symposium (HAPTICS)"
+      ],
+      "original-title": [],
+      "link": [
+        {
+          "URL": "http://xplorestaging.ieee.org/ielx7/9765562/9765563/09765570.pdf?arnumber=9765570",
+          "content-type": "unspecified",
+          "content-version": "vor",
+          "intended-application": "similarity-checking"
+        }
+      ],
+      "deposited": {
+        "date-parts": [
+          [
+            2022,
+            8,
+            5
+          ]
+        ],
+        "date-time": "2022-08-05T00:44:32Z",
+        "timestamp": 1659660272000
+      },
+      "score": 1,
+      "resource": {
+        "primary": {
+          "URL": "https://ieeexplore.ieee.org/document/9765570/"
+        }
+      },
+      "subtitle": [],
+      "short-title": [],
+      "issued": {
+        "date-parts": [
+          [
+            2022,
+            3,
+            21
+          ]
+        ]
+      },
+      "references-count": 20,
+      "URL": "https://doi.org/10.1109/haptics52432.2022.9765570",
+      "relation": {},
+      "subject": [],
+      "published": {
+        "date-parts": [
+          [
+            2022,
+            3,
+            21
+          ]
+        ]
+      }
+    },
+    "resolver": {
+      "url": "https://ieeexplore.ieee.org/document/9765570/",
+      "status": 202
+    }
+  },
+  {
+    "kind": "doi",
+    "query": "10.3390/s24165199",
+    "api_url": "https://api.crossref.org/works/10.3390%2Fs24165199",
+    "metadata": {
+      "indexed": {
+        "date-parts": [
+          [
+            2026,
+            5,
+            20
+          ]
+        ],
+        "date-time": "2026-05-20T19:45:52Z",
+        "timestamp": 1779306352157,
+        "version": "3.51.4"
+      },
+      "reference-count": 42,
+      "publisher": "MDPI AG",
+      "issue": "16",
+      "license": [
+        {
+          "start": {
+            "date-parts": [
+              [
+                2024,
+                8,
+                11
+              ]
+            ],
+            "date-time": "2024-08-11T00:00:00Z",
+            "timestamp": 1723334400000
+          },
+          "content-version": "vor",
+          "delay-in-days": 0,
+          "URL": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      ],
+      "funder": [
+        {
+          "name": "European Regional Development Fund of the European Union",
+          "award": [
+            "T1EDK-02347"
+          ],
+          "award-info": [
+            {
+              "award-number": [
+                "T1EDK-02347"
+              ]
+            }
+          ]
+        }
+      ],
+      "content-domain": {
+        "domain": [],
+        "crossmark-restriction": false
+      },
+      "short-container-title": [
+        "Sensors"
+      ],
+      "abstract": "<jats:p>Today, Smart Assistants (SAs) are supported by significantly improved Natural Language Processing (NLP) and Natural Language Understanding (NLU) engines as well as AI-enabled decision support, enabling efficient information communication, easy appliance/device control, and seamless access to entertainment services, among others. In fact, an increasing number of modern households are being equipped with SAs, which promise to enhance user experience in the context of smart environments through verbal interaction. Currently, the market in SAs is dominated by products manufactured by technology giants that provide well designed off-the-shelf solutions. However, their simple setup and ease of use come with trade-offs, as these SAs abide by proprietary and/or closed-source architectures and offer limited functionality. Their enforced vendor lock-in does not provide (power) users with the ability to build custom conversational applications through their SAs. On the other hand, employing an open-source approach for building and deploying an SA (which comes with a significant overhead) necessitates expertise in multiple domains and fluency in the multimodal technologies used to build the envisioned applications. In this context, this paper proposes a methodology for developing and deploying conversational applications on the edge on top of an open-source software and hardware infrastructure via a multilayer architecture that simplifies low-level complexity and reduces learning overhead. The proposed approach facilitates the rapid development of applications by third-party developers, thereby enabling the establishment of a marketplace of customized applications aimed at the smart assisted living domain, among others. The supporting framework supports application developers, device owners, and ecosystem administrators in building, testing, uploading, and deploying applications, remotely controlling devices, and monitoring device performance. A demonstration of this methodology is presented and discussed focusing on health and assisted living applications for the elderly.</jats:p>",
+      "DOI": "10.3390/s24165199",
+      "type": "journal-article",
+      "created": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            12
+          ]
+        ],
+        "date-time": "2024-08-12T11:23:46Z",
+        "timestamp": 1723461826000
+      },
+      "page": "5199",
+      "update-policy": "https://doi.org/10.3390/mdpi_crossmark_policy",
+      "source": "Crossref",
+      "is-referenced-by-count": 5,
+      "title": [
+        "A Multilayer Architecture towards the Development and Distribution of Multimodal Interface Applications on the Edge"
+      ],
+      "prefix": "10.3390",
+      "volume": "24",
+      "author": [
+        {
+          "ORCID": "https://orcid.org/0000-0001-8006-145X",
+          "authenticated-orcid": false,
+          "given": "Nikolaos",
+          "family": "Malamas",
+          "sequence": "first",
+          "affiliation": [
+            {
+              "name": "Faculty of Engineering, Aristotle University of Thessaloniki, 541 24 Thessaloniki, Greece"
+            },
+            {
+              "name": "Gnomon Informatics S.A., 570 01 Thessaloniki, Greece"
+            }
+          ],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "ORCID": "https://orcid.org/0000-0001-6407-6205",
+          "authenticated-orcid": false,
+          "given": "Konstantinos",
+          "family": "Panayiotou",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Faculty of Engineering, Aristotle University of Thessaloniki, 541 24 Thessaloniki, Greece"
+            }
+          ],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "ORCID": "https://orcid.org/0000-0002-5349-8493",
+          "authenticated-orcid": false,
+          "given": "Apostolia",
+          "family": "Karabatea",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Gnomon Informatics S.A., 570 01 Thessaloniki, Greece"
+            }
+          ],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "ORCID": "https://orcid.org/0000-0001-9034-4832",
+          "authenticated-orcid": false,
+          "given": "Emmanouil",
+          "family": "Tsardoulias",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Faculty of Engineering, Aristotle University of Thessaloniki, 541 24 Thessaloniki, Greece"
+            }
+          ],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "ORCID": "https://orcid.org/0000-0003-0235-6046",
+          "authenticated-orcid": false,
+          "given": "Andreas L.",
+          "family": "Symeonidis",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Faculty of Engineering, Aristotle University of Thessaloniki, 541 24 Thessaloniki, Greece"
+            }
+          ],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        }
+      ],
+      "member": "1968",
+      "published-online": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            11
+          ]
+        ]
+      },
+      "reference": [
+        {
+          "key": "ref_1",
+          "unstructured": "Yaqub, M. (2024, February 15). 10+ Voice Assistant Statistics: The Key Data and Numbers. Available online: https://www.onlinedasher.com/voice-assistant-statistics/."
+        },
+        {
+          "key": "ref_2",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Malamas, N., Papangelou, K., and Symeonidis, A.L. (2022). Upon Improving the Performance of Localized Healthcare Virtual Assistants. Healthcare, 10.",
+          "DOI": "10.3390/healthcare10010099"
+        },
+        {
+          "key": "ref_3",
+          "unstructured": "Holst, A. (2021). IoT Connected Devices Worldwide 2019–2030, Statista."
+        },
+        {
+          "key": "ref_4",
+          "first-page": "1",
+          "article-title": "The internet of things: How the next evolution of the internet is changing everything",
+          "volume": "1",
+          "author": "Evans",
+          "year": "2011",
+          "journal-title": "CISCO White Pap."
+        },
+        {
+          "key": "ref_5",
+          "unstructured": "Mosby, A. (2024, August 03). 69 Voice Search Statistics 2024 (Usage & Demographics). Available online: https://www.yaguara.co/voice-search-statistics/."
+        },
+        {
+          "key": "ref_6",
+          "unstructured": "Thormundsson, B. (2023). Virtual Assistant Technology in the U.S.—Statistics & Facts, Statista."
+        },
+        {
+          "key": "ref_7",
+          "doi-asserted-by": "crossref",
+          "first-page": "1",
+          "DOI": "10.4018/IJSSOE.2018070101",
+          "article-title": "A Framework of Enhanced Performance: People’s Interactions with Cognitive Assistants",
+          "volume": "8",
+          "author": "Siddike",
+          "year": "2018",
+          "journal-title": "Int. J. Syst. Serv. Oriented Eng."
+        },
+        {
+          "key": "ref_8",
+          "doi-asserted-by": "crossref",
+          "first-page": "109",
+          "DOI": "10.1016/j.procs.2021.08.012",
+          "article-title": "Embedding Rasa in edge Devices: Capabilities and Limitations",
+          "volume": "192",
+          "author": "Malamas",
+          "year": "2021",
+          "journal-title": "Procedia Comput. Sci."
+        },
+        {
+          "key": "ref_9",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Schadelbauer, L., Schlögl, S., and Groth, A. (2023). Linking Personality and Trust in Intelligent Virtual Assistants. Multimodal Technol. Interact., 7.",
+          "DOI": "10.3390/mti7060054"
+        },
+        {
+          "key": "ref_10",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Antonius Alijoyo, F., Sneha Sri, S.S., Alapati, P.R., Yuldashev, D., and M, P.V. (2024, January 11–12). Ethical Considerations in Explainable AI: Balancing Transparency and User Privacy in English Language-based Virtual Assistants. Proceedings of the 2024 5th International Conference on Intelligent Communication Technologies and Virtual Mobile Networks (ICICV), Tirunelveli, India.",
+          "DOI": "10.1109/ICICV62344.2024.00069"
+        },
+        {
+          "key": "ref_11",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Elahi, H., Wang, G., Peng, T., and Chen, J. (2019). On Transparency and Accountability of Smart Assistants in Smart Cities. Appl. Sci., 9.",
+          "DOI": "10.3390/app9245344"
+        },
+        {
+          "key": "ref_12",
+          "unstructured": "Kubach, M., Görwitz, C., and Hornung, G. (2016). Non-Technical Challenges of Building Ecosystems for Trustable Smart Assistants in the Internet of Things: A Socioeconomic and Legal Perspective, Gesellschaft für Informatik."
+        },
+        {
+          "key": "ref_13",
+          "unstructured": "Bonilla, K., and Martin-Hammond, A. (2020, January 10–11). Older adults’ perceptions of intelligent voice assistant privacy, transparency, and online privacy guidelines. Proceedings of the Sixteenth Symposium on Usable Privacy and Security, Online."
+        },
+        {
+          "key": "ref_14",
+          "doi-asserted-by": "crossref",
+          "first-page": "42",
+          "DOI": "10.1145/3441715",
+          "article-title": "Why or Why Not? The Effect of Justification Styles on Chatbot Recommendations",
+          "volume": "39",
+          "author": "Wilkinson",
+          "year": "2021",
+          "journal-title": "ACM Trans. Inf. Syst."
+        },
+        {
+          "key": "ref_15",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Wintersberger, P., Klotz, T., and Riener, A. (2020, January 25–29). Tell Me More: Transparency and Time-Fillers to Optimize Chatbots’ Waiting Time Experience. Proceedings of the 11th Nordic Conference on Human-Computer Interaction: Shaping Experiences, Shaping Society, NordiCHI ’20, New York, NY, USA.",
+          "DOI": "10.1145/3419249.3420170"
+        },
+        {
+          "key": "ref_16",
+          "doi-asserted-by": "crossref",
+          "first-page": "106763",
+          "DOI": "10.1016/j.chb.2021.106763",
+          "article-title": "‘Okay google, what about my privacy?’: User’s privacy perceptions and acceptance of voice based digital assistants",
+          "volume": "120",
+          "author": "Vimalkumar",
+          "year": "2021",
+          "journal-title": "Comput. Hum. Behav."
+        },
+        {
+          "key": "ref_17",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Khurana, A., Alamzadeh, P., and Chilana, P.K. (2021, January 10–13). ChatrEx: Designing Explainable Chatbot Interfaces for Enhancing Usefulness, Transparency, and Trust. Proceedings of the 2021 IEEE Symposium on Visual Languages and Human-Centric Computing (VL/HCC), St. Louis, MO, USA.",
+          "DOI": "10.1109/VL/HCC51201.2021.9576440"
+        },
+        {
+          "key": "ref_18",
+          "doi-asserted-by": "crossref",
+          "first-page": "107711",
+          "DOI": "10.1016/j.chb.2023.107711",
+          "article-title": "I will be with you Alexa! The impact of intelligent virtual assistant’s authenticity and personalization on user reusage intentions",
+          "volume": "143",
+          "author": "Alimamy",
+          "year": "2023",
+          "journal-title": "Comput. Hum. Behav."
+        },
+        {
+          "key": "ref_19",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Barricelli, B.R., and Fogli, D. (2021, January 11–13). Virtual Assistants for Personalizing IoT Ecosystems: Challenges and Opportunities. Proceedings of the CHItaly 2021: 14th Biannual Conference of the Italian SIGCHI Chapter, CHItaly ’21, New York, NY, USA.",
+          "DOI": "10.1145/3464385.3464699"
+        },
+        {
+          "key": "ref_20",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Iannizzotto, G., Bello, L.L., Nucita, A., and Grasso, G.M. (2018, January 4–6). A Vision and Speech Enabled, Customizable, Virtual Assistant for Smart Environments. Proceedings of the 2018 11th International Conference on Human System Interaction (HSI), Gdansk, Poland.",
+          "DOI": "10.1109/HSI.2018.8431232"
+        },
+        {
+          "key": "ref_21",
+          "unstructured": "Duong, L., Hoang, V.C.D., Pham, T.Q., Hong, Y.H., Dovgalecs, V., Bashkansky, G., Black, J., Bleeker, A., Huitouze, S.L., and Johnson, M. (August, January 28). An adaptable task-oriented dialog system for stand-alone embedded devices. Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics: System Demonstrations, Florence, Italy."
+        },
+        {
+          "key": "ref_22",
+          "unstructured": "Ng, Y., Miyashita, D., Hoshi, Y., Morioka, Y., Torii, O., Kodama, T., and Deguchi, J. (2023). SimplyRetrieve: A Private and Lightweight Retrieval-Centric Generative AI Tool. arXix."
+        },
+        {
+          "key": "ref_23",
+          "doi-asserted-by": "crossref",
+          "first-page": "85714",
+          "DOI": "10.1109/ACCESS.2020.2991734",
+          "article-title": "An Overview on Edge Computing Research",
+          "volume": "8",
+          "author": "Cao",
+          "year": "2020",
+          "journal-title": "IEEE Access"
+        },
+        {
+          "key": "ref_24",
+          "doi-asserted-by": "crossref",
+          "first-page": "265",
+          "DOI": "10.21105/joss.00265",
+          "article-title": "Mosquitto: Server and client implementation of the MQTT protocol",
+          "volume": "2",
+          "author": "Light",
+          "year": "2017",
+          "journal-title": "J. Open Source Softw."
+        },
+        {
+          "key": "ref_25",
+          "unstructured": "(2024, July 30). OASIS Advanced Message Queuing Protocol (AMQP) Version 1.0 Part 0: Overview 2012. Available online: https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html."
+        },
+        {
+          "key": "ref_26",
+          "first-page": "116",
+          "article-title": "A Survey of Communication Protocols for Internet of Things and Related Challenges of Fog and Cloud Computing Integration",
+          "volume": "51",
+          "author": "Carpio",
+          "year": "2019",
+          "journal-title": "ACM Comput. Surv."
+        },
+        {
+          "key": "ref_27",
+          "doi-asserted-by": "crossref",
+          "first-page": "101931",
+          "DOI": "10.1016/j.pmcj.2024.101931",
+          "article-title": "SmAuto: A domain-specific-language for application development in smart environments",
+          "volume": "101",
+          "author": "Panayiotou",
+          "year": "2024",
+          "journal-title": "Pervasive Mob. Comput."
+        },
+        {
+          "key": "ref_28",
+          "doi-asserted-by": "crossref",
+          "first-page": "61",
+          "DOI": "10.21742/26531941.1.1.06",
+          "article-title": "Research on real-time data transmission between IoT gateway and cloud platform based on two-way communication technology",
+          "volume": "1",
+          "author": "Taniar",
+          "year": "2021",
+          "journal-title": "Int. J. Smartcare Home"
+        },
+        {
+          "key": "ref_29",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Brunete, A., Gambao, E., Hernando, M., and Cedazo, R. (2021). Smart Assistive Architecture for the Integration of IoT Devices, Robotic Systems, and Multimodal Interfaces in Healthcare Environments. Sensors, 21.",
+          "DOI": "10.3390/s21062212"
+        },
+        {
+          "key": "ref_30",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Savaglio, C., Fortino, G., Zhou, M., and Ma, J. (2024). Evaluating the Performance of a Multimodal Speaker Tracking System at the Edge-to-Cloud Continuum. Device-Edge-Cloud Continuum: Paradigms, Architectures and Applications, Springer Nature.",
+          "DOI": "10.1007/978-3-031-42194-5"
+        },
+        {
+          "key": "ref_31",
+          "unstructured": "Soofastaei, A. (2024). Introductory Chapter: Advanced Virtual Assistants—Transforming the Future of Human-Computer Interaction. Advanced Virtual Assistants—A Window to the Virtual Future, IntechOpen. Chapter 1."
+        },
+        {
+          "key": "ref_32",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Rocha, A.P., Ketsmur, M., Almeida, N., and Teixeira, A. (2021). An Accessible Smart Home Based on Integrated Multimodal Interaction. Sensors, 21.",
+          "DOI": "10.3390/s21165464"
+        },
+        {
+          "key": "ref_33",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Bakare, S., Akkasaligar, P.T., Kulkarni, S., Kadamba, P., Mutnal, S., and Belagali, S. (2023, January 19–21). Multimodal Framework for Multilingual Social Interaction Assistive Application (MSIAA) for Elderly People. Proceedings of the 2023 2nd International Conference on Edge Computing and Applications (ICECAA), Namakkal, India.",
+          "DOI": "10.1109/ICECAA58104.2023.10212159"
+        },
+        {
+          "key": "ref_34",
+          "unstructured": "(2024, July 30). Wit.ai. Available online: https://wit.ai/."
+        },
+        {
+          "key": "ref_35",
+          "unstructured": "(2024, July 30). Botpress. Available online: https://botpress.com/."
+        },
+        {
+          "key": "ref_36",
+          "unstructured": "Hansen, M. (2024, July 30). Rhasspy Voice Assistant. Available online: https://rhasspy.readthedocs.io/en/latest/."
+        },
+        {
+          "key": "ref_37",
+          "unstructured": "Bocklisch, T., Faulkner, J., Pawlowski, N., and Nichol, A. (2017). Rasa: Open Source Language Understanding and Dialogue Management. arXiv."
+        },
+        {
+          "key": "ref_38",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Braun, D., Hernandez Mendez, A., Matthes, F., and Langen, M. (2017, January 15–17). Evaluating Natural Language Understanding Services for Conversational Question Answering Systems. Proceedings of the 18th Annual SIGdial Meeting on Discourse and Dialogue, Saarbrücken, Germany.",
+          "DOI": "10.18653/v1/W17-5522"
+        },
+        {
+          "key": "ref_39",
+          "doi-asserted-by": "crossref",
+          "first-page": "13",
+          "DOI": "10.1109/MIC.2018.2881519",
+          "article-title": "Approaches for Dialog Management in Conversational Agents",
+          "volume": "23",
+          "author": "Harms",
+          "year": "2019",
+          "journal-title": "IEEE Internet Comput."
+        },
+        {
+          "key": "ref_40",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Segura, C., Palau, À., Luque, J., Costa-Jussà, M.R., and Banchs, R.E. (2019, January 18–20). Chatbol, a Chatbot for the Spanish “La Liga”. Proceedings of the 9th International Workshop on Spoken Dialogue System Technology, Singapore.",
+          "DOI": "10.1007/978-981-13-9443-0_28"
+        },
+        {
+          "key": "ref_41",
+          "first-page": "33",
+          "article-title": "Enhancing Rasa NLU model for Vietnamese chatbot",
+          "volume": "9",
+          "author": "Nguyen",
+          "year": "2021",
+          "journal-title": "Int. J. Open Inf. Technol."
+        },
+        {
+          "key": "ref_42",
+          "doi-asserted-by": "crossref",
+          "first-page": "101180",
+          "DOI": "10.1016/j.softx.2022.101180",
+          "article-title": "Commlib: An easy-to-use communication library for Cyber–Physical Systems",
+          "volume": "19",
+          "author": "Panayiotou",
+          "year": "2022",
+          "journal-title": "SoftwareX"
+        }
+      ],
+      "container-title": [
+        "Sensors"
+      ],
+      "original-title": [],
+      "language": "en",
+      "link": [
+        {
+          "URL": "https://www.mdpi.com/1424-8220/24/16/5199/pdf",
+          "content-type": "unspecified",
+          "content-version": "vor",
+          "intended-application": "similarity-checking"
+        }
+      ],
+      "deposited": {
+        "date-parts": [
+          [
+            2025,
+            10,
+            10
+          ]
+        ],
+        "date-time": "2025-10-10T15:34:53Z",
+        "timestamp": 1760110493000
+      },
+      "score": 1,
+      "resource": {
+        "primary": {
+          "URL": "https://www.mdpi.com/1424-8220/24/16/5199"
+        }
+      },
+      "subtitle": [],
+      "short-title": [],
+      "issued": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            11
+          ]
+        ]
+      },
+      "references-count": 42,
+      "journal-issue": {
+        "issue": "16",
+        "published-online": {
+          "date-parts": [
+            [
+              2024,
+              8
+            ]
+          ]
+        }
+      },
+      "alternative-id": [
+        "s24165199"
+      ],
+      "URL": "https://doi.org/10.3390/s24165199",
+      "relation": {},
+      "ISSN": [
+        "1424-8220"
+      ],
+      "issn-type": [
+        {
+          "value": "1424-8220",
+          "type": "electronic"
+        }
+      ],
+      "subject": [],
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            11
+          ]
+        ]
+      }
+    },
+    "resolver": {
+      "url": "https://www.mdpi.com/1424-8220/24/16/5199",
+      "status": 403
+    }
+  },
+  {
+    "kind": "doi",
+    "query": "10.1016/j.future.2024.05.026",
+    "api_url": "https://api.crossref.org/works/10.1016%2Fj.future.2024.05.026",
+    "metadata": {
+      "indexed": {
+        "date-parts": [
+          [
+            2026,
+            8,
+            12
+          ]
+        ],
+        "date-time": "2026-08-12T07:04:01Z",
+        "timestamp": 1786518241501,
+        "version": "build-2736575974"
+      },
+      "reference-count": 57,
+      "publisher": "Elsevier BV",
+      "license": [
+        {
+          "start": {
+            "date-parts": [
+              [
+                2024,
+                10,
+                1
+              ]
+            ],
+            "date-time": "2024-10-01T00:00:00Z",
+            "timestamp": 1727740800000
+          },
+          "content-version": "tdm",
+          "delay-in-days": 0,
+          "URL": "https://www.elsevier.com/tdm/userlicense/1.0/"
+        },
+        {
+          "start": {
+            "date-parts": [
+              [
+                2024,
+                10,
+                1
+              ]
+            ],
+            "date-time": "2024-10-01T00:00:00Z",
+            "timestamp": 1727740800000
+          },
+          "content-version": "tdm",
+          "delay-in-days": 0,
+          "URL": "https://www.elsevier.com/legal/tdmrep-license"
+        },
+        {
+          "start": {
+            "date-parts": [
+              [
+                2024,
+                5,
+                23
+              ]
+            ],
+            "date-time": "2024-05-23T00:00:00Z",
+            "timestamp": 1716422400000
+          },
+          "content-version": "vor",
+          "delay-in-days": 0,
+          "URL": "http://creativecommons.org/licenses/by/4.0/"
+        }
+      ],
+      "content-domain": {
+        "domain": [
+          "elsevier.com",
+          "sciencedirect.com"
+        ],
+        "crossmark-restriction": true
+      },
+      "short-container-title": [
+        "Future Generation Computer Systems"
+      ],
+      "published-print": {
+        "date-parts": [
+          [
+            2024,
+            10
+          ]
+        ]
+      },
+      "DOI": "10.1016/j.future.2024.05.026",
+      "type": "journal-article",
+      "created": {
+        "date-parts": [
+          [
+            2024,
+            5,
+            18
+          ]
+        ],
+        "date-time": "2024-05-18T03:44:55Z",
+        "timestamp": 1716003895000
+      },
+      "page": "505-521",
+      "update-policy": "https://doi.org/10.1016/elsevier_cm_policy",
+      "source": "Crossref",
+      "is-referenced-by-count": 9,
+      "special_numbering": "C",
+      "title": [
+        "CLAID: Closing the Loop on AI &amp; Data Collection — A cross-platform transparent computing middleware framework for smart edge-cloud and digital biomarker applications"
+      ],
+      "prefix": "10.1016",
+      "volume": "159",
+      "author": [
+        {
+          "given": "Patrick",
+          "family": "Langer",
+          "sequence": "first",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Stephan",
+          "family": "Altmüller",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Elgar",
+          "family": "Fleisch",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Filipe",
+          "family": "Barata",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        }
+      ],
+      "member": "78",
+      "reference": [
+        {
+          "key": "10.1016/j.future.2024.05.026_b1",
+          "article-title": "Sensors for daily life: A review",
+          "volume": "2",
+          "author": "Javaid",
+          "year": "2021",
+          "journal-title": "Sens. Int."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b2",
+          "series-title": "Die Kosten der nichtübertragbaren Krankheiten in der Schweiz : Schlussbericht",
+          "author": "Wieser",
+          "year": "2014"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b3",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.1186/s12961-021-00732-y",
+          "article-title": "The household financial burden of non-communicable diseases in low- and middle-income countries: a systematic review",
+          "volume": "19",
+          "author": "Kazibwe",
+          "year": "2021",
+          "journal-title": "Health Res. Policy Syst."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b4",
+          "doi-asserted-by": "crossref",
+          "first-page": "65",
+          "DOI": "10.3389/fpubh.2015.00065",
+          "article-title": "Growing burden of non-communicable diseases in the emerging health markets: The case of BRICS",
+          "volume": "3",
+          "author": "Jakovljevic",
+          "year": "2015",
+          "journal-title": "Front. Public Health"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b5",
+          "article-title": "Developing and adopting safe and effective digital biomarkers to improve patient outcomes",
+          "volume": "2",
+          "author": "Coravos",
+          "year": "2019",
+          "journal-title": "npj Digit. Med."
+        },
+        {
+          "issue": "7",
+          "key": "10.1016/j.future.2024.05.026_b6",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.3390/ijerph19073747",
+          "article-title": "Mobile health (m-Health) in retrospect: The known unknowns",
+          "volume": "19",
+          "author": "Istepanian",
+          "year": "2022",
+          "journal-title": "Int. J. Environ. Res. Public Health"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b7",
+          "doi-asserted-by": "crossref",
+          "first-page": "889",
+          "DOI": "10.3390/healthcare9070889",
+          "article-title": "Application of smartphone technologies in disease monitoring: A systematic review",
+          "volume": "9",
+          "author": "Moses",
+          "year": "2021",
+          "journal-title": "Healthcare"
+        },
+        {
+          "issue": "10",
+          "key": "10.1016/j.future.2024.05.026_b8",
+          "doi-asserted-by": "crossref",
+          "first-page": "956",
+          "DOI": "10.1056/NEJMra1806949",
+          "article-title": "Mobile devices and health",
+          "volume": "381",
+          "author": "Sim",
+          "year": "2019",
+          "journal-title": "N. Engl. J. Med."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b9",
+          "doi-asserted-by": "crossref",
+          "first-page": "92",
+          "DOI": "10.1159/000502000",
+          "article-title": "Traditional and digital biomarkers: Two worlds apart?",
+          "volume": "3",
+          "author": "Babrak",
+          "year": "2019",
+          "journal-title": "Digit. Biomark."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b10",
+          "doi-asserted-by": "crossref",
+          "first-page": "462",
+          "DOI": "10.1038/nbt.3223",
+          "article-title": "The digital phenotype",
+          "volume": "33",
+          "author": "Jain",
+          "year": "2015",
+          "journal-title": "Nature Biotechnol."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b11",
+          "first-page": "191",
+          "article-title": "A review of challenges and opportunities in machine learning for health",
+          "volume": "2020",
+          "author": "Ghassemi",
+          "year": "2020",
+          "journal-title": "AMIA Joint Summits Transl. Sci. Proc. AMIA Joint Summits Transl. Sci."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b12",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.2196/18082",
+          "article-title": "Automatic recognition, segmentation, and sex assignment of nocturnal asthmatic coughs and cough epochs in smartphone audio recordings: Observational field study",
+          "volume": "22",
+          "author": "Barata",
+          "year": "2020",
+          "journal-title": "J. Med. Internet Res."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b13",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.3389/fict.2015.00006",
+          "article-title": "AWARE: Mobile context instrumentation framework",
+          "volume": "2",
+          "author": "Ferreira",
+          "year": "2015",
+          "journal-title": "Front. ICT"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b14",
+          "series-title": "Proceedings of the 2016 ACM International Joint Conference on Pervasive and Ubiquitous Computing",
+          "first-page": "415",
+          "article-title": "Sensus: A cross-platform, general-purpose system for mobile crowdsensing in human-subject studies",
+          "author": "Xiong",
+          "year": "2016"
+        },
+        {
+          "issue": "8",
+          "key": "10.1016/j.future.2024.05.026_b15",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.2196/11734",
+          "article-title": "RADAR-base: Open source mobile health platform for collecting, monitoring, and analyzing data using sensors, wearables, and mobile devices",
+          "volume": "7",
+          "author": "Ranjan",
+          "year": "2019",
+          "journal-title": "JMIR Mhealth Uhealth"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b16",
+          "first-page": "1",
+          "article-title": "The digital biomarker discovery pipeline: An open source software platform for the development of digital biomarkers using mHealth and wearables data",
+          "volume": "5",
+          "author": "Bent",
+          "year": "2020",
+          "journal-title": "J. Clin. Transl. Sci."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b17",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.1016/j.cmpb.2021.106461",
+          "article-title": "FLIRT: A feature generation toolkit for wearable data",
+          "volume": "212",
+          "author": "Föll",
+          "year": "2021",
+          "journal-title": "Comput. Methods Programs Biomed."
+        },
+        {
+          "issue": "13",
+          "key": "10.1016/j.future.2024.05.026_b18",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.3390/s21134412",
+          "article-title": "An overview of machine learning within embedded and mobile devices–optimizations and applications",
+          "volume": "21",
+          "author": "Ajani",
+          "year": "2021",
+          "journal-title": "Sensors"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b19",
+          "series-title": "Pogo, a middleware for mobile phone sensing",
+          "first-page": "21",
+          "author": "Brouwers",
+          "year": "2012"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b20",
+          "first-page": "56",
+          "article-title": "USense – A smartphone middleware for community sensing",
+          "volume": "vol. 1",
+          "author": "Agarwal",
+          "year": "2013"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b21",
+          "series-title": "The CARP mobile sensing framework - A cross-platform, reactive, programming framework and runtime environment for digital phenotyping",
+          "author": "Bardram",
+          "year": "2020"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b22",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.1155/2018/8715294",
+          "article-title": "MobiCOP: A scalable and reliable mobile code offloading solution",
+          "volume": "2018",
+          "author": "Benedetto",
+          "year": "2018",
+          "journal-title": "Wirel. Commun. Mob. Comput."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b23",
+          "doi-asserted-by": "crossref",
+          "first-page": "424",
+          "DOI": "10.1016/j.future.2018.09.056",
+          "article-title": "Towards a practical framework for code offloading in the internet of things",
+          "volume": "92",
+          "author": "Benedetto",
+          "year": "2019",
+          "journal-title": "Future Gener. Comput. Syst."
+        },
+        {
+          "issue": "2",
+          "key": "10.1016/j.future.2024.05.026_b24",
+          "doi-asserted-by": "crossref",
+          "first-page": "132",
+          "DOI": "10.1109/MNET.2018.1700458",
+          "article-title": "Mobile transparent computing: A novel user-centric approach to unify device, edge, and cloud",
+          "volume": "33",
+          "author": "Zhou",
+          "year": "2019",
+          "journal-title": "IEEE Netw."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b25",
+          "series-title": "Robotic frameworks, architectures and middleware comparison",
+          "author": "Tsardoulias",
+          "year": "2017"
+        },
+        {
+          "issue": "1",
+          "key": "10.1016/j.future.2024.05.026_b26",
+          "doi-asserted-by": "crossref",
+          "first-page": "70",
+          "DOI": "10.1109/JIOT.2015.2498900",
+          "article-title": "Middleware for internet of things: A survey",
+          "volume": "3",
+          "author": "Razzaque",
+          "year": "2016",
+          "journal-title": "IEEE Internet Things J."
+        },
+        {
+          "issue": "6",
+          "key": "10.1016/j.future.2024.05.026_b27",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.1145/3362031",
+          "article-title": "A survey on end-edge-cloud orchestrated network computing paradigms: Transparent computing, mobile edge computing, fog computing, and cloudlet",
+          "volume": "52",
+          "author": "Ren",
+          "year": "2019",
+          "journal-title": "ACM Comput. Surv."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b28",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.1002/dac.4474",
+          "article-title": "Internet of things offloading: Ongoing issues, opportunities, and future challenges",
+          "volume": "33",
+          "author": "Heidari",
+          "year": "2020",
+          "journal-title": "Int. J. Commun. Syst."
+        },
+        {
+          "issue": "2",
+          "key": "10.1016/j.future.2024.05.026_b29",
+          "doi-asserted-by": "crossref",
+          "first-page": "232",
+          "DOI": "10.1109/TSUSC.2022.3216461",
+          "article-title": "Energy-efficient computation offloading for static and dynamic applications in hybrid mobile edge cloud system",
+          "volume": "8",
+          "author": "Bi",
+          "year": "2023",
+          "journal-title": "IEEE Trans. Sustain. Comput."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b30",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.1016/j.future.2018.04.057",
+          "article-title": "Offloading in fog computing for IoT: Review, enabling technologies, and research opportunities",
+          "volume": "87",
+          "author": "Aazam",
+          "year": "2018",
+          "journal-title": "Future Gener. Comput. Syst."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b31",
+          "article-title": "Robotics middleware: A comprehensive literature survey and attribute-based bibliography",
+          "volume": "2012",
+          "author": "Elkady",
+          "year": "2012",
+          "journal-title": "J. Robot."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b32",
+          "unstructured": "M. Quigley, K. Conley, B. Gerkey, J. Faust, T. Foote, J. Leibs, R. Wheeler, A. Ng, ROS: an open-source Robot Operating System, in: ICRA Workshop on Open Source Software, Vol. 3, 2009."
+        },
+        {
+          "issue": "66",
+          "key": "10.1016/j.future.2024.05.026_b33",
+          "doi-asserted-by": "crossref",
+          "first-page": "eabm6074",
+          "DOI": "10.1126/scirobotics.abm6074",
+          "article-title": "Robot operating system 2: Design, architecture, and uses in the wild",
+          "volume": "7",
+          "author": "Macenski",
+          "year": "2022",
+          "journal-title": "Science Robotics"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b34",
+          "series-title": "Boost C++ libraries",
+          "author": "Koranne",
+          "year": "2011"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b35",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.2196/mental.5165",
+          "article-title": "New tools for new research in psychiatry: A scalable and customizable platform to empower data driven smartphone research",
+          "volume": "3",
+          "author": "Torous",
+          "year": "2016",
+          "journal-title": "JMIR Mental Health"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b36",
+          "first-page": "1",
+          "article-title": "Mcerebrum: A mobile sensing software platform for development and validation of digital biomarkers and interventions",
+          "volume": "vol. 2017",
+          "author": "Hossain",
+          "year": "2017"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b37",
+          "doi-asserted-by": "crossref",
+          "first-page": "1",
+          "DOI": "10.1145/3422158",
+          "article-title": "Mobile and wearable sensing frameworks for mHealth studies and applications: A systematic review",
+          "volume": "2",
+          "author": "Kumar",
+          "year": "2020",
+          "journal-title": "ACM Trans. Comput. Healthc."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b38",
+          "series-title": "Get started with xamarin",
+          "author": "Microsoft",
+          "year": "2023"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b39",
+          "series-title": "Build apps for any screen",
+          "author": "Flutter",
+          "year": "2023"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b40",
+          "doi-asserted-by": "crossref",
+          "first-page": "114",
+          "DOI": "10.1145/857076.857078",
+          "article-title": "The many faces of publish/subscribe",
+          "volume": "35",
+          "author": "Eugster",
+          "year": "2003",
+          "journal-title": "ACM Comput. Surv."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b41",
+          "series-title": "A high performance, open source universal RPC framework",
+          "author": "gRPC",
+          "year": "2024"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b42",
+          "series-title": "Supported languages",
+          "author": "gRPC",
+          "year": "2024"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b43",
+          "series-title": "Supported languages",
+          "author": "Bazel",
+          "year": "2024"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b44",
+          "series-title": "protocol-buffers",
+          "author": "Google",
+          "year": "2023"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b45",
+          "doi-asserted-by": "crossref",
+          "first-page": "759",
+          "DOI": "10.1126/science.1196187",
+          "article-title": "Open mHealth architecture: An engine for health care innovation",
+          "volume": "330",
+          "author": "Estrin",
+          "year": "2010",
+          "journal-title": "Science"
+        },
+        {
+          "issue": "3",
+          "key": "10.1016/j.future.2024.05.026_b46",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.3390/s23031330",
+          "article-title": "A survey on wearable sensors for mental health monitoring",
+          "volume": "23",
+          "author": "Gomes",
+          "year": "2023",
+          "journal-title": "Sensors"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b47",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.1038/s41598-023-36062-y",
+          "article-title": "Wearable-based accelerometer activity profile as digital biomarker of inflammation, biological age, and mortality using hierarchical clustering analysis in NHANES 2011–2014",
+          "volume": "13",
+          "author": "Shim",
+          "year": "2023",
+          "journal-title": "Sci. Rep."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b48",
+          "series-title": "Samsung galaxy watch",
+          "author": "Samsung",
+          "year": "2023"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b49",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.2196/38439",
+          "article-title": "Nighttime continuous contactless smartphone-based cough monitoring for the ward: A validation study",
+          "author": "Barata",
+          "year": "2023",
+          "journal-title": "JMIR Form. Res."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b50",
+          "series-title": "Nighttime continuous contactless smartphone-based CoughMonitoring for the ward: Validation study",
+          "author": "Barata",
+          "year": "2023"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b51",
+          "series-title": "Polar verity sense",
+          "author": "Polar",
+          "year": "2023"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b52",
+          "series-title": "CORE body temperature monitoring",
+          "author": "greenTEG",
+          "year": "2023"
+        },
+        {
+          "issue": "17",
+          "key": "10.1016/j.future.2024.05.026_b53",
+          "doi-asserted-by": "crossref",
+          "DOI": "10.3390/s21175932",
+          "article-title": "Reliability and validity of the CORE sensor to assess core body temperature during cycling exercise",
+          "volume": "21",
+          "author": "Verdel",
+          "year": "2021",
+          "journal-title": "Sensors"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b54",
+          "article-title": "The pitfalls of verifying floating-point computations",
+          "volume": "30",
+          "author": "Monniaux",
+          "year": "2007",
+          "journal-title": "ACM Trans. Program. Lang. Syst."
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b55",
+          "series-title": "Software-in-the-loop modeling and simulation framework for autonomous vehicles",
+          "first-page": "0305",
+          "author": "Ahamed",
+          "year": "2018"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b56",
+          "series-title": "Proceedings of the 44th International Conference on Software Engineering",
+          "first-page": "2091",
+          "article-title": "The art and practice of data science pipelines: A comprehensive study of data science pipelines in theory, in-the-small, and in-the-large",
+          "author": "Biswas",
+          "year": "2022"
+        },
+        {
+          "key": "10.1016/j.future.2024.05.026_b57",
+          "series-title": "Comparative efficacy of commercial wearables for circadian rhythm home monitoring from activity, heart rate, and core body temperature",
+          "author": "Wu",
+          "year": "2024"
+        }
+      ],
+      "container-title": [
+        "Future Generation Computer Systems"
+      ],
+      "original-title": [],
+      "language": "en",
+      "link": [
+        {
+          "URL": "https://api.elsevier.com/content/article/PII:S0167739X24002589?httpAccept=text/xml",
+          "content-type": "text/xml",
+          "content-version": "vor",
+          "intended-application": "text-mining"
+        },
+        {
+          "URL": "https://api.elsevier.com/content/article/PII:S0167739X24002589?httpAccept=text/plain",
+          "content-type": "text/plain",
+          "content-version": "vor",
+          "intended-application": "text-mining"
+        }
+      ],
+      "deposited": {
+        "date-parts": [
+          [
+            2024,
+            6,
+            13
+          ]
+        ],
+        "date-time": "2024-06-13T01:03:19Z",
+        "timestamp": 1718240599000
+      },
+      "score": 1,
+      "resource": {
+        "primary": {
+          "URL": "https://linkinghub.elsevier.com/retrieve/pii/S0167739X24002589"
+        }
+      },
+      "subtitle": [],
+      "short-title": [],
+      "issued": {
+        "date-parts": [
+          [
+            2024,
+            10
+          ]
+        ]
+      },
+      "references-count": 57,
+      "alternative-id": [
+        "S0167739X24002589"
+      ],
+      "URL": "https://doi.org/10.1016/j.future.2024.05.026",
+      "relation": {},
+      "ISSN": [
+        "0167-739X"
+      ],
+      "issn-type": [
+        {
+          "value": "0167-739X",
+          "type": "print"
+        }
+      ],
+      "subject": [],
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            10
+          ]
+        ]
+      },
+      "assertion": [
+        {
+          "value": "Elsevier",
+          "name": "publisher",
+          "label": "This article is maintained by"
+        },
+        {
+          "value": "CLAID: Closing the Loop on AI & Data Collection — A cross-platform transparent computing middleware framework for smart edge-cloud and digital biomarker applications",
+          "name": "articletitle",
+          "label": "Article Title"
+        },
+        {
+          "value": "Future Generation Computer Systems",
+          "name": "journaltitle",
+          "label": "Journal Title"
+        },
+        {
+          "value": "https://doi.org/10.1016/j.future.2024.05.026",
+          "name": "articlelink",
+          "label": "CrossRef DOI link to publisher maintained version"
+        },
+        {
+          "value": "article",
+          "name": "content_type",
+          "label": "Content Type"
+        },
+        {
+          "value": "© 2024 The Authors. Published by Elsevier B.V.",
+          "name": "copyright",
+          "label": "Copyright"
+        }
+      ]
+    },
+    "resolver": {
+      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0167739X24002589",
+      "status": 200
+    }
+  },
+  {
+    "kind": "doi",
+    "query": "10.24251/HICSS.2022.259",
+    "api_url": "https://api.crossref.org/works/10.24251%2FHICSS.2022.259",
+    "metadata": {
+      "indexed": {
+        "date-parts": [
+          [
+            2025,
+            11,
+            4
+          ]
+        ],
+        "date-time": "2025-11-04T11:00:25Z",
+        "timestamp": 1762254025854
+      },
+      "reference-count": 0,
+      "publisher": "Hawaii International Conference on System Sciences",
+      "content-domain": {
+        "domain": [],
+        "crossmark-restriction": false
+      },
+      "short-container-title": [],
+      "DOI": "10.24251/hicss.2022.259",
+      "type": "proceedings-article",
+      "created": {
+        "date-parts": [
+          [
+            2022,
+            1,
+            11
+          ]
+        ],
+        "date-time": "2022-01-11T01:50:06Z",
+        "timestamp": 1641865806000
+      },
+      "source": "Crossref",
+      "is-referenced-by-count": 5,
+      "title": [
+        "Communicating with Humans and Robots: A Motion Tracking Data Glove for Enhanced Support of Deafblind"
+      ],
+      "prefix": "10.24251",
+      "author": [
+        {
+          "given": "Federico",
+          "family": "Gelsomini",
+          "sequence": "first",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Elena",
+          "family": "Tomasuolo",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Maria",
+          "family": "Roccaforte",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Patrick",
+          "family": "Hung",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Bill",
+          "family": "Kapralos",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Adam",
+          "family": "Doubrowski",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Alvaro",
+          "family": "Quevedo",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Kamen",
+          "family": "Kanev",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Hosoda",
+          "family": "Makoto",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Hidenori",
+          "family": "Mimura",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        }
+      ],
+      "member": "10348",
+      "published-online": {
+        "date-parts": [
+          [
+            2022
+          ]
+        ]
+      },
+      "event": {
+        "name": "Hawaii International Conference on System Sciences",
+        "acronym": "HICSS"
+      },
+      "container-title": [
+        "Proceedings of the Annual Hawaii International Conference on System Sciences",
+        "Proceedings of the 55th Hawaii International Conference on System Sciences"
+      ],
+      "original-title": [],
+      "deposited": {
+        "date-parts": [
+          [
+            2022,
+            1,
+            11
+          ]
+        ],
+        "date-time": "2022-01-11T01:52:28Z",
+        "timestamp": 1641865948000
+      },
+      "score": 1,
+      "resource": {
+        "primary": {
+          "URL": "http://hdl.handle.net/10125/79591"
+        }
+      },
+      "subtitle": [],
+      "short-title": [],
+      "issued": {
+        "date-parts": [
+          [
+            2022
+          ]
+        ]
+      },
+      "references-count": 0,
+      "URL": "https://doi.org/10.24251/hicss.2022.259",
+      "relation": {},
+      "ISSN": [
+        "2572-6862"
+      ],
+      "issn-type": [
+        {
+          "value": "2572-6862",
+          "type": "print"
+        }
+      ],
+      "subject": [],
+      "published": {
+        "date-parts": [
+          [
+            2022
+          ]
+        ]
+      }
+    },
+    "resolver": {
+      "url": "https://scholarspace.manoa.hawaii.edu/items/ce8a05a1-c02f-4e45-addd-c30439513499",
+      "status": 200
+    }
+  },
+  {
+    "kind": "doi",
+    "query": "10.1016/j.intcom.2012.06.003",
+    "api_url": "https://api.crossref.org/works/10.1016%2Fj.intcom.2012.06.003",
+    "metadata": {
+      "indexed": {
+        "date-parts": [
+          [
+            2026,
+            8,
+            28
+          ]
+        ],
+        "date-time": "2026-08-28T11:40:00Z",
+        "timestamp": 1787917200656,
+        "version": "build-2784847793"
+      },
+      "reference-count": 38,
+      "publisher": "Oxford University Press (OUP)",
+      "issue": "5",
+      "content-domain": {
+        "domain": [],
+        "crossmark-restriction": false
+      },
+      "short-container-title": [
+        "Interacting with Computers"
+      ],
+      "published-print": {
+        "date-parts": [
+          [
+            2012,
+            9
+          ]
+        ]
+      },
+      "DOI": "10.1016/j.intcom.2012.06.003",
+      "type": "journal-article",
+      "created": {
+        "date-parts": [
+          [
+            2012,
+            7,
+            6
+          ]
+        ],
+        "date-time": "2012-07-06T01:24:07Z",
+        "timestamp": 1341537847000
+      },
+      "page": "374-386",
+      "source": "Crossref",
+      "is-referenced-by-count": 34,
+      "title": [
+        "SymbolChat: A flexible picture-based communication platform for users with intellectual disabilities"
+      ],
+      "prefix": "10.1093",
+      "volume": "24",
+      "author": [
+        {
+          "given": "Tuuli",
+          "family": "Keskinen",
+          "sequence": "first",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Tomi",
+          "family": "Heimonen",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Markku",
+          "family": "Turunen",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Juha-Pekka",
+          "family": "Rajaniemi",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Sami",
+          "family": "Kauppinen",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        }
+      ],
+      "member": "286",
+      "reference": [
+        {
+          "issue": "1",
+          "key": "10.1016/j.intcom.2012.06.003_b0080",
+          "doi-asserted-by": "crossref",
+          "first-page": "26",
+          "DOI": "10.1145/1361203.1361208",
+          "article-title": "The field evaluation of a mobile digital image communication application designed for people with Aphasia",
+          "volume": "1",
+          "author": "Allen",
+          "year": "2008",
+          "journal-title": "ACM Transactions on Accessible Computing"
+        },
+        {
+          "issue": "3",
+          "key": "10.1016/j.intcom.2012.06.003_b0140",
+          "doi-asserted-by": "crossref",
+          "first-page": "145",
+          "DOI": "10.1007/s10209-008-0112-5",
+          "article-title": "Involving domain experts in assistive technology research",
+          "volume": "7",
+          "author": "Allen",
+          "year": "2008",
+          "journal-title": "Universal Access in Information Society"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0060",
+          "unstructured": "American Speech-Language-Hearing Association, 2011. Augmentative and Alternative Communication. <http://www.asha.org/public/speech/disorders/AAC.htm> (checked 19.06.12)."
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0075",
+          "unstructured": "Blissymbolics Communication International, 2012. <http://www.blissymbolics.org/pfw/> (checked 19.06.12)."
+        },
+        {
+          "issue": "4",
+          "key": "10.1016/j.intcom.2012.06.003_b0020",
+          "doi-asserted-by": "crossref",
+          "first-page": "45",
+          "DOI": "10.1177/016264340401900406",
+          "article-title": "Emerging technologies and cognitive disability",
+          "volume": "19",
+          "author": "Braddock",
+          "year": "2004",
+          "journal-title": "Journal of Special Education Technology"
+        },
+        {
+          "issue": "6",
+          "key": "10.1016/j.intcom.2012.06.003_b0160",
+          "doi-asserted-by": "crossref",
+          "first-page": "467",
+          "DOI": "10.1046/j.1365-2788.2001.00366.x",
+          "article-title": "Sensory impairments, intellectual disability and psychiatry",
+          "volume": "45",
+          "author": "Carvill",
+          "year": "2001",
+          "journal-title": "Journal of Intellectual Disability Research"
+        },
+        {
+          "issue": "1",
+          "key": "10.1016/j.intcom.2012.06.003_b0010",
+          "first-page": "107",
+          "article-title": "Enhancing independent internet access for individuals with mental retardation through use of a specialized web browser: a pilot study",
+          "volume": "36",
+          "author": "Davies",
+          "year": "2001",
+          "journal-title": "Education and Training in Mental Retardation and Developmental Disabilities"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0005",
+          "series-title": "Proceedings of the SIGCHI conference on Human Factors in computing systems (CHI ‘06)",
+          "first-page": "1143",
+          "article-title": "Desperately seeking simplicity: how young adults with cognitive disabilities and their families adopt assistive technologies",
+          "author": "Dawe",
+          "year": "2006"
+        },
+        {
+          "issue": "1",
+          "key": "10.1016/j.intcom.2012.06.003_b0055",
+          "doi-asserted-by": "crossref",
+          "first-page": "14",
+          "DOI": "10.1111/j.1460-2466.1996.tb01459.x",
+          "article-title": "Units of analysis for internet communication",
+          "volume": "46",
+          "author": "December",
+          "year": "1996",
+          "journal-title": "Journal of Communication"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0085",
+          "unstructured": "DynaVox, 2012. <http://www.dynavoxtech.com/> (checked 19.06.12)."
+        },
+        {
+          "issue": "1",
+          "key": "10.1016/j.intcom.2012.06.003_b0165",
+          "doi-asserted-by": "crossref",
+          "first-page": "51",
+          "DOI": "10.1046/j.1365-2788.2003.00464.x",
+          "article-title": "Prevalence of psychiatric disorders in children and adolescents with and without intellectual disability",
+          "volume": "47",
+          "author": "Emerson",
+          "year": "2003",
+          "journal-title": "Journal of Intellectual Disability Research"
+        },
+        {
+          "issue": "3",
+          "key": "10.1016/j.intcom.2012.06.003_b0125",
+          "doi-asserted-by": "crossref",
+          "first-page": "44",
+          "DOI": "10.1145/1714458.1714460",
+          "article-title": "Computer usage by children with down syndrome: challenges and future research",
+          "volume": "2",
+          "author": "Feng",
+          "year": "2010",
+          "journal-title": "ACM Transactions on Accessible Computing"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0040",
+          "unstructured": "Fischer, G., Sullivan J.F., 2002. Human-centered public transportation systems for persons with cognitive disabilities – challenges and insights for participatory design. In: Proc. 7th Participatory Design Conference, pp. 194–198."
+        },
+        {
+          "issue": "7",
+          "key": "10.1016/j.intcom.2012.06.003_b0035",
+          "doi-asserted-by": "crossref",
+          "first-page": "663",
+          "DOI": "10.1007/s00779-010-0294-8",
+          "article-title": "Interactive visual supports for children with autism",
+          "volume": "14",
+          "author": "Hayes",
+          "year": "2010",
+          "journal-title": "Personal Ubiquitous Computing"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0155",
+          "doi-asserted-by": "crossref",
+          "first-page": "387",
+          "DOI": "10.1007/3-540-36572-9_30",
+          "article-title": "finger instead of mouse: touch screens as a means of enhancing universal access",
+          "volume": "2615",
+          "author": "Holzinger",
+          "year": "2003",
+          "journal-title": "Universal Access Theoretical Perspectives, Practice, and Experience, Lecture Notes in Computer Science"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0175",
+          "series-title": "Proceedings of the 11th International ACM SIGACCESS Conference on Computers and Accessibility (Assets ‘09)",
+          "first-page": "3",
+          "article-title": "Comparing evaluation techniques for text readability software for adults with intellectual disabilities",
+          "author": "Huenerfauth",
+          "year": "2009"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0110",
+          "unstructured": "Jiwnani, K., 2012. Designing for Users with Cognitive Disabilities. Universal Usability. In Practice. University of Maryland Report. <http://otal.umd.edu/uupractice/cognition/> (checked 19.06.12)."
+        },
+        {
+          "issue": "1",
+          "key": "10.1016/j.intcom.2012.06.003_b0185",
+          "doi-asserted-by": "crossref",
+          "first-page": "39",
+          "DOI": "10.1207/s15327809jls0401_2",
+          "article-title": "Interaction analysis: foundations and practice",
+          "volume": "4",
+          "author": "Jordan",
+          "year": "1995",
+          "journal-title": "The Journal of the Learning Sciences"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0045",
+          "doi-asserted-by": "crossref",
+          "unstructured": "Keating, T., 2006. Picture planner: a cognitively accessible personal activity scheduling application. In: Proceedings of the 8th International ACM SIGACCESS Conference on Computers and Accessibility (Assets ‘06). ACM, New York, NY, USA, pp. 239–240.",
+          "DOI": "10.1145/1168987.1169034"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0145",
+          "series-title": "Proceedings of the third Nordic Conference on Human-Computer Interaction (NordiCHI ‘04)",
+          "first-page": "305",
+          "article-title": "Usability evaluation involving participants with cognitive disabilities",
+          "author": "Lepistö",
+          "year": "2004"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0025",
+          "doi-asserted-by": "crossref",
+          "first-page": "12",
+          "DOI": "10.1145/1102187.1102190",
+          "article-title": "HCI for people with cognitive disabilities",
+          "volume": "83",
+          "author": "Lewis",
+          "year": "2005",
+          "journal-title": "SIGACCESS Accessibility and Computing"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0135",
+          "unstructured": "Moffatt, K., Findlater, L., Allen, M., 2006. Generalizability in Research with Cognitively Impaired Individuals. CHI 2006 Workshop on Designing for People with Cognitive Impairments, April 22–23, Montreal, Quebec."
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0100",
+          "series-title": "Proceedings of the 14th International Conference on Knowledge-Based and Intelligent Information and Engineering Systems: Part III (KES’10)",
+          "first-page": "473",
+          "article-title": "Pictograph chat communicator III: a chat system that embodies cross-cultural communication",
+          "author": "Munemori",
+          "year": "2010"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0130",
+          "series-title": "Proceedings on the 2000 Conference on Universal Usability (CUU ‘00)",
+          "first-page": "39",
+          "article-title": "User sensitive inclusive design – in search of a new paradigm",
+          "author": "Newell",
+          "year": "2000"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0015",
+          "series-title": "The Human-Computer Interaction Handbook",
+          "first-page": "464",
+          "article-title": "Information technology for cognitive support",
+          "author": "Newell",
+          "year": "2002"
+        },
+        {
+          "issue": "1",
+          "key": "10.1016/j.intcom.2012.06.003_b0050",
+          "first-page": "57",
+          "article-title": "Beyond linear syntax: an image-oriented communication aid",
+          "volume": "1",
+          "author": "Patel",
+          "year": "2004",
+          "journal-title": "Journal of Assistive Technology Outcomes and Benefits"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0065",
+          "unstructured": "Picture Communication Symbols, 2012. <http://www.mayer-johnson.com/category/symbols-and-photos/> (checked 19.06.12)."
+        },
+        {
+          "issue": "1",
+          "key": "10.1016/j.intcom.2012.06.003_b0030",
+          "doi-asserted-by": "crossref",
+          "first-page": "48",
+          "DOI": "10.1007/s10209-003-0072-8",
+          "article-title": "Making the Internet accessible for people with cognitive and communication Impairments",
+          "volume": "3",
+          "author": "Poulson",
+          "year": "2004",
+          "journal-title": "Universal Access in the Information Society"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0170",
+          "series-title": "Proceedings of Interaction Design and Children",
+          "first-page": "189",
+          "article-title": "Endurability, engagement and expectations: measuring children’s fun",
+          "author": "Read",
+          "year": "2002"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0150",
+          "unstructured": "Riihiaho, S. 2009. User testing when test tasks are not appropriate. In: Leena Norros, Hanna Koskinen, Leena Salo, Paula Savioja (Eds.), European Conference on Cognitive Ergonomics: Designing beyond the Product – Understanding Activity and User Experience in Ubiquitous Environments (ECCE ‘09). VTT Technical Research Centre of Finland, Finland. Article 21, p. 9."
+        },
+        {
+          "issue": "4",
+          "key": "10.1016/j.intcom.2012.06.003_b0115",
+          "doi-asserted-by": "crossref",
+          "first-page": "171",
+          "DOI": "10.1145/505248.506006",
+          "article-title": "Making the computer accessible to mentally retarded adults",
+          "volume": "45",
+          "author": "Robertson",
+          "year": "2002",
+          "journal-title": "Communications of the ACM"
+        },
+        {
+          "issue": "4",
+          "key": "10.1016/j.intcom.2012.06.003_b0120",
+          "doi-asserted-by": "crossref",
+          "first-page": "577",
+          "DOI": "10.1016/S0953-5438(03)00051-1",
+          "article-title": "Investigating the usability of assistive user interfaces",
+          "volume": "15",
+          "author": "Sutcliffe",
+          "year": "2003",
+          "journal-title": "Interacting with Computers"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0095",
+          "series-title": "Proceedings of the 1st International Conference on Intercultural Collaboration (IWIC’07)",
+          "first-page": "193",
+          "article-title": "Design and development of a pictogram communication system for children around the world",
+          "author": "Takasaki",
+          "year": "2007"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0180",
+          "doi-asserted-by": "crossref",
+          "unstructured": "M. Turunen, J. Hakulinen, A. Melto, T. Heimonen, T. Laivo, J. Hella, SUXES – User Experience Evaluation Method for Spoken and Multimodal Interaction. In: Proceedings of Interspeech, 2009, pp. 2567–2570.",
+          "DOI": "10.21437/Interspeech.2009-676"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0090",
+          "series-title": "Proceedings of 3rd International Workshop on Ambient Assisted Living (IWAAL ‘11)",
+          "first-page": "57",
+          "article-title": "Designing messenger visual, an instant messaging service for individuals with cognitive disability",
+          "author": "Tuset",
+          "year": "2011"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0190",
+          "series-title": "Proceedings of the 19th International Conference on User Modeling, adaption, and Personalization (UMAP’11)",
+          "first-page": "454",
+          "article-title": "Modeling individuals with learning disabilities to personalize a pictogram-based instant messaging service",
+          "author": "Tuset-Peiró",
+          "year": "2011"
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0070",
+          "unstructured": "Widgit Symbols, 2012. <http://www.widgit.com/symbols/> (checked 19.06.12)."
+        },
+        {
+          "key": "10.1016/j.intcom.2012.06.003_b0105",
+          "unstructured": "Zlango, 2012. <http://www.zlango.com> (checked 19.06.12)."
+        }
+      ],
+      "container-title": [
+        "Interacting with Computers"
+      ],
+      "original-title": [],
+      "language": "en",
+      "link": [
+        {
+          "URL": "http://academic.oup.com/iwc/article-pdf/24/5/374/2043387/iwc24-0374.pdf",
+          "content-type": "unspecified",
+          "content-version": "vor",
+          "intended-application": "similarity-checking"
+        }
+      ],
+      "deposited": {
+        "date-parts": [
+          [
+            2022,
+            1,
+            20
+          ]
+        ],
+        "date-time": "2022-01-20T09:45:11Z",
+        "timestamp": 1642671911000
+      },
+      "score": 1,
+      "resource": {
+        "primary": {
+          "URL": "https://academic.oup.com/iwc/article-lookup/doi/10.1016/j.intcom.2012.06.003"
+        }
+      },
+      "subtitle": [],
+      "short-title": [],
+      "issued": {
+        "date-parts": [
+          [
+            2012,
+            9
+          ]
+        ]
+      },
+      "references-count": 38,
+      "journal-issue": {
+        "issue": "5",
+        "published-print": {
+          "date-parts": [
+            [
+              2012,
+              9
+            ]
+          ]
+        }
+      },
+      "alternative-id": [
+        "S0953543812000616"
+      ],
+      "URL": "https://doi.org/10.1016/j.intcom.2012.06.003",
+      "relation": {},
+      "ISSN": [
+        "0953-5438"
+      ],
+      "issn-type": [
+        {
+          "value": "0953-5438",
+          "type": "print"
+        }
+      ],
+      "subject": [],
+      "published": {
+        "date-parts": [
+          [
+            2012,
+            9
+          ]
+        ]
+      }
+    },
+    "resolver": {
+      "url": "https://academic.oup.com/iwc/article-lookup/doi/10.1016/j.intcom.2012.06.003",
+      "status": 403
+    }
+  },
+  {
+    "kind": "doi",
+    "query": "10.1109/CPSNA.2015.21",
+    "api_url": "https://api.crossref.org/works/10.1109%2FCPSNA.2015.21",
+    "metadata": {
+      "indexed": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            9
+          ]
+        ],
+        "date-time": "2024-08-09T17:11:21Z",
+        "timestamp": 1723223481720
+      },
+      "reference-count": 11,
+      "publisher": "IEEE",
+      "content-domain": {
+        "domain": [],
+        "crossmark-restriction": false
+      },
+      "short-container-title": [],
+      "published-print": {
+        "date-parts": [
+          [
+            2015,
+            8
+          ]
+        ]
+      },
+      "DOI": "10.1109/cpsna.2015.21",
+      "type": "proceedings-article",
+      "created": {
+        "date-parts": [
+          [
+            2015,
+            9,
+            21
+          ]
+        ],
+        "date-time": "2015-09-21T17:24:10Z",
+        "timestamp": 1442856250000
+      },
+      "source": "Crossref",
+      "is-referenced-by-count": 11,
+      "title": [
+        "Adaptive Periodic Communication over MQTT for Large-Scale Cyber-Physical Systems"
+      ],
+      "prefix": "10.1109",
+      "author": [
+        {
+          "given": "Hyun-Chul",
+          "family": "Jo",
+          "sequence": "first",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        },
+        {
+          "given": "Hyun-Wook",
+          "family": "Jin",
+          "sequence": "additional",
+          "affiliation": [],
+          "role": [
+            {
+              "role": "author",
+              "vocabulary": "crossref"
+            }
+          ]
+        }
+      ],
+      "member": "263",
+      "reference": [
+        {
+          "key": "ref4",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/ICDCSW.2003.1203555"
+        },
+        {
+          "key": "ref3",
+          "author": "oasis",
+          "year": "2014",
+          "journal-title": "MQTT Version 3 1 1"
+        },
+        {
+          "key": "ref10",
+          "year": "0",
+          "journal-title": "Paho Project"
+        },
+        {
+          "key": "ref6",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/TII.2012.2183878"
+        },
+        {
+          "key": "ref11",
+          "year": "0",
+          "journal-title": "Mosquitto"
+        },
+        {
+          "key": "ref5",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/49.709449"
+        },
+        {
+          "key": "ref8",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1007/s11390-007-9017-7"
+        },
+        {
+          "key": "ref7",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/ETFA.2014.7005136"
+        },
+        {
+          "key": "ref2",
+          "first-page": "4655",
+          "article-title": "SPEED: a stateless protocol for realtime communication in sensor networks",
+          "author": "he",
+          "year": "2003",
+          "journal-title": "Proc of ICDCS"
+        },
+        {
+          "key": "ref9",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/WAINA.2013.55"
+        },
+        {
+          "key": "ref1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/REAL.2002.1181560"
+        }
+      ],
+      "event": {
+        "name": "2015 IEEE 3rd International Conference on Cyber-Physical Systems, Networks, and Applications (CPSNA)",
+        "location": "Kowloon, Hong Kong",
+        "start": {
+          "date-parts": [
+            [
+              2015,
+              8,
+              19
+            ]
+          ]
+        },
+        "end": {
+          "date-parts": [
+            [
+              2015,
+              8,
+              21
+            ]
+          ]
+        }
+      },
+      "container-title": [
+        "2015 IEEE 3rd International Conference on Cyber-Physical Systems, Networks, and Applications"
+      ],
+      "original-title": [],
+      "link": [
+        {
+          "URL": "http://xplorestaging.ieee.org/ielx7/7271128/7272665/07272687.pdf?arnumber=7272687",
+          "content-type": "unspecified",
+          "content-version": "vor",
+          "intended-application": "similarity-checking"
+        }
+      ],
+      "deposited": {
+        "date-parts": [
+          [
+            2017,
+            3,
+            24
+          ]
+        ],
+        "date-time": "2017-03-24T19:23:37Z",
+        "timestamp": 1490383417000
+      },
+      "score": 1,
+      "resource": {
+        "primary": {
+          "URL": "http://ieeexplore.ieee.org/document/7272687/"
+        }
+      },
+      "subtitle": [],
+      "short-title": [],
+      "issued": {
+        "date-parts": [
+          [
+            2015,
+            8
+          ]
+        ]
+      },
+      "references-count": 11,
+      "URL": "https://doi.org/10.1109/cpsna.2015.21",
+      "relation": {},
+      "subject": [],
+      "published": {
+        "date-parts": [
+          [
+            2015,
+            8
+          ]
+        ]
+      }
+    },
+    "resolver": {
+      "url": "https://ieeexplore.ieee.org/document/7272687/",
+      "status": 202
+    }
+  },
+  {
+    "kind": "doi",
+    "query": "10.1145/2018436.2018443",
+    "api_url": "https://api.crossref.org/works/10.1145%2F2018436.2018443",
+    "metadata": {
+      "indexed": {
+        "date-parts": [
+          [
+            2026,
+            8,
+            12
+          ]
+        ],
+        "date-time": "2026-08-12T04:41:11Z",
+        "timestamp": 1786509671012,
+        "version": "build-2736575974"
+      },
+      "publisher-location": "New York, NY, USA",
+      "reference-count": 24,
+      "publisher": "ACM",
+      "license": [
+        {
+          "start": {
+            "date-parts": [
+              [
+                2011,
+                8,
+                15
+              ]
+            ],
+            "date-time": "2011-08-15T00:00:00Z",
+            "timestamp": 1313366400000
+          },
+          "content-version": "vor",
+          "delay-in-days": 0,
+          "URL": "https://www.acm.org/publications/policies/copyright_policy#Background"
+        }
+      ],
+      "content-domain": {
+        "domain": [
+          "dl.acm.org"
+        ],
+        "crossmark-restriction": true
+      },
+      "short-container-title": [],
+      "published-print": {
+        "date-parts": [
+          [
+            2011,
+            8,
+            15
+          ]
+        ]
+      },
+      "DOI": "10.1145/2018436.2018443",
+      "type": "proceedings-article",
+      "created": {
+        "date-parts": [
+          [
+            2011,
+            8,
+            31
+          ]
+        ],
+        "date-time": "2011-08-31T11:22:45Z",
+        "timestamp": 1314789765000
+      },
+      "page": "50-61",
+      "update-policy": "https://doi.org/10.1145/crossmark-policy",
+      "source": "Crossref",
+      "is-referenced-by-count": 354,
+      "title": [
+        "Better never than late"
+      ],
+      "prefix": "10.1145",
+      "author": [
+        {
+          "given": "Christo",
+          "family": "Wilson",
+          "sequence": "first",
+          "affiliation": [
+            {
+              "name": "University of California at Santa Barbara, Santa Barbara, USA"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Hitesh",
+          "family": "Ballani",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Microsoft Research, Cambridge, United Kingdom"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Thomas",
+          "family": "Karagiannis",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Microsoft Research, Cambridge, United Kingdom"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Ant",
+          "family": "Rowtron",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Microsoft Research, Cambridge, United Kingdom"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        }
+      ],
+      "member": "320",
+      "published-online": {
+        "date-parts": [
+          [
+            2011,
+            8,
+            15
+          ]
+        ]
+      },
+      "reference": [
+        {
+          "key": "e_1_3_2_2_1_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1851182.1851191"
+        },
+        {
+          "key": "e_1_3_2_2_2_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1402958.1402967"
+        },
+        {
+          "key": "e_1_3_2_2_3_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/ALLERTON.2008.4797706"
+        },
+        {
+          "key": "e_1_3_2_2_4_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1851182.1851192"
+        },
+        {
+          "key": "e_1_3_2_2_5_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/5.259431"
+        },
+        {
+          "key": "e_1_3_2_2_6_1",
+          "volume-title": "Proc. of OSDI",
+          "author": "Beaver D.",
+          "year": "2010",
+          "unstructured": "D. Beaver , S. Kumar , H. C. Li , J. Sobel , and P. Vajgel . Finding a Needle in Haystack: Facebook's Photo Storage . In Proc. of OSDI , 2010 . D. Beaver, S. Kumar, H. C. Li, J. Sobel, and P. Vajgel. Finding a Needle in Haystack: Facebook's Photo Storage. In Proc. of OSDI, 2010."
+        },
+        {
+          "key": "e_1_3_2_2_7_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/CCGRID.2007.102"
+        },
+        {
+          "key": "e_1_3_2_2_8_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1592681.1592693"
+        },
+        {
+          "key": "e_1_3_2_2_9_1",
+          "volume-title": "USENIX OSDI",
+          "author": "Dean J.",
+          "year": "2004",
+          "unstructured": "J. Dean and S. Ghemawat . MapReduce: Simplified Data Processing on Large Clusters . In USENIX OSDI , 2004 . J. Dean and S. Ghemawat. MapReduce: Simplified Data Processing on Large Clusters. In USENIX OSDI, 2004."
+        },
+        {
+          "key": "e_1_3_2_2_10_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1323293.1294281"
+        },
+        {
+          "key": "e_1_3_2_2_12_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1016/0169-7552(94)90101-5"
+        },
+        {
+          "key": "e_1_3_2_2_13_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1592568.1592576"
+        },
+        {
+          "key": "e_1_3_2_2_14_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/INFCOM.2007.125"
+        },
+        {
+          "key": "e_1_3_2_2_15_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1402958.1402968"
+        },
+        {
+          "key": "e_1_3_2_2_16_1",
+          "unstructured": "T. Hoff. 10 eBay Secrets for Planet Wide Scaling Nov. 2009. http://highscalability.com/blog/2009/11/17/10-ebay-secrets-for-planet-wide-scaling.html.  T. Hoff. 10 eBay Secrets for Planet Wide Scaling Nov. 2009. http://highscalability.com/blog/2009/11/17/10-ebay-secrets-for-planet-wide-scaling.html."
+        },
+        {
+          "key": "e_1_3_2_2_17_1",
+          "volume-title": "July",
+          "author": "Hoff T.",
+          "year": "2009",
+          "unstructured": "T. Hoff . Latency is Everywhere and it Costs You Sales - How to Crush it , July 2009 . http://highscalability.com/blog/2009/7/25/latency-is-everywhere-and-it-costs-you-sales-how-to-crush-it.html. T. Hoff. Latency is Everywhere and it Costs You Sales - How to Crush it, July 2009. http://highscalability.com/blog/2009/7/25/latency-is-everywhere-and-it-costs-you-sales-how-to-crush-it.html."
+        },
+        {
+          "key": "e_1_3_2_2_18_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1272996.1273005"
+        },
+        {
+          "key": "e_1_3_2_2_19_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/633025.633035"
+        },
+        {
+          "key": "e_1_3_2_2_20_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1007/s10618-008-0114-1"
+        },
+        {
+          "key": "e_1_3_2_2_21_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/321738.321743"
+        },
+        {
+          "key": "e_1_3_2_2_22_1",
+          "volume-title": "Dec.",
+          "author": "Saab P.",
+          "year": "2008",
+          "unstructured": "P. Saab . Scaling memcached at Facebook , Dec. 2008 . http://www.facebook.com/note.php?note_id=39391378919. P. Saab. Scaling memcached at Facebook, Dec. 2008. http://www.facebook.com/note.php?note_id=39391378919."
+        },
+        {
+          "key": "e_1_3_2_2_23_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1592568.1592604"
+        },
+        {
+          "key": "e_1_3_2_2_24_1",
+          "volume-title": "Apr.",
+          "author": "Vogels W.",
+          "year": "2009",
+          "unstructured": "W. Vogels . Performance and Scalability , Apr. 2009 . http://www.thingsdistributed.com/2006/04/performance_and_scalability.html. W. Vogels. Performance and Scalability, Apr. 2009. http://www.thingsdistributed.com/2006/04/performance_and_scalability.html."
+        },
+        {
+          "key": "e_1_3_2_2_25_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/502034.502057"
+        }
+      ],
+      "event": {
+        "name": "SIGCOMM '11: ACM SIGCOMM 2011 Conference",
+        "location": "Toronto Ontario Canada",
+        "acronym": "SIGCOMM '11",
+        "sponsor": [
+          "SIGCOMM ACM Special Interest Group on Data Communication"
+        ]
+      },
+      "container-title": [
+        "Proceedings of the ACM SIGCOMM 2011 conference"
+      ],
+      "original-title": [],
+      "link": [
+        {
+          "URL": "https://dl.acm.org/doi/10.1145/2018436.2018443",
+          "content-type": "unspecified",
+          "content-version": "vor",
+          "intended-application": "text-mining"
+        },
+        {
+          "URL": "https://dl.acm.org/doi/pdf/10.1145/2018436.2018443",
+          "content-type": "unspecified",
+          "content-version": "vor",
+          "intended-application": "similarity-checking"
+        }
+      ],
+      "deposited": {
+        "date-parts": [
+          [
+            2025,
+            6,
+            18
+          ]
+        ],
+        "date-time": "2025-06-18T05:48:46Z",
+        "timestamp": 1750225726000
+      },
+      "score": 1,
+      "resource": {
+        "primary": {
+          "URL": "https://dl.acm.org/doi/10.1145/2018436.2018443"
+        }
+      },
+      "subtitle": [
+        "meeting deadlines in datacenter networks"
+      ],
+      "short-title": [],
+      "issued": {
+        "date-parts": [
+          [
+            2011,
+            8,
+            15
+          ]
+        ]
+      },
+      "references-count": 24,
+      "alternative-id": [
+        "10.1145/2018436.2018443",
+        "10.1145/2018436"
+      ],
+      "URL": "https://doi.org/10.1145/2018436.2018443",
+      "relation": {
+        "is-identical-to": [
+          {
+            "id-type": "doi",
+            "id": "10.1145/2043164.2018443",
+            "asserted-by": "object"
+          }
+        ]
+      },
+      "subject": [],
+      "published": {
+        "date-parts": [
+          [
+            2011,
+            8,
+            15
+          ]
+        ]
+      },
+      "assertion": [
+        {
+          "value": "2011-08-15",
+          "order": 2,
+          "name": "published",
+          "label": "Published",
+          "group": {
+            "name": "publication_history",
+            "label": "Publication History"
+          }
+        }
+      ]
+    },
+    "resolver": {
+      "url": "https://dl.acm.org/doi/10.1145/2018436.2018443",
+      "status": 403
+    }
+  },
+  {
+    "kind": "doi",
+    "query": "10.1080/10400435.2024.2369547",
+    "api_url": "https://api.crossref.org/works/10.1080%2F10400435.2024.2369547",
+    "metadata": {
+      "indexed": {
+        "date-parts": [
+          [
+            2026,
+            7,
+            16
+          ]
+        ],
+        "date-time": "2026-07-16T14:43:49Z",
+        "timestamp": 1784213029667,
+        "version": "3.55.0"
+      },
+      "reference-count": 38,
+      "publisher": "Informa UK Limited",
+      "license": [
+        {
+          "start": {
+            "date-parts": [
+              [
+                2024,
+                7,
+                11
+              ]
+            ],
+            "date-time": "2024-07-11T00:00:00Z",
+            "timestamp": 1720656000000
+          },
+          "content-version": "vor",
+          "delay-in-days": 0,
+          "URL": "http://creativecommons.org/licenses/by/4.0/"
+        }
+      ],
+      "funder": [
+        {
+          "name": "Google Computer Science - Education Research"
+        }
+      ],
+      "content-domain": {
+        "domain": [
+          "www.tandfonline.com"
+        ],
+        "crossmark-restriction": true
+      },
+      "short-container-title": [
+        "Assistive Technology"
+      ],
+      "DOI": "10.1080/10400435.2024.2369547",
+      "type": "journal-article",
+      "created": {
+        "date-parts": [
+          [
+            2024,
+            7,
+            11
+          ]
+        ],
+        "date-time": "2024-07-11T15:06:37Z",
+        "timestamp": 1720710397000
+      },
+      "page": "1-10",
+      "update-policy": "https://doi.org/10.1080/tandf_crossmark_01",
+      "source": "Crossref",
+      "is-referenced-by-count": 4,
+      "title": [
+        "Mediated and non-mediated tactile fingerspelling: a comparative study"
+      ],
+      "prefix": "10.1080",
+      "author": [
+        {
+          "given": "Sven",
+          "family": "Topp",
+          "sequence": "first",
+          "affiliation": [
+            {
+              "name": "Psychology, University of Sydney, Sydney, Australia"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Shuangshuang",
+          "family": "Xiao",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Experience Design, Bentley University, Waltham, Massachusetts, USA"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Basil",
+          "family": "Duvernoy",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "TAUCHI, Tampere University, Tampere, Finland"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Jeraldine",
+          "family": "Milroy",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "University of New England, Armidale, Australia"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Zhanat",
+          "family": "Kappassov",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Experience Design, Bentley University, Waltham, Massachusetts, USA"
+            },
+            {
+              "name": "Department of Robotics and Mechatronics, Nazarbayev University, Astana, Kazakhstan"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Nurlan",
+          "family": "Kabdyshev",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Department of Robotics and Mechatronics, Nazarbayev University, Astana, Kazakhstan"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Roope",
+          "family": "Raisamo",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "TAUCHI, Tampere University, Tampere, Finland"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Vincent",
+          "family": "Hayward",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "Actronika SAS, Paris, France"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        },
+        {
+          "given": "Mounia",
+          "family": "Ziat",
+          "sequence": "additional",
+          "affiliation": [
+            {
+              "name": "TAUCHI, Tampere University, Tampere, Finland"
+            }
+          ],
+          "role": [
+            {
+              "vocabulary": "crossref",
+              "role": "author"
+            }
+          ]
+        }
+      ],
+      "member": "301",
+      "published-online": {
+        "date-parts": [
+          [
+            2024,
+            7,
+            11
+          ]
+        ]
+      },
+      "reference": [
+        {
+          "key": "e_1_3_7_2_1",
+          "unstructured": "American Foundation for the Blind. (2022). Technology resources for people with vision loss. https://www.afb.org/blindness-and-low-vision/using-technology/assistive-technology-products/braille-printers"
+        },
+        {
+          "key": "e_1_3_7_3_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/TOH.2020.2970929"
+        },
+        {
+          "key": "e_1_3_7_4_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1385569.1385655"
+        },
+        {
+          "key": "e_1_3_7_5_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/IROS47612.2022.9982052"
+        },
+        {
+          "key": "e_1_3_7_6_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/LRA.2023.3241758"
+        },
+        {
+          "key": "e_1_3_7_7_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/TOH.2020.3045928"
+        },
+        {
+          "key": "e_1_3_7_8_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.3389/feduc.2020.578389"
+        },
+        {
+          "key": "e_1_3_7_9_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1353/lan.2020.0063"
+        },
+        {
+          "key": "e_1_3_7_10_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1375/audi.23.1.18.31095"
+        },
+        {
+          "key": "e_1_3_7_11_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1097/00003446-199912000-00003"
+        },
+        {
+          "key": "e_1_3_7_12_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.24251/HICSS.2022.259"
+        },
+        {
+          "key": "e_1_3_7_13_1",
+          "unstructured": "Gibson J. J. (1966). The senses considered as perceptual systems."
+        },
+        {
+          "key": "e_1_3_7_14_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1177/0145482X7406800201"
+        },
+        {
+          "key": "e_1_3_7_15_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/2148131.2148159"
+        },
+        {
+          "key": "e_1_3_7_16_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1016/j.pragma.2018.05.003"
+        },
+        {
+          "issue": "3",
+          "key": "e_1_3_7_17_1",
+          "first-page": "236",
+          "article-title": "Evolution of mechanical fingerspelling hands for people who are deaf-blind",
+          "volume": "31",
+          "author": "Jaffe D.",
+          "year": "1994",
+          "unstructured": "Jaffe, D. (1994). Evolution of mechanical fingerspelling hands for people who are deaf-blind. Journal of Rehabilitation Research and Development, 31(3), 236–244.",
+          "journal-title": "Journal of Rehabilitation Research and Development"
+        },
+        {
+          "key": "e_1_3_7_18_1",
+          "first-page": "4732",
+          "volume-title": "IEEE Engineering in Medicine & Biology Society",
+          "author": "Johnson S.",
+          "year": "2021",
+          "unstructured": "Johnson, S., Gao, G., Johnson, T., Liarokapis, M., & Bellini, C. (2021). An adaptive, affordable, open-source robotic hand for deaf and deaf-blind communication using tactile American sign language [Paper presentation]. IEEE Engineering in Medicine & Biology Society (pp. 4732–4737."
+        },
+        {
+          "key": "e_1_3_7_19_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/TOH.2019.2963858"
+        },
+        {
+          "key": "e_1_3_7_20_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/IHMSC.2016.148"
+        },
+        {
+          "key": "e_1_3_7_21_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/ROBOT.1987.1087844"
+        },
+        {
+          "key": "e_1_3_7_22_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/IEMBS.2006.260667"
+        },
+        {
+          "key": "e_1_3_7_23_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1068/p120615"
+        },
+        {
+          "key": "e_1_3_7_24_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/MEMB.1987.5006436"
+        },
+        {
+          "key": "e_1_3_7_25_1",
+          "first-page": "518",
+          "volume-title": "Assistive technology",
+          "author": "Ozioko O.",
+          "year": "2015",
+          "unstructured": "Ozioko, O., & Hersh, M. (2015). Development of a portable two-way communication and information device for deafblind people. In Assistive technology (pp. 518–525). IOS Press."
+        },
+        {
+          "key": "e_1_3_7_26_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/ISIE.2017.8001563"
+        },
+        {
+          "key": "e_1_3_7_27_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1016/j.ijhcs.2022.102881"
+        },
+        {
+          "key": "e_1_3_7_28_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/3458725"
+        },
+        {
+          "key": "e_1_3_7_29_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/TOH.2018.2861010"
+        },
+        {
+          "key": "e_1_3_7_30_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.5772/60416"
+        },
+        {
+          "key": "e_1_3_7_31_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1080/17483107.2017.1385100"
+        },
+        {
+          "key": "e_1_3_7_32_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.3758/BF03207608"
+        },
+        {
+          "key": "e_1_3_7_33_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1109/TOH.2020.2973135"
+        },
+        {
+          "key": "e_1_3_7_34_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1016/S1474-6670(17)70142-5"
+        },
+        {
+          "key": "e_1_3_7_35_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1075/hop.21.tac1"
+        },
+        {
+          "key": "e_1_3_7_36_1",
+          "first-page": "1",
+          "volume-title": "CHI Conference on Human Factors in Computing Systems",
+          "author": "Zhao S.",
+          "year": "2018",
+          "unstructured": "Zhao, S., Israr, A., Lau, F., & Abnousi, F. (2018). Coding tactile symbols for phonemic communication. CHI Conference on Human Factors in Computing Systems, Montreal, QC, Canada (pp. 1–13)."
+        },
+        {
+          "key": "e_1_3_7_37_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1145/1088463.1088505"
+        },
+        {
+          "key": "e_1_3_7_38_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1007/s00221-010-2407-z"
+        },
+        {
+          "key": "e_1_3_7_39_1",
+          "doi-asserted-by": "publisher",
+          "DOI": "10.1007/978-3-540-73279-2_94"
+        }
+      ],
+      "container-title": [
+        "Assistive Technology"
+      ],
+      "original-title": [],
+      "language": "en",
+      "link": [
+        {
+          "URL": "https://www.tandfonline.com/doi/pdf/10.1080/10400435.2024.2369547",
+          "content-type": "unspecified",
+          "content-version": "vor",
+          "intended-application": "similarity-checking"
+        }
+      ],
+      "deposited": {
+        "date-parts": [
+          [
+            2024,
+            9,
+            18
+          ]
+        ],
+        "date-time": "2024-09-18T19:52:04Z",
+        "timestamp": 1726689124000
+      },
+      "score": 1,
+      "resource": {
+        "primary": {
+          "URL": "https://www.tandfonline.com/doi/full/10.1080/10400435.2024.2369547"
+        }
+      },
+      "subtitle": [],
+      "short-title": [],
+      "issued": {
+        "date-parts": [
+          [
+            2024,
+            7,
+            11
+          ]
+        ]
+      },
+      "references-count": 38,
+      "alternative-id": [
+        "10.1080/10400435.2024.2369547"
+      ],
+      "URL": "https://doi.org/10.1080/10400435.2024.2369547",
+      "relation": {},
+      "ISSN": [
+        "1040-0435",
+        "1949-3614"
+      ],
+      "issn-type": [
+        {
+          "value": "1040-0435",
+          "type": "print"
+        },
+        {
+          "value": "1949-3614",
+          "type": "electronic"
+        }
+      ],
+      "subject": [],
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            7,
+            11
+          ]
+        ]
+      },
+      "assertion": [
+        {
+          "value": "The publishing and review policy for this title is described in its Aims & Scope.",
+          "order": 1,
+          "name": "peerreview_statement",
+          "label": "Peer Review Statement"
+        },
+        {
+          "value": "http://www.tandfonline.com/action/journalInformation?show=aimsScope&journalCode=uaty20",
+          "URL": "http://www.tandfonline.com/action/journalInformation?show=aimsScope&journalCode=uaty20",
+          "order": 2,
+          "name": "aims_and_scope_url",
+          "label": "Aim & Scope"
+        },
+        {
+          "value": "2024-06-04",
+          "order": 2,
+          "name": "accepted",
+          "label": "Accepted",
+          "group": {
+            "name": "publication_history",
+            "label": "Publication History"
+          }
+        },
+        {
+          "value": "2024-07-11",
+          "order": 3,
+          "name": "published",
+          "label": "Published",
+          "group": {
+            "name": "publication_history",
+            "label": "Publication History"
+          }
+        }
+      ]
+    },
+    "resolver": {
+      "url": "https://www.tandfonline.com/doi/full/10.1080/10400435.2024.2369547",
+      "status": 403
+    }
+  }
+]

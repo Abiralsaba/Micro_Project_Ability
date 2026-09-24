@@ -1,0 +1,354 @@
+[
+  {
+    "id": "A",
+    "source": "Web search (discovery; not direct database search)",
+    "query": "\"cross-disability\" \"communication\" protocol OR system",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "B",
+    "source": "Web search (discovery; not direct database search)",
+    "query": "deafblind remote bidirectional communication system Braille speech 2020 2026",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "C",
+    "source": "Web search (discovery; not direct database search)",
+    "query": "W3C multimodal architecture distributed lifecycle DoneNotification pause resume",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "D",
+    "source": "Web search (discovery; not direct database search)",
+    "query": "accessibility preference capability negotiation GPII universal remote console ISO 24752",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "E",
+    "source": "Web search (discovery)",
+    "query": "semantic interoperability IoT middleware multimodal EMMA intermediate representation",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "F",
+    "source": "Web search (discovery)",
+    "query": "adaptive multimodal output selection user preference service composition architecture",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "G",
+    "source": "Web search (discovery)",
+    "query": "MQTT assistive communication middleware visually impaired publish subscribe architecture",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "H",
+    "source": "Web search (discovery)",
+    "query": "presentation acknowledgment displayed XMPP message markers W3C multimodal",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "I",
+    "source": "Web search (discovery)",
+    "query": "receiver driven flow control Reactive Streams AMQP slow consumers backpressure",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "J",
+    "source": "Web search (discovery)",
+    "query": "MQTT deadline aware scheduling slow subscriber flow control research",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "K",
+    "source": "Web search (discovery)",
+    "query": "partial message presentation recovery deafblind interruption messaging checkpoint",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "L",
+    "source": "Web search (discovery)",
+    "query": "AAC remote communication conversation turn taking delay interface 2020 2025",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "M",
+    "source": "Web search (discovery)",
+    "query": "site.rfc-editor.org accessibility real time text total conversation deaf blind 5194 8865",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "N",
+    "source": "Web search (discovery)",
+    "query": "AAC remote communication interoperability asynchronous messaging study 2020 2025 site:dl.acm.org",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "O",
+    "source": "Web search (discovery)",
+    "query": "mixed ability communication accessibility preferences remote ASSETS CHI CSCW 2020 2026",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "P",
+    "source": "Web search (discovery)",
+    "query": "assistive edge computing distributed multimodal communication deafblind middleware",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "N2",
+    "source": "Web search (discovery)",
+    "query": "AAC remote communication messaging turn taking site:dl.acm.org/doi",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "B2",
+    "source": "Web search (discovery)",
+    "query": "\"deafblind\" \"remote\" \"communication\" robotic hand Russo",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "J2",
+    "source": "Web search (discovery)",
+    "query": "\"MQTT\" \"scheduling\" \"deadline\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "D2",
+    "source": "Web search (discovery)",
+    "query": "\"GPII\" \"preferences\" paper personalization infrastructure",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "N3",
+    "source": "Web search (discovery)",
+    "query": "\"AAC\" \"remote communication\" study technology",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "N4",
+    "source": "Web search (discovery)",
+    "query": "\"augmentative\" \"conversation\" \"ACM\" \"2023\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "J3",
+    "source": "Web search (discovery)",
+    "query": "\"MQTT\" \"deadline-aware\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "B3",
+    "source": "Web search (discovery)",
+    "query": "\"Vibration-based communication for deafblind people\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "V1",
+    "source": "Official venue scope via web discovery",
+    "query": "site.ieee-iotj.org scope protocols middleware",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Venue scope; separate from core corpus"
+  },
+  {
+    "id": "V2",
+    "source": "Official venue scope via web discovery",
+    "query": "site.sciencedirect.com/journal/internet-of-things/about/aims-and-scope",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Venue scope; separate from core corpus"
+  },
+  {
+    "id": "V3",
+    "source": "Official venue scope via web discovery",
+    "query": "site.sciencedirect.com/journal/journal-of-network-and-computer-applications/about/aims-and-scope",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Venue scope; separate from core corpus"
+  },
+  {
+    "id": "V4",
+    "source": "Official venue scope via web discovery",
+    "query": "site.mdpi.com/journal/iot/about aims scope",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Venue scope; separate from core corpus"
+  },
+  {
+    "id": "V5",
+    "source": "Official venue scope via web discovery",
+    "query": "site.sciencedirect.com/journal/internet-of-things \"Aims and scope\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Venue scope; separate from core corpus"
+  },
+  {
+    "id": "V6",
+    "source": "Official venue scope via web discovery",
+    "query": "site.sciencedirect.com/journal/journal-of-network-and-computer-applications \"welcomes\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Venue scope; separate from core corpus"
+  },
+  {
+    "id": "V7",
+    "source": "Official venue scope via web discovery",
+    "query": "site.embs.org/tnsre \"scope\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Venue scope; separate from core corpus"
+  },
+  {
+    "id": "V8",
+    "source": "Official venue scope via web discovery",
+    "query": "site.acm.org \"Transactions on Accessible Computing\" \"topics\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Venue scope; separate from core corpus"
+  },
+  {
+    "id": "K2",
+    "source": "Web search (discovery)",
+    "query": "\"Asynchronous Lightweight Snapshots\" distributed dataflows",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "J4",
+    "source": "Web search (discovery)",
+    "query": "\"Better Never than Late\" \"2011\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "V9",
+    "source": "Web search (discovery)",
+    "query": "\"TACCESS\" \"scope\" site:acm.org",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "P2",
+    "source": "Web search (discovery)",
+    "query": "\"A Multilayer Architecture\" \"Multimodal\" \"2024\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "M2",
+    "source": "Web search (discovery)",
+    "query": "site.iso.org \"24752-1:2014\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "M3",
+    "source": "Web search (discovery)",
+    "query": "site.iso.org \"24751-2:2008\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "C2",
+    "source": "Web search (discovery)",
+    "query": "\"Multimodal\" \"presentation\" \"acknowledgement\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "K3",
+    "source": "Web search (discovery)",
+    "query": "\"Braille\" \"resume\" \"communication\" protocol",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "C3",
+    "source": "Web search (discovery)",
+    "query": "\"What are Multimodalities Made of\"",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "V10",
+    "source": "Web search (discovery)",
+    "query": "\"Internet of Things\" \"Engineering Cyber Physical Human Systems\" site:elsevier.com",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "V11",
+    "source": "Web search (discovery)",
+    "query": "\"Journal of Network and Computer Applications\" \"scope\" site:elsevier.com",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  },
+  {
+    "id": "V12",
+    "source": "Web search (discovery)",
+    "query": "\"Transactions on Accessible Computing\" \"scope\" site:sigaccess.org",
+    "date": "2026-09-15",
+    "inspected": "Not recorded / unavailable",
+    "retained": "Pending screening"
+  }
+]

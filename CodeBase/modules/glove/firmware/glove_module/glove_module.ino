@@ -1,242 +1,207 @@
 /*
  * ══════════════════════════════════════════════════════════════
- * GLOVE MODULE FIRMWARE — Project Ability
+ * GLOVE-TO-LANGUAGE MODULE — Project Ability
  * Target: ESP32-S3 WROOM (Arduino IDE)
- * Board: "ESP32S3 Dev Module" in Arduino IDE
+ * Board:  "ESP32S3 Dev Module"
  * ══════════════════════════════════════════════════════════════
  *
  * PURPOSE:
- *   Reads sensor glove data (flex sensors, IMU, environment,
- *   health sensors) and streams it to the local RPi Zero 2W
- *   via Serial UART.
- *   The RPi Zero handles camera + MediaPipe + ML fusion → TEXT.
+ *   Reads 5 flex sensors + BNO055 IMU (SEN0253) and recognises
+ *   ASL-style hand signs.  The recognised letter / word is
+ *   printed to the Serial Monitor at 115200 baud.
  *
- * SENSORS:
- *   - 5× Flex Sensors via ADS1115 (I²C, addr 0x48)
- *   - BNO055 IMU (I²C, addr 0x28) — palm orientation (quaternion + Euler)
- *   - BMP280 (I²C, addr 0x76/0x77) — barometric pressure + temperature
- *   - MAX30102 (I²C, addr 0x57) — SpO2 + heart rate
- *   - MPU6050 (I²C, addr 0x68) — fall detection (runs on Core 1)
+ * WIRING (matches your physical layout):
+ *   Left Side                  Right Side
+ *   ─────────                  ──────────
+ *   GPIO 1 → Thumb  Flex       3V3  → Flex dividers + SEN0253
+ *   GPIO 2 → Index  Flex       GND  → Common ground
+ *   GPIO 3 → Middle Flex       GPIO 8 → SEN0253 SDA
+ *   GPIO 4 → Ring   Flex       GPIO 9 → SEN0253 SCL
+ *   GPIO 5 → Pinky  Flex
  *
- * COMMUNICATION:
- *   - Serial UART → RPi Zero 2W (sensor data at 100 Hz)
- *   - WiFi → Central Hub MQTT (health data, status)
+ * FLEX-SENSOR CIRCUIT (each finger):
+ *   3V3 ──┤Flex├──┬── GPIOx (ADC input)
+ *                 │
+ *                10 kΩ
+ *                 │
+ *                GND
  *
- * LIBRARIES REQUIRED (install via Arduino IDE Library Manager):
- *   - Adafruit ADS1X15
+ * LIBRARIES REQUIRED (Arduino IDE Library Manager):
  *   - Adafruit BNO055
  *   - Adafruit Unified Sensor
- *   - Adafruit BMP280
- *   - SparkFun MAX3010x
- *   - Adafruit MPU6050
- *   - ArduinoJson
- *   - PubSubClient (MQTT)
- *   - WiFi (built-in for ESP32)
  *
  * BOARD SETUP (Arduino IDE):
- *   1. File → Preferences → Additional Board URLs:
- *      https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
- *   2. Tools → Board → ESP32 Arduino → "ESP32S3 Dev Module"
- *   3. Tools → USB CDC On Boot → "Enabled"
- *   4. Tools → Upload Speed → 921600
- *   5. Tools → Flash Size → "8MB (64Mb)"
+ *   1. Board → "ESP32S3 Dev Module"
+ *   2. USB CDC On Boot → "Enabled"
+ *   3. Upload Speed → 921600
  */
 
 #include <Wire.h>
-#include <WiFi.h>
-#include <PubSubClient.h>
-#include <ArduinoJson.h>
-#include <Adafruit_ADS1X15.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-#include <Adafruit_BMP280.h>
-#include "MAX30105.h"           // SparkFun MAX3010x library
-#include "heartRate.h"          // SparkFun heart rate algorithm
-#include <Adafruit_MPU6050.h>
-
-// ── WiFi & MQTT Configuration ───────────────────────────────
-const char* WIFI_SSID     = "YOUR_WIFI_SSID";
-const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
-const char* MQTT_SERVER   = "CENTRAL_HUB_IP";
-const int   MQTT_PORT     = 1883;
-const char* MODULE_ID     = "glove_user_01";
 
 // ── Pin Definitions ─────────────────────────────────────────
-// I²C (shared bus for all sensors)
-#define I2C_SDA 21
-#define I2C_SCL 22
+// Flex sensor analog inputs (voltage-divider output)
+#define FLEX_THUMB   1
+#define FLEX_INDEX   2
+#define FLEX_MIDDLE  3
+#define FLEX_RING    4
+#define FLEX_PINKY   5
 
-// Serial UART to RPi Zero 2W
-#define ZERO_TX 17
-#define ZERO_RX 16
+// I²C for SEN0253 (BNO055 breakout by DFRobot)
+#define IMU_SDA  8
+#define IMU_SCL  9
 
-// Battery ADC pin (voltage divider to LiPo)
-#define BATTERY_PIN 4
+// ── Sensor Object ───────────────────────────────────────────
+Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
+bool bnoReady = false;
 
-// ── Sensor Objects ──────────────────────────────────────────
-Adafruit_ADS1115 ads;                                // 16-bit ADC for flex sensors
-Adafruit_BNO055  bno = Adafruit_BNO055(55, 0x28);   // IMU — palm orientation
-Adafruit_BMP280  bmp;                                // Barometric pressure + temperature
-MAX30105         particleSensor;                     // SpO2 + heart rate
-Adafruit_MPU6050 mpu;                                // Fall detection (secondary IMU)
+// ── ESP32-S3 ADC Configuration ──────────────────────────────
+// Using analogReadMilliVolts() for factory-calibrated readings.
+// This gives millivolts (0–3100 mV) which is more reliable
+// than raw ADC counts on ESP32-S3.
 
-// ── Global Objects ──────────────────────────────────────────
-WiFiClient   wifiClient;
-PubSubClient mqttClient(wifiClient);
+// ── Flex Sensor Calibration ─────────────────────────────────
+// These are filled automatically by the 10-second calibration
+// at startup.  You can also hardcode them after calibrating once.
+//   STRAIGHT = millivolts when finger is flat
+//   BENT     = millivolts when finger is fully curled
+
+int FLEX_STRAIGHT[5] = { 0, 0, 0, 0, 0 };  // auto-filled at boot
+int FLEX_BENT[5]     = { 0, 0, 0, 0, 0 };  // auto-filled at boot
+bool calibrated = false;
+
+// ── Finger Bend Percentages (0 = straight, 100 = fully bent)
+int bend[5] = { 0, 0, 0, 0, 0 };
+
+// ── Raw millivolt values (for calibration / debugging) ──────
+int rawMV[5] = { 0, 0, 0, 0, 0 };
+
+// ── IMU Data ────────────────────────────────────────────────
+float pitch = 0, roll = 0, yaw = 0;   // Euler angles (degrees)
 
 // ── Timing ──────────────────────────────────────────────────
-unsigned long lastSensorRead   = 0;
-unsigned long lastHealthReport = 0;
-unsigned long lastEnvReport    = 0;
-const int     SENSOR_INTERVAL  = 10;     // 100 Hz sensor streaming
-const int     HEALTH_INTERVAL  = 5000;   // Health data every 5 seconds
-const int     ENV_INTERVAL     = 10000;  // Environment data every 10 seconds
+unsigned long lastRead   = 0;
+const int     READ_INTERVAL = 100;  // 10 Hz — comfortable for serial reading
 
-// ── Sensor Status Flags ─────────────────────────────────────
-bool adsReady  = false;
-bool bnoReady  = false;
-bool bmpReady  = false;
-bool maxReady  = false;
-bool mpuReady  = false;
+// ── Previous Gesture (avoid spamming same output) ───────────
+String lastGesture = "";
+unsigned long lastGestureTime = 0;
+const int     GESTURE_HOLD_MS = 500; // Must hold gesture 500 ms to confirm
 
-// ── BNO055 Calibration Storage ──────────────────────────────
-// BNO055 loses calibration on power cycle — we save/restore offsets
-bool bnoCalibrated = false;
-
-// ── Heart Rate Variables ────────────────────────────────────
-const byte HR_RATE_SIZE = 4;
-byte       hrRates[HR_RATE_SIZE];
-byte       hrRateSpot = 0;
-long       lastHrBeat = 0;
-float      beatsPerMinute = 0;
-int        beatAvg = 0;
-
-// ── Fall Detection Variables (MPU6050 on Core 1) ────────────
-volatile bool fallDetected = false;
-const float   FALL_THRESHOLD = 2.5;  // g-force threshold for fall event
-
-// ── Fall Detection Task Handle ──────────────────────────────
-TaskHandle_t fallDetectionTaskHandle = NULL;
+// ── Finger Names (for debug prints) ────────────────────────
+const char* fingerName[5] = { "Thumb", "Index", "Middle", "Ring", "Pinky" };
 
 // ══════════════════════════════════════════════════════════════
 // SETUP
 // ══════════════════════════════════════════════════════════════
 
 void setup() {
-  // Debug serial
   Serial.begin(115200);
-  Serial.println("[Ability] Glove Module — Initializing...");
 
-  // Serial to RPi Zero 2W
-  Serial1.begin(115200, SERIAL_8N1, ZERO_RX, ZERO_TX);
+  // Wait for native USB serial (ESP32-S3 USB-CDC needs this)
+  unsigned long start = millis();
+  while (!Serial && (millis() - start < 3000));
 
-  // I²C bus
-  Wire.begin(I2C_SDA, I2C_SCL);
-  Wire.setClock(400000);  // 400 kHz Fast Mode for all I²C sensors
+  Serial.println();
+  Serial.println("═══════════════════════════════════════");
+  Serial.println("  Project Ability — Glove-to-Language  ");
+  Serial.println("═══════════════════════════════════════");
+  Serial.println();
 
-  // ── Initialize ADS1115 (flex sensors) ──────────────────────
-  if (ads.begin(0x48)) {
-    ads.setGain(GAIN_ONE);        // ±4.096V range (flex sensors are 0–3.3V)
-    ads.setDataRate(RATE_ADS1115_250SPS);  // 250 samples/sec — fast enough
-    adsReady = true;
-    Serial.println("[ADS1115] ✓ Flex sensor ADC initialized");
-  } else {
-    Serial.println("[ADS1115] ✗ FAILED — flex sensors unavailable");
+  // ── Configure ADC ─────────────────────────────────────────
+  analogReadResolution(12);
+  analogSetAttenuation(ADC_11db);  // 0–3.1 V range
+
+  // Quick-test each flex pin (millivolts)
+  int pins[5] = { FLEX_THUMB, FLEX_INDEX, FLEX_MIDDLE, FLEX_RING, FLEX_PINKY };
+  Serial.println("[FLEX] Testing analog pins (millivolts)...");
+  for (int i = 0; i < 5; i++) {
+    uint32_t mv = analogReadMilliVolts(pins[i]);
+    Serial.printf("  GPIO %d (%s): %d mV\n", pins[i], fingerName[i], mv);
   }
 
-  // ── Initialize BNO055 (IMU — palm orientation) ─────────────
-  if (bno.begin()) {
-    bno.setExtCrystalUse(true);   // Use external 32.768 kHz crystal for better accuracy
-    // Set to NDOF mode (9-DOF absolute orientation fusion)
-    // This is the default, but let's be explicit
-    bno.setMode(Adafruit_BNO055::OPERATION_MODE_NDOF);
-    bnoReady = true;
-    Serial.println("[BNO055]  ✓ IMU initialized (NDOF fusion mode)");
-    Serial.println("[BNO055]  ℹ Calibration will auto-converge — wave hand slowly");
-  } else {
-    Serial.println("[BNO055]  ✗ FAILED — palm orientation unavailable");
-  }
+  // ── I²C for BNO055 ───────────────────────────────────────
+  Wire.begin(IMU_SDA, IMU_SCL);
+  Wire.setClock(100000);   // 100 kHz — safer for startup
+  Wire.setTimeOut(50);     // 50 ms timeout — prevents crash if no device
 
-  // ── Initialize BMP280 (barometric pressure + temperature) ──
-  if (bmp.begin(0x76)) {
-    // Oversampling for stable indoor readings
-    bmp.setSampling(
-      Adafruit_BMP280::MODE_NORMAL,      // Continuous measurement
-      Adafruit_BMP280::SAMPLING_X2,      // Temperature: 2× oversampling
-      Adafruit_BMP280::SAMPLING_X16,     // Pressure: 16× oversampling
-      Adafruit_BMP280::FILTER_X16,       // IIR filter: 16× (smooth)
-      Adafruit_BMP280::STANDBY_MS_500    // 500ms standby between readings
-    );
-    bmpReady = true;
-    Serial.println("[BMP280]  ✓ Barometric sensor initialized");
-  } else {
-    // Try alternate address 0x77
-    if (bmp.begin(0x77)) {
-      bmp.setSampling(
-        Adafruit_BMP280::MODE_NORMAL,
-        Adafruit_BMP280::SAMPLING_X2,
-        Adafruit_BMP280::SAMPLING_X16,
-        Adafruit_BMP280::FILTER_X16,
-        Adafruit_BMP280::STANDBY_MS_500
-      );
-      bmpReady = true;
-      Serial.println("[BMP280]  ✓ Barometric sensor initialized (addr 0x77)");
+  // Scan I2C bus for BNO055 at address 0x28 before calling begin()
+  Serial.println("\n[IMU]  Scanning I2C for BNO055 at 0x28...");
+  Wire.beginTransmission(0x28);
+  uint8_t i2cError = Wire.endTransmission();
+
+  if (i2cError == 0) {
+    Serial.println("[IMU]  Device found at 0x28 — initialising...");
+    if (bno.begin()) {
+      bno.setExtCrystalUse(true);
+      bnoReady = true;
+      Serial.println("[IMU]  OK — BNO055 ready");
     } else {
-      Serial.println("[BMP280]  ✗ FAILED — environment data unavailable");
+      Serial.println("[IMU]  begin() failed — device present but not responding");
+    }
+  } else {
+    Serial.printf("[IMU]  No device at 0x28 (I2C error %d)\n", i2cError);
+    Serial.println("[IMU]  Skipping IMU — flex sensors only");
+  }
+
+  // ── AUTO-CALIBRATION (10 seconds) ─────────────────────────
+  // Phase 1: 5 seconds — keep hand FLAT/STRAIGHT
+  // Phase 2: 5 seconds — BEND all fingers fully
+  // The code records min and max millivolt readings per finger.
+
+  int minMV[5], maxMV[5];
+  for (int i = 0; i < 5; i++) {
+    minMV[i] = 9999;
+    maxMV[i] = 0;
+  }
+
+  Serial.println("\n╔═══════════════════════════════════════╗");
+  Serial.println("║  AUTO-CALIBRATION — 10 seconds total  ║");
+  Serial.println("╠═══════════════════════════════════════╣");
+  Serial.println("║  First 5s: Keep hand FLAT / STRAIGHT  ║");
+  Serial.println("║  Last  5s: BEND all fingers fully     ║");
+  Serial.println("╚═══════════════════════════════════════╝\n");
+
+  for (int t = 0; t < 100; t++) {  // 100 × 100ms = 10 seconds
+    int sec = (t * 100) / 1000;
+    if (t == 0)  Serial.println(">>> KEEP HAND FLAT NOW <<<");
+    if (t == 50) Serial.println("\n>>> BEND ALL FINGERS NOW <<<");
+
+    Serial.printf("[CAL %2ds] ", sec);
+    for (int i = 0; i < 5; i++) {
+      uint32_t mv = analogReadMilliVolts(pins[i]);
+      if ((int)mv < minMV[i]) minMV[i] = (int)mv;
+      if ((int)mv > maxMV[i]) maxMV[i] = (int)mv;
+      Serial.printf("%s:%4d  ", fingerName[i], mv);
+    }
+    Serial.println();
+    delay(100);
+  }
+
+  // Determine which direction flex sensors go
+  // (some go high→low when bent, others low→high)
+  // We sample once flat to determine direction
+  Serial.println("\n--- Calibration Results (millivolts) ---");
+  for (int i = 0; i < 5; i++) {
+    FLEX_STRAIGHT[i] = maxMV[i];  // Assume straight = higher voltage
+    FLEX_BENT[i]     = minMV[i];  // Assume bent = lower voltage
+    Serial.printf("  %s: STRAIGHT=%d  BENT=%d  (range=%d mV)\n",
+      fingerName[i], FLEX_STRAIGHT[i], FLEX_BENT[i],
+      abs(FLEX_STRAIGHT[i] - FLEX_BENT[i]));
+
+    // Warn if range is too small (bad wiring or no sensor)
+    if (abs(FLEX_STRAIGHT[i] - FLEX_BENT[i]) < 50) {
+      Serial.printf("  ⚠ WARNING: %s has very small range — check wiring!\n",
+        fingerName[i]);
     }
   }
+  calibrated = true;
 
-  // ── Initialize MAX30102 (SpO2 + heart rate) ────────────────
-  if (particleSensor.begin(Wire, I2C_SPEED_FAST)) {
-    particleSensor.setup();                // Default settings
-    particleSensor.setPulseAmplitudeRed(0x0A);   // Low power — just detecting
-    particleSensor.setPulseAmplitudeGreen(0);     // Green LED off
-    maxReady = true;
-    Serial.println("[MAX30102]✓ SpO2 / heart rate initialized");
-  } else {
-    Serial.println("[MAX30102]✗ FAILED — health monitoring unavailable");
-  }
-
-  // ── Initialize MPU6050 (fall detection) ────────────────────
-  if (mpu.begin(0x68)) {
-    mpu.setAccelerometerRange(MPU6050_RANGE_8_G);   // ±8g for detecting impacts
-    mpu.setGyroRange(MPU6050_RANGE_500_DEG);
-    mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);     // Low-pass filter
-    mpuReady = true;
-    Serial.println("[MPU6050] ✓ Fall detection initialized");
-
-    // Launch fall detection on Core 1 (separate from main loop on Core 0)
-    xTaskCreatePinnedToCore(
-      fallDetectionTask,         // Task function
-      "FallDetection",           // Name
-      4096,                      // Stack size (bytes)
-      NULL,                      // Parameters
-      1,                         // Priority
-      &fallDetectionTaskHandle,  // Task handle
-      1                          // Core 1
-    );
-    Serial.println("[MPU6050] ℹ Fall detection running on Core 1");
-  } else {
-    Serial.println("[MPU6050] ✗ FAILED — fall detection unavailable");
-  }
-
-  // ── WiFi connection ────────────────────────────────────────
-  connectWiFi();
-
-  // ── MQTT connection to Central Hub ─────────────────────────
-  mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
-  mqttClient.setCallback(mqttCallback);
-  connectMQTT();
-
-  // ── Print sensor summary ──────────────────────────────────
-  Serial.println("\n[Ability] ═══ Sensor Status ═══");
-  Serial.printf("  ADS1115 (Flex):   %s\n", adsReady ? "✓ OK" : "✗ FAIL");
-  Serial.printf("  BNO055  (IMU):    %s\n", bnoReady ? "✓ OK" : "✗ FAIL");
-  Serial.printf("  BMP280  (Baro):   %s\n", bmpReady ? "✓ OK" : "✗ FAIL");
-  Serial.printf("  MAX30102 (SpO2):  %s\n", maxReady ? "✓ OK" : "✗ FAIL");
-  Serial.printf("  MPU6050 (Fall):   %s\n", mpuReady ? "✓ OK" : "✗ FAIL");
-  Serial.println("[Ability] Glove Module — Ready!\n");
+  Serial.println("\n───────────────────────────────────────");
+  Serial.println("  Calibration done — running live now   ");
+  Serial.println("───────────────────────────────────────\n");
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -244,274 +209,228 @@ void setup() {
 // ══════════════════════════════════════════════════════════════
 
 void loop() {
-  // Maintain MQTT connection
-  if (!mqttClient.connected()) {
-    connectMQTT();
-  }
-  mqttClient.loop();
-
   unsigned long now = millis();
+  if (now - lastRead < READ_INTERVAL) return;
+  lastRead = now;
 
-  // ── High-frequency sensor streaming to RPi Zero (100 Hz) ──
-  if (now - lastSensorRead >= SENSOR_INTERVAL) {
-    lastSensorRead = now;
-    readAndStreamSensors();
-  }
+  // ── 1. Read flex sensors ──────────────────────────────────
+  readFlexSensors();
 
-  // ── Periodic health data to Central Hub (every 5s) ────────
-  if (now - lastHealthReport >= HEALTH_INTERVAL) {
-    lastHealthReport = now;
-    reportHealthData();
-  }
+  // ── 2. Read IMU orientation ───────────────────────────────
+  readIMU();
 
-  // ── Periodic environment data to Central Hub (every 10s) ──
-  if (now - lastEnvReport >= ENV_INTERVAL) {
-    lastEnvReport = now;
-    reportEnvironmentData();
-  }
+  // ── 3. Classify gesture ───────────────────────────────────
+  String gesture = classifyGesture();
 
-  // ── Update heart rate (non-blocking) ──────────────────────
-  if (maxReady) {
-    updateHeartRate();
-  }
-}
-
-// ══════════════════════════════════════════════════════════════
-// SENSOR READING & STREAMING (100 Hz → RPi Zero)
-// ══════════════════════════════════════════════════════════════
-
-void readAndStreamSensors() {
-  JsonDocument doc;
-  doc["ts"] = millis();
-
-  // ── Read 5 flex sensor values from ADS1115 ────────────────
-  // ADS1115 has 4 channels; we read 5 flex sensors using
-  // channels 0-3 (4 fingers) + one via differential or
-  // a second ADS1115. For now, 4 channels + 1 raw ADC pin.
-  if (adsReady) {
-    doc["f"][0] = ads.readADC_SingleEnded(0);  // Thumb
-    doc["f"][1] = ads.readADC_SingleEnded(1);  // Index
-    doc["f"][2] = ads.readADC_SingleEnded(2);  // Middle
-    doc["f"][3] = ads.readADC_SingleEnded(3);  // Ring
-    doc["f"][4] = analogRead(5);               // Pinky (ESP32 ADC pin fallback)
-  }
-
-  // ── Read orientation from BNO055 ──────────────────────────
-  if (bnoReady) {
-    // Quaternion — primary output for ML model (drift-free, no gimbal lock)
-    imu::Quaternion quat = bno.getQuat();
-    doc["q"][0] = quat.w();
-    doc["q"][1] = quat.x();
-    doc["q"][2] = quat.y();
-    doc["q"][3] = quat.z();
-
-    // Euler angles — human-readable backup (heading, roll, pitch)
-    sensors_event_t orientationData;
-    bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
-    doc["e"][0] = orientationData.orientation.x;  // Heading (yaw) 0–360°
-    doc["e"][1] = orientationData.orientation.y;  // Roll ±180°
-    doc["e"][2] = orientationData.orientation.z;  // Pitch ±90°
-
-    // Linear acceleration (gravity removed) — useful for gesture velocity
-    sensors_event_t linearAccelData;
-    bno.getEvent(&linearAccelData, Adafruit_BNO055::VECTOR_LINEARACCEL);
-    doc["la"][0] = linearAccelData.acceleration.x;
-    doc["la"][1] = linearAccelData.acceleration.y;
-    doc["la"][2] = linearAccelData.acceleration.z;
-
-    // Calibration status (0=uncalibrated, 3=fully calibrated)
-    uint8_t sysCal, gyroCal, accelCal, magCal;
-    bno.getCalibration(&sysCal, &gyroCal, &accelCal, &magCal);
-    doc["cal"] = sysCal;  // System calibration (0-3)
-
-    // Mark calibrated once system reaches level 3
-    if (sysCal == 3 && !bnoCalibrated) {
-      bnoCalibrated = true;
-      Serial.println("[BNO055]  ✓ Fully calibrated!");
-    }
-  }
-
-  // ── Stream JSON to RPi Zero 2W via Serial UART ────────────
-  serializeJson(doc, Serial1);
-  Serial1.println();  // Newline delimiter for RPi parser
-}
-
-// ══════════════════════════════════════════════════════════════
-// HEART RATE UPDATE (called every loop iteration, non-blocking)
-// ══════════════════════════════════════════════════════════════
-
-void updateHeartRate() {
-  long irValue = particleSensor.getIR();
-
-  // Only process if finger is actually on the sensor
-  if (irValue < 50000) return;  // No finger detected
-
-  if (checkForBeat(irValue)) {
-    long delta = millis() - lastHrBeat;
-    lastHrBeat = millis();
-
-    beatsPerMinute = 60.0 / (delta / 1000.0);
-
-    // Sanity check — valid HR range
-    if (beatsPerMinute > 20 && beatsPerMinute < 255) {
-      hrRates[hrRateSpot++ % HR_RATE_SIZE] = (byte)beatsPerMinute;
-
-      // Compute running average
-      beatAvg = 0;
-      for (byte i = 0; i < HR_RATE_SIZE; i++) {
-        beatAvg += hrRates[i];
+  // ── 4. Print result (with debounce) ───────────────────────
+  if (gesture != "---") {
+    if (gesture == lastGesture) {
+      // Gesture held long enough → confirm and print
+      if (now - lastGestureTime >= GESTURE_HOLD_MS) {
+        Serial.println(">>> " + gesture + " <<<");
+        lastGestureTime = now;  // Reset so it doesn't spam
       }
-      beatAvg /= HR_RATE_SIZE;
-    }
-  }
-}
-
-// ══════════════════════════════════════════════════════════════
-// HEALTH MONITORING (every 5s → MQTT to Central Hub)
-// ══════════════════════════════════════════════════════════════
-
-void reportHealthData() {
-  JsonDocument doc;
-  doc["module_id"] = MODULE_ID;
-  doc["type"]      = "health";
-
-  // ── Heart rate from MAX30102 ──────────────────────────────
-  if (maxReady) {
-    long irValue = particleSensor.getIR();
-    doc["heart_rate"] = beatAvg;
-    doc["finger_on"]  = (irValue > 50000);
-
-    // SpO2 reading (simplified — full algorithm would use red + IR ratio)
-    doc["spo2"] = 0;  // TODO: implement full SpO2 algorithm with red/IR ratio
-  }
-
-  // ── Fall detection status from MPU6050 (Core 1) ───────────
-  doc["fall"] = fallDetected;
-  if (fallDetected) {
-    Serial.println("[ALERT] ⚠ FALL DETECTED — notifying hub!");
-    fallDetected = false;  // Reset after reporting
-  }
-
-  // ── Battery level ─────────────────────────────────────────
-  int rawBattery = analogRead(BATTERY_PIN);
-  float batteryVoltage = (rawBattery / 4095.0) * 3.3 * 2.0;  // Assumes 1:1 voltage divider
-  int batteryPercent = constrain(map(batteryVoltage * 100, 320, 420, 0, 100), 0, 100);
-  doc["battery_v"]   = batteryVoltage;
-  doc["battery_pct"] = batteryPercent;
-
-  // ── BNO055 calibration status ─────────────────────────────
-  if (bnoReady) {
-    uint8_t sysCal, gyroCal, accelCal, magCal;
-    bno.getCalibration(&sysCal, &gyroCal, &accelCal, &magCal);
-    doc["imu_cal"]["sys"]   = sysCal;
-    doc["imu_cal"]["gyro"]  = gyroCal;
-    doc["imu_cal"]["accel"] = accelCal;
-    doc["imu_cal"]["mag"]   = magCal;
-  }
-
-  // ── Publish to MQTT ───────────────────────────────────────
-  char buffer[512];
-  serializeJson(doc, buffer);
-  String topic = "ability/local/" + String(MODULE_ID) + "/health";
-  mqttClient.publish(topic.c_str(), buffer);
-}
-
-// ══════════════════════════════════════════════════════════════
-// ENVIRONMENT DATA (every 10s → MQTT to Central Hub)
-// ══════════════════════════════════════════════════════════════
-
-void reportEnvironmentData() {
-  if (!bmpReady) return;
-
-  JsonDocument doc;
-  doc["module_id"]    = MODULE_ID;
-  doc["type"]         = "environment";
-  doc["temperature"]  = bmp.readTemperature();     // °C
-  doc["pressure"]     = bmp.readPressure() / 100.0; // hPa (mbar)
-  doc["altitude"]     = bmp.readAltitude(1013.25);  // Approximate altitude (m)
-
-  char buffer[256];
-  serializeJson(doc, buffer);
-  String topic = "ability/local/" + String(MODULE_ID) + "/environment";
-  mqttClient.publish(topic.c_str(), buffer);
-}
-
-// ══════════════════════════════════════════════════════════════
-// FALL DETECTION TASK (runs on Core 1, independent of main loop)
-// ══════════════════════════════════════════════════════════════
-
-void fallDetectionTask(void* parameter) {
-  Serial.println("[Core 1] Fall detection task started");
-
-  while (true) {
-    if (mpuReady) {
-      sensors_event_t accel, gyro, temp;
-      mpu.getEvent(&accel, &gyro, &temp);
-
-      // Calculate total acceleration magnitude
-      float totalAccel = sqrt(
-        accel.acceleration.x * accel.acceleration.x +
-        accel.acceleration.y * accel.acceleration.y +
-        accel.acceleration.z * accel.acceleration.z
-      ) / 9.81;  // Convert to g-force
-
-      // Simple fall detection: sudden spike > threshold
-      // In freefall, total accel drops near 0, then spikes on impact
-      if (totalAccel > FALL_THRESHOLD) {
-        fallDetected = true;
-      }
-    }
-
-    vTaskDelay(pdMS_TO_TICKS(20));  // 50 Hz sampling for fall detection
-  }
-}
-
-// ══════════════════════════════════════════════════════════════
-// MQTT CALLBACK (messages from Central Hub)
-// ══════════════════════════════════════════════════════════════
-
-void mqttCallback(char* topic, byte* payload, unsigned int length) {
-  // Parse incoming messages from Hub (avatar commands, display text, etc.)
-  String message = "";
-  for (unsigned int i = 0; i < length; i++) {
-    message += (char)payload[i];
-  }
-
-  Serial.printf("[MQTT] Received on %s: %s\n", topic, message.c_str());
-
-  // Forward to RPi Zero for display/avatar rendering
-  Serial1.print("HUB:");
-  Serial1.println(message);
-}
-
-// ══════════════════════════════════════════════════════════════
-// CONNECTIVITY
-// ══════════════════════════════════════════════════════════════
-
-void connectWiFi() {
-  Serial.print("[WiFi] Connecting to ");
-  Serial.println(WIFI_SSID);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("\n[WiFi] Connected! IP: " + WiFi.localIP().toString());
-}
-
-void connectMQTT() {
-  while (!mqttClient.connected()) {
-    Serial.print("[MQTT] Connecting to Central Hub...");
-    if (mqttClient.connect(MODULE_ID)) {
-      Serial.println(" Connected!");
-      // Subscribe to output from Hub (avatar commands, display text)
-      String topic = "ability/local/" + String(MODULE_ID) + "/output";
-      mqttClient.subscribe(topic.c_str());
     } else {
-      Serial.print(" Failed (rc=");
-      Serial.print(mqttClient.state());
-      Serial.println("). Retrying in 5s...");
-      delay(5000);
+      // New gesture detected — start hold timer
+      lastGesture = gesture;
+      lastGestureTime = now;
     }
   }
+
+  // ── 5. Print raw debug data every cycle ───────────────────
+  printDebugLine(gesture);
+}
+
+// ══════════════════════════════════════════════════════════════
+// READ FLEX SENSORS
+// ══════════════════════════════════════════════════════════════
+
+void readFlexSensors() {
+  int pins[5] = { FLEX_THUMB, FLEX_INDEX, FLEX_MIDDLE, FLEX_RING, FLEX_PINKY };
+
+  for (int i = 0; i < 5; i++) {
+    rawMV[i] = (int)analogReadMilliVolts(pins[i]);
+
+    // Map to 0–100% bend (clamped)
+    if (calibrated && FLEX_STRAIGHT[i] != FLEX_BENT[i]) {
+      bend[i] = map(rawMV[i], FLEX_STRAIGHT[i], FLEX_BENT[i], 0, 100);
+      bend[i] = constrain(bend[i], 0, 100);
+    } else {
+      bend[i] = 0;  // Not calibrated yet
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// READ IMU (BNO055 / SEN0253)
+// ══════════════════════════════════════════════════════════════
+
+void readIMU() {
+  if (!bnoReady) return;
+
+  sensors_event_t event;
+  bno.getEvent(&event, Adafruit_BNO055::VECTOR_EULER);
+
+  yaw   = event.orientation.x;   // 0–360°
+  roll  = event.orientation.y;   // ±180°
+  pitch = event.orientation.z;   // ±90°
+}
+
+// ══════════════════════════════════════════════════════════════
+// GESTURE CLASSIFICATION
+// ══════════════════════════════════════════════════════════════
+//
+// Finger bend thresholds:
+//   OPEN  = bend <  30%  (finger is straight / extended)
+//   BENT  = bend >= 60%  (finger is curled in)
+//
+// Orientation thresholds (Euler angles from BNO055):
+//   PALM_UP   = pitch roughly  0° to  45°
+//   PALM_DOWN = pitch roughly -45° to -90° (or 135° to 180°)
+//   PALM_FWD  = roll  roughly  0° ± 30°
+//
+// The gesture table below covers basic ASL-like letters.
+// Expand as needed for your project.
+// ══════════════════════════════════════════════════════════════
+
+// Helper macros
+#define OPEN(f)   (bend[f] < 30)
+#define BENT(f)   (bend[f] >= 60)
+#define HALF(f)   (bend[f] >= 30 && bend[f] < 60)
+
+// Finger indices
+#define THUMB   0
+#define INDEX   1
+#define MIDDLE  2
+#define RING    3
+#define PINKY   4
+
+String classifyGesture() {
+
+  // ─────────── FIST (all fingers bent) ──────────────────────
+  if (BENT(THUMB) && BENT(INDEX) && BENT(MIDDLE) && BENT(RING) && BENT(PINKY)) {
+    return "S";  // ASL 'S' — fist
+  }
+
+  // ─────────── OPEN HAND (all fingers open) ─────────────────
+  if (OPEN(THUMB) && OPEN(INDEX) && OPEN(MIDDLE) && OPEN(RING) && OPEN(PINKY)) {
+    // Check palm orientation for different signs
+    if (bnoReady) {
+      if (pitch > -30 && pitch < 30) {
+        return "B";  // ASL 'B' — flat hand, palm forward
+      }
+      if (pitch > 60 || pitch < -60) {
+        return "5";  // ASL '5' — open hand, palm down/up
+      }
+    }
+    return "B";  // Default: open hand = B
+  }
+
+  // ─────────── INDEX ONLY (pointing) ────────────────────────
+  if (OPEN(INDEX) && BENT(MIDDLE) && BENT(RING) && BENT(PINKY)) {
+    if (BENT(THUMB)) {
+      return "D";  // ASL 'D' — index up, others curled, thumb touches middle
+    }
+    if (OPEN(THUMB)) {
+      return "L";  // ASL 'L' — index + thumb open (L shape)
+    }
+  }
+
+  // ─────────── PEACE SIGN (index + middle open) ─────────────
+  if (OPEN(INDEX) && OPEN(MIDDLE) && BENT(RING) && BENT(PINKY)) {
+    if (BENT(THUMB)) {
+      return "V";  // ASL 'V' (or number 2)
+    }
+    if (OPEN(THUMB)) {
+      return "W";  // ASL 'W' would be 3 fingers — but thumb+index+middle ≈ 'W' variant
+    }
+  }
+
+  // ─────────── THREE FINGERS (index + middle + ring open) ───
+  if (OPEN(INDEX) && OPEN(MIDDLE) && OPEN(RING) && BENT(PINKY)) {
+    if (BENT(THUMB)) {
+      return "W";  // ASL 'W' — three middle fingers up
+    }
+    if (OPEN(THUMB)) {
+      return "4";  // ASL '4' — four fingers open, pinky bent (close enough)
+    }
+  }
+
+  // ─────────── THUMB UP ONLY ────────────────────────────────
+  if (OPEN(THUMB) && BENT(INDEX) && BENT(MIDDLE) && BENT(RING) && BENT(PINKY)) {
+    return "A";  // ASL 'A' — fist with thumb up/beside
+  }
+
+  // ─────────── PINKY ONLY (I Love You pinky) ────────────────
+  if (BENT(THUMB) && BENT(INDEX) && BENT(MIDDLE) && BENT(RING) && OPEN(PINKY)) {
+    return "I";  // ASL 'I' — pinky up
+  }
+
+  // ─────────── THUMB + PINKY (hang loose / 'Y') ─────────────
+  if (OPEN(THUMB) && BENT(INDEX) && BENT(MIDDLE) && BENT(RING) && OPEN(PINKY)) {
+    return "Y";  // ASL 'Y' — thumb + pinky spread
+  }
+
+  // ─────────── THUMB + INDEX + PINKY (I Love You) ───────────
+  if (OPEN(THUMB) && OPEN(INDEX) && BENT(MIDDLE) && BENT(RING) && OPEN(PINKY)) {
+    return "I Love You";  // ASL 'ILY' sign
+  }
+
+  // ─────────── INDEX + PINKY (Rock / horns) ─────────────────
+  if (BENT(THUMB) && OPEN(INDEX) && BENT(MIDDLE) && BENT(RING) && OPEN(PINKY)) {
+    return "U";  // ASL 'U' variant / horns
+  }
+
+  // ─────────── THUMB + INDEX pinch (O shape) ────────────────
+  if (HALF(THUMB) && HALF(INDEX) && BENT(MIDDLE) && BENT(RING) && BENT(PINKY)) {
+    return "O";  // ASL 'O' — fingers curled into O shape
+  }
+
+  // ─────────── C shape (all fingers half-bent) ──────────────
+  if (HALF(THUMB) && HALF(INDEX) && HALF(MIDDLE) && HALF(RING) && HALF(PINKY)) {
+    return "C";  // ASL 'C' — cupped hand
+  }
+
+  // ─────────── INDEX + MIDDLE + PINKY open ──────────────────
+  if (OPEN(INDEX) && OPEN(MIDDLE) && BENT(RING) && OPEN(PINKY)) {
+    if (OPEN(THUMB)) {
+      return "I Love You";  // Already covered above, but safety net
+    }
+  }
+
+  // ─────────── RING + PINKY open, others bent ───────────────
+  if (BENT(THUMB) && BENT(INDEX) && BENT(MIDDLE) && OPEN(RING) && OPEN(PINKY)) {
+    return "6";  // Number 6 variant
+  }
+
+  // ─────────── NO MATCH ─────────────────────────────────────
+  return "---";
+}
+
+// ══════════════════════════════════════════════════════════════
+// DEBUG OUTPUT (one compact line per cycle)
+// ══════════════════════════════════════════════════════════════
+
+void printDebugLine(String gesture) {
+  // Show millivolts + bend % + IMU + gesture
+  Serial.printf("mV[%4d %4d %4d %4d %4d] ",
+    rawMV[THUMB], rawMV[INDEX], rawMV[MIDDLE], rawMV[RING], rawMV[PINKY]);
+
+  Serial.printf("BEND[T:%3d I:%3d M:%3d R:%3d P:%3d]", 
+    bend[THUMB], bend[INDEX], bend[MIDDLE], bend[RING], bend[PINKY]);
+
+  if (bnoReady) {
+    Serial.printf(" | Pit:%6.1f Rol:%6.1f Yaw:%6.1f", pitch, roll, yaw);
+
+    // Show calibration status periodically
+    static unsigned long lastCalPrint = 0;
+    if (millis() - lastCalPrint > 5000) {
+      uint8_t sys, gyro, accel, mag;
+      bno.getCalibration(&sys, &gyro, &accel, &mag);
+      Serial.printf(" [Cal S:%d G:%d A:%d M:%d]", sys, gyro, accel, mag);
+      lastCalPrint = millis();
+    }
+  }
+
+  Serial.printf(" | %s\n", gesture.c_str());
 }

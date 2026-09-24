@@ -1,0 +1,16 @@
+{
+  "CORE_LITERATURE.csv": {
+    "data_rows": 46,
+    "columns": 21
+  },
+  "FEATURE_MATRIX.csv": {
+    "data_rows": 16,
+    "columns": 25
+  },
+  "CITATION_AUDIT.csv": {
+    "data_rows": 46,
+    "columns": 10
+  },
+  "references": 46,
+  "checks": "CSV dimensions, reference IDs, local artifact links, Python syntax and required section numbering passed. This does not independently validate literature judgments."
+}
