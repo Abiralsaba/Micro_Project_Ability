@@ -87,6 +87,7 @@ htmlcov/
 secrets/
 credentials/
 mqtt_credentials.json
+**/secrets.h
 
 # ── Node.js (if used for web UI) ─────────────────────────────
 node_modules/

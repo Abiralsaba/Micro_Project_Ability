@@ -1,0 +1,16 @@
+[Unit]
+Description=Project Ability Cloud MQTT Hub
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/vamos/Micro_Project_Ability/CodeBase
+ExecStart=/home/vamos/Micro_Project_Ability/CodeBase/.venv/bin/python /home/vamos/Micro_Project_Ability/CodeBase/hub/core/cloud_hub.py
+Restart=always
+RestartSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
