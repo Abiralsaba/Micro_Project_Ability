@@ -1,0 +1,17 @@
+System,Remote communication,Different user accessibility needs,Heterogeneous devices,Multiple input modalities,Multiple output modalities,Cross-modal transformation,Capability discovery,Preference negotiation,Semantic/intermediate representation,Automatic modality selection,Bidirectional communication,Conversation/session state,Presentation-state tracking,Application ACK,Partial presentation recovery,Duplicate handling,Message expiry,Receiver-rate awareness,Queue/backpressure control,User-approved fallback,Intermittent network recovery,Edge execution,Real physical testbed,Human evaluation
+P01,✓,△,✓,✗,✗,✓,△,✗,✓,✗,△,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,✓,✓,✓
+P02,✓,△,✓,△,△,△,✗,✗,△,✗,△,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,△,△
+P03,✗,△,✓,✓,✓,✓,✗,✗,△,✗,✓,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,✓,✓,✓
+P04,△,✓,✓,✓,✓,✓,✗,△,✓,✗,✓,✓,△,✗,✗,✗,✗,✗,✗,△,✗,✓,✓,✓
+P05,✗,△,△,△,△,✓,✗,△,△,✗,✓,✗,△,✗,✗,✗,✗,△,✗,△,✗,✓,✓,✓
+P06,✓,✓,△,△,△,△,△,△,△,✗,✓,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,△,✓
+P13,✓,✗,✓,✗,✗,△,△,✗,✓,△,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,△,✓,✗
+P15,△,△,✓,△,△,✗,✓,△,△,△,✗,✗,✗,✗,✗,✗,✗,✗,✗,△,✗,△,✗,✗
+P16,△,△,✓,△,△,△,✗,✗,△,△,△,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,✓,△,✗
+P19,✓,△,✓,✗,✗,✓,△,✗,△,✗,△,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,△,△,△
+P22,✓,△,△,✗,✗,✓,✗,✗,△,✗,△,✗,✗,✗,✗,✗,✗,✗,✗,✗,✗,△,△,△
+P26,△,✗,△,△,✓,△,✓,△,✓,✓,✗,△,✓,✓,✗,✗,✗,△,△,△,✗,✗,△,✗
+S01,✓,✗,✓,✓,✓,△,△,△,△,△,✓,✓,✓,✓,△,✗,✗,△,△,△,△,△,✗,✗
+S07,✓,✗,✓,✗,✗,✗,✗,✗,✗,✗,△,△,✗,✓,✗,△,✓,△,✓,✗,✓,✗,✗,✗
+S13,✓,△,△,✗,✗,✗,✓,△,✗,✗,✓,✓,✗,✗,✗,✗,✗,✓,△,✗,△,✗,✗,✗
+AMP — PROPOSED — NOT PRIOR ART,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△,△

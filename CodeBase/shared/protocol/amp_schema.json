@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AMP - Ability Message Protocol",
+  "description": "JSON schema for messages exchanged between Central Hubs via MQTT",
+  "version": "1.0",
+  "type": "object",
+  "required": [
+    "amp_version",
+    "message_id",
+    "sender_hub_id",
+    "sender_module_id",
+    "sender_profile",
+    "target_hub_id",
+    "target_module_id",
+    "target_profile",
+    "content_type",
+    "content",
+    "timestamp_utc"
+  ],
+  "properties": {
+    "amp_version": {
+      "type": "string",
+      "description": "Protocol version",
+      "enum": ["1.0"]
+    },
+    "message_id": {
+      "type": "string",
+      "description": "Unique message identifier (UUID v4)",
+      "format": "uuid"
+    },
+    "sender_hub_id": {
+      "type": "string",
+      "description": "Unique ID of the sender's Central Hub"
+    },
+    "sender_module_id": {
+      "type": "string",
+      "description": "Unique ID of the sender's individual module"
+    },
+    "sender_profile": {
+      "type": "string",
+      "description": "Disability profile of the sender",
+      "enum": ["deaf", "blind", "mute", "paralyzed", "parkinsons", "hearing"]
+    },
+    "target_hub_id": {
+      "type": "string",
+      "description": "Unique ID of the target's Central Hub"
+    },
+    "target_module_id": {
+      "type": "string",
+      "description": "Unique ID of the target's individual module"
+    },
+    "target_profile": {
+      "type": "string",
+      "description": "Disability profile of the receiver",
+      "enum": ["deaf", "blind", "mute", "paralyzed", "parkinsons", "hearing"]
+    },
+    "content_type": {
+      "type": "string",
+      "description": "Type of the content payload",
+      "enum": ["text", "health_alert", "status"]
+    },
+    "content": {
+      "type": "string",
+      "description": "The message content (always TEXT after translation)"
+    },
+    "language": {
+      "type": "string",
+      "description": "ISO 639-1 language code",
+      "default": "en"
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "description": "UTC timestamp in ISO 8601 format",
+      "format": "date-time"
+    },
+    "encrypted": {
+      "type": "boolean",
+      "description": "Whether the content is encrypted",
+      "default": false
+    },
+    "encryption_algo": {
+      "type": "string",
+      "description": "Encryption algorithm used",
+      "enum": ["AES-256-GCM"]
+    },
+    "qos": {
+      "type": "integer",
+      "description": "MQTT QoS level",
+      "enum": [0, 1, 2],
+      "default": 2
+    },
+    "ttl_seconds": {
+      "type": "integer",
+      "description": "Time-to-live for offline message queuing",
+      "default": 86400
+    }
+  }
+}

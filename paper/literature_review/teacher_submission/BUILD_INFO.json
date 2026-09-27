@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-16",
+  "literature_cutoff": "2026-09-15",
+  "reference_count": 23,
+  "reference_mapping": {
+    "P01": 1,
+    "P02": 2,
+    "P06": 3,
+    "P03": 4,
+    "P05": 5,
+    "P04": 6,
+    "P09": 7,
+    "P12": 8,
+    "P27": 9,
+    "S01": 10,
+    "S03": 11,
+    "S04": 12,
+    "S18": 13,
+    "S14": 14,
+    "P13": 15,
+    "P16": 16,
+    "S06": 17,
+    "S19": 18,
+    "S09": 19,
+    "P26": 20,
+    "S07": 21,
+    "S13": 22,
+    "S11": 23
+  },
+  "body_word_count": 2354,
+  "note": "No experimental results claimed. Student metadata fields left blank for completion."
+}

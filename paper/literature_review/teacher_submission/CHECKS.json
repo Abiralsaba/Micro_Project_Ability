@@ -1,0 +1,12 @@
+{
+  "pdf_pages": 8,
+  "numbered_references": 23,
+  "word_tables": 2,
+  "checks": "PDF text bounds, reference-number presence and DOCX structure checked. Layout inspected visually.",
+  "blank_fields": [
+    "Student name",
+    "Student ID",
+    "Course / department",
+    "Supervisor / teacher"
+  ]
+}
