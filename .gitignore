@@ -65,8 +65,6 @@ sdkconfig.old
 *.pth
 *.pkl
 *.joblib
-CodeBase/ml/models/trained/
-CodeBase/ml/datasets/raw/
 
 # ── Logs & Temporary ─────────────────────────────────────────
 *.log
@@ -103,13 +101,6 @@ site/
 .ipynb_checkpoints/
 
 # ── Project-Specific Ignores ─────────────────────────────────
-# Avatar video clips (large, tracked separately)
-CodeBase/assets/avatar/clips/*.mp4
-CodeBase/assets/avatar/clips/*.webm
-
-# Recorded test data
-CodeBase/tests/recordings/
-
 # Local configuration overrides
 *.local.yaml
 *.local.json
@@ -118,4 +109,3 @@ config.local.*
 # Documentation and Rules
 PROJECT_BRAIN.md
 .agents/
-plan/MASTER_PLAN.md

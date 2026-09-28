@@ -1,3 +1,5 @@
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ESP32Servo.h>
@@ -579,6 +581,7 @@ void homeAllServos() {
 }
 
 void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   Serial.begin(115200);
   delay(1000);
 
@@ -769,6 +772,7 @@ void displayWord(String word) {
     for (int m = 0; m < NUM_MODULES; m++) {
       if (active[m]) {
         driveModule(m, patterns[m]);
+        delay(200);
       }
     }
 
