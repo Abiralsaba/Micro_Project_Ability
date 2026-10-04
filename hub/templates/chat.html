@@ -524,6 +524,7 @@ body {
 
 .retro-voice-input {
   flex: 1;
+  min-width: 0;
   background: #fff;
   border: 3px solid #1e1136;
   padding: 6px 8px;
@@ -563,6 +564,131 @@ body {
 
 .voice-feedback-banner.show {
   display: block;
+}
+
+.voice-language-select {
+  background: var(--c-cream-light);
+  border: 2px solid var(--c-purple-deep);
+  color: var(--c-purple-deep);
+  font-family: var(--font-terminal);
+  font-size: 14px;
+  padding: 2px 5px;
+}
+
+/* Gemini bilingual chat drawer */
+.ai-chat-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  background: rgba(30, 17, 54, 0.62);
+}
+
+.ai-chat-backdrop.open { display: block; }
+
+.ai-chat-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 61;
+  width: min(580px, 100vw);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-cream-bg);
+  border-left: 6px solid var(--c-purple-deep);
+  box-shadow: -10px 0 0 rgba(255, 107, 53, 0.7);
+  transform: translateX(calc(100% + 16px));
+  transition: transform 0.2s ease;
+}
+
+.ai-chat-drawer.open { transform: translateX(0); }
+
+.ai-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: var(--pixel-border);
+  background: var(--c-orange-main);
+  color: #fff;
+}
+
+.ai-chat-header h2 {
+  font-family: var(--font-pixel-head);
+  font-size: 14px;
+}
+
+.ai-chat-header p {
+  margin-top: 4px;
+  font-family: var(--font-terminal);
+  font-size: 16px;
+}
+
+.ai-chat-status {
+  padding: 7px 14px;
+  border-bottom: 3px solid var(--c-purple-deep);
+  background: var(--c-neon-gold);
+  font-family: var(--font-terminal);
+  font-size: 16px;
+}
+
+.ai-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+}
+
+.ai-message {
+  max-width: 86%;
+  padding: 11px 14px;
+  border: 3px solid var(--c-purple-deep);
+  box-shadow: var(--pixel-shadow-sm);
+  white-space: pre-wrap;
+  user-select: text;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.ai-message.user {
+  align-self: flex-end;
+  background: var(--c-orange-warm);
+  color: #fff;
+}
+
+.ai-message.model {
+  align-self: flex-start;
+  background: var(--c-cream-light);
+}
+
+.ai-chat-composer {
+  padding: 12px;
+  border-top: var(--pixel-border);
+  background: var(--c-cream-card);
+}
+
+.ai-chat-composer textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  border: 3px solid var(--c-purple-deep);
+  padding: 10px;
+  font: 16px var(--font-pixel-body);
+}
+
+.ai-chat-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ai-chat-actions .retro-btn {
+  flex: 1;
+  justify-content: center;
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -1134,6 +1260,10 @@ body {
         <span>🤟</span> SIGN DISPLAY
       </button>
 
+      <button class="retro-btn" id="btnOpenGemini" title="Open bilingual Gemini assistant chat">
+        <span>✨</span> GEMINI CHAT
+      </button>
+
       <!-- 8-Bit Chiptune Sound FX Toggle -->
       <button class="retro-btn alt-purple" id="btnSoundToggle" title="Toggle 8-bit sound effects">
         <span>🔊</span> FX: ON
@@ -1183,6 +1313,11 @@ body {
       <div class="sidebar-voice-dock">
         <div class="voice-input-row">
           <input type="text" class="retro-voice-input" id="voiceCmdInput" placeholder="Voice cmd: 'Message Braille'…">
+          <select class="voice-language-select" id="voiceLanguage" title="Whisper language">
+            <option value="auto">AUTO</option>
+            <option value="bn">বাংলা</option>
+            <option value="en">EN</option>
+          </select>
           <button class="retro-mic-btn" id="btnMicTrigger" title="Speak Voice Command">🎙</button>
         </div>
         <div class="voice-feedback-banner" id="voiceFeedbackBanner"></div>
@@ -1282,6 +1417,29 @@ body {
     </main>
   </div>
 </div>
+
+<div class="ai-chat-backdrop" id="aiChatBackdrop"></div>
+<aside class="ai-chat-drawer" id="aiChatDrawer" aria-label="Gemini assistant chat">
+  <div class="ai-chat-header">
+    <div>
+      <h2>✨ ABILITY GEMINI CHAT</h2>
+      <p>Open bilingual assistant · বাংলা + English</p>
+    </div>
+    <button type="button" class="drawer-close-btn" id="btnCloseGemini" aria-label="Close Gemini chat">✕</button>
+  </div>
+  <div class="ai-chat-status" id="aiChatStatus">CHECKING GEMINI + LOCAL WHISPER…</div>
+  <div class="ai-chat-messages" id="aiChatMessages">
+    <div class="ai-message model">Hello! আমি Ability Assistant। Ask me anything in Bangla or English.</div>
+  </div>
+  <div class="ai-chat-composer">
+    <textarea id="geminiInput" placeholder="Ask Gemini in বাংলা or English…"></textarea>
+    <div class="ai-chat-actions">
+      <button type="button" class="retro-btn alt-purple" id="btnGeminiMic">🎙 WHISPER</button>
+      <button type="button" class="retro-btn" id="btnGeminiClear">CLEAR</button>
+      <button type="button" class="retro-btn" id="btnGeminiSend">SEND ✨</button>
+    </div>
+  </div>
+</aside>
 
 <!-- ════════════════════════════════════════════════════════════════════
      RETRO ENGINE SCRIPT (CANVAS SUNSET, 3D VOXELS & CHIPTUNE AUDIO)
@@ -2163,30 +2321,164 @@ document.getElementById("voiceCmdInput").addEventListener("keydown", (e) => {
 });
 
 const micBtn = document.getElementById("btnMicTrigger");
-if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recog = new SR();
-  recog.continuous = false;
-  recog.lang = "en-US";
+let activeMediaRecorder = null;
+let activeRecorderButton = null;
 
-  recog.onresult = (ev) => {
-    document.getElementById("voiceCmdInput").value = ev.results[0][0].transcript;
-    micBtn.classList.remove("active");
-    runVoiceInput();
-  };
-  recog.onerror = () => micBtn.classList.remove("active");
-  recog.onend = () => micBtn.classList.remove("active");
-
-  micBtn.addEventListener("click", () => {
-    if (micBtn.classList.contains("active")) {
-      recog.stop();
-    } else {
-      recog.start();
-      micBtn.classList.add("active");
-      retroAudio.playClick();
-    }
-  });
+function showVoiceFeedback(message) {
+  const banner = document.getElementById("voiceFeedbackBanner");
+  banner.textContent = message;
+  banner.classList.add("show");
 }
+
+async function transcribeRecording(blob) {
+  const form = new FormData();
+  const extension = blob.type.includes("mp4") ? "mp4" : "webm";
+  form.append("audio", blob, `recording.${extension}`);
+  form.append("language", document.getElementById("voiceLanguage").value);
+  const response = await fetch("/api/transcribe", { method: "POST", body: form });
+  const data = await response.json();
+  if (!response.ok || !data.ok) throw new Error(data.error || "Transcription failed");
+  return data.text;
+}
+
+async function toggleWhisperRecording(button, onTranscript) {
+  if (activeMediaRecorder && activeMediaRecorder.state === "recording") {
+    activeMediaRecorder.stop();
+    return;
+  }
+  if (!navigator.mediaDevices || !window.MediaRecorder) {
+    showVoiceFeedback("This browser cannot record microphone audio.");
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const preferredTypes = [
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/mp4"
+    ];
+    const mimeType = preferredTypes.find(type => MediaRecorder.isTypeSupported(type));
+    const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    const chunks = [];
+    activeMediaRecorder = recorder;
+    activeRecorderButton = button;
+    button.classList.add("active");
+    button.textContent = button === micBtn ? "⏹" : "⏹ STOP";
+    showVoiceFeedback("🎙 Recording… press STOP when finished.");
+
+    recorder.addEventListener("dataavailable", event => {
+      if (event.data.size) chunks.push(event.data);
+    });
+    recorder.addEventListener("stop", async () => {
+      stream.getTracks().forEach(track => track.stop());
+      button.classList.remove("active");
+      button.textContent = button === micBtn ? "🎙" : "🎙 WHISPER";
+      activeMediaRecorder = null;
+      activeRecorderButton = null;
+      showVoiceFeedback("LOCAL WHISPER: TRANSCRIBING বাংলা + ENGLISH…");
+      try {
+        const text = await transcribeRecording(new Blob(chunks, { type: recorder.mimeType }));
+        showVoiceFeedback(`WHISPER: ${text}`);
+        onTranscript(text);
+      } catch (error) {
+        showVoiceFeedback(`VOICE ERROR: ${error.message}`);
+      }
+    });
+    recorder.start();
+    retroAudio.playClick();
+  } catch (error) {
+    button.classList.remove("active");
+    showVoiceFeedback(`MICROPHONE ERROR: ${error.message}`);
+  }
+}
+
+micBtn.addEventListener("click", () => {
+  toggleWhisperRecording(micBtn, text => {
+    document.getElementById("voiceCmdInput").value = text;
+    runVoiceInput();
+  });
+});
+
+const geminiHistory = [];
+
+function setGeminiOpen(open) {
+  document.getElementById("aiChatDrawer").classList.toggle("open", open);
+  document.getElementById("aiChatBackdrop").classList.toggle("open", open);
+  if (open) document.getElementById("geminiInput").focus();
+}
+
+function appendGeminiMessage(role, text) {
+  const messages = document.getElementById("aiChatMessages");
+  const bubble = document.createElement("div");
+  bubble.className = `ai-message ${role}`;
+  bubble.textContent = text;
+  messages.appendChild(bubble);
+  messages.scrollTop = messages.scrollHeight;
+  return bubble;
+}
+
+async function sendGeminiMessage() {
+  const input = document.getElementById("geminiInput");
+  const message = input.value.trim();
+  if (!message) return;
+  const priorHistory = geminiHistory.slice(-20);
+  geminiHistory.push({ role: "user", text: message });
+  appendGeminiMessage("user", message);
+  input.value = "";
+  const waiting = appendGeminiMessage("model", "Gemini is thinking…");
+  document.getElementById("btnGeminiSend").disabled = true;
+  try {
+    const response = await fetch("/api/gemini/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, history: priorHistory })
+    });
+    const data = await response.json();
+    if (!response.ok || !data.ok) throw new Error(data.error || "Gemini request failed");
+    waiting.textContent = data.response;
+    geminiHistory.push({ role: "model", text: data.response });
+  } catch (error) {
+    waiting.textContent = `Gemini error: ${error.message}`;
+  } finally {
+    document.getElementById("btnGeminiSend").disabled = false;
+    document.getElementById("geminiInput").focus();
+  }
+}
+
+async function refreshAIStatus() {
+  const status = document.getElementById("aiChatStatus");
+  try {
+    const response = await fetch("/api/ai/status");
+    const data = await response.json();
+    const whisper = data.whisper.available ? `WHISPER: ${data.whisper.model}` : "WHISPER: OFFLINE";
+    const gemini = data.gemini.available ? `GEMINI: ${data.gemini.model}` : "GEMINI: ADD KEY TO .env";
+    status.textContent = `${whisper} · ${gemini}`;
+  } catch (error) {
+    status.textContent = "AI SERVICE STATUS UNAVAILABLE";
+  }
+}
+
+document.getElementById("btnOpenGemini").addEventListener("click", () => setGeminiOpen(true));
+document.getElementById("btnCloseGemini").addEventListener("click", () => setGeminiOpen(false));
+document.getElementById("aiChatBackdrop").addEventListener("click", () => setGeminiOpen(false));
+document.getElementById("btnGeminiSend").addEventListener("click", sendGeminiMessage);
+document.getElementById("btnGeminiClear").addEventListener("click", () => {
+  geminiHistory.length = 0;
+  document.getElementById("aiChatMessages").innerHTML = '<div class="ai-message model">New conversation started. নতুন কথোপকথন শুরু হয়েছে।</div>';
+});
+document.getElementById("btnGeminiMic").addEventListener("click", event => {
+  toggleWhisperRecording(event.currentTarget, text => {
+    document.getElementById("geminiInput").value = text;
+    sendGeminiMessage();
+  });
+});
+document.getElementById("geminiInput").addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendGeminiMessage();
+  }
+});
 
 /* ────────────────────────────────────────────────────────────────────
    10. BUTTON CONTROLS & INITIALIZATION
@@ -2218,6 +2510,7 @@ document.getElementById("btnOpenSignDisplay").addEventListener("click", () => {
 window.addEventListener("DOMContentLoaded", () => {
   initPixelSunsetBackground();
   init3DVoxelStage();
+  refreshAIStatus();
 });
 </script>
 </body>
