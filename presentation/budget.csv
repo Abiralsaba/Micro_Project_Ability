@@ -1,0 +1,36 @@
+Module,Component,Quantity,Unit_BDT_target,Line_BDT_target,Basis
+Hub,Raspberry Pi 5: 2GB / reused target,1,12000,12000,Cost allocation / target; glove total uses owner estimate; not an invoice
+Hub,USB-C power supply,1,1500,1500,Cost allocation / target; glove total uses owner estimate; not an invoice
+Hub,Active cooler,1,500,500,Cost allocation / target; glove total uses owner estimate; not an invoice
+Hub,microSD storage,1,600,600,Cost allocation / target; glove total uses owner estimate; not an invoice
+Hub,Case,1,400,400,Cost allocation / target; glove total uses owner estimate; not an invoice
+Glove,ESP32-S3,1,650,650,Cost allocation / target; glove total uses owner estimate; not an invoice
+Glove,Flex sensors: economy target,5,250,1250,Cost allocation / target; glove total uses owner estimate; not an invoice
+Glove,BNO055: sourcing target,1,1900,1900,Cost allocation / target; glove total uses owner estimate; not an invoice
+Glove,Glove + wiring / resistors,1,400,400,Cost allocation / target; glove total uses owner estimate; not an invoice
+Glove,Power allowance,1,300,300,Cost allocation / target; glove total uses owner estimate; not an invoice
+Braille,ESP32-S3,1,650,650,Cost allocation / target; glove total uses owner estimate; not an invoice
+Braille,MG90S servos,8,200,1600,Cost allocation / target; glove total uses owner estimate; not an invoice
+Braille,Cams / pins / housing,1,600,600,Cost allocation / target; glove total uses owner estimate; not an invoice
+Braille,Tactile buttons,7,10,70,Cost allocation / target; glove total uses owner estimate; not an invoice
+Braille,Regulated 5V supply,1,400,400,Cost allocation / target; glove total uses owner estimate; not an invoice
+Braille,Cables / connectors,1,180,180,Cost allocation / target; glove total uses owner estimate; not an invoice
+Voice,ESP32-S3,1,650,650,Cost allocation / target; glove total uses owner estimate; not an invoice
+Voice,I2S microphone,1,250,250,Cost allocation / target; glove total uses owner estimate; not an invoice
+Voice,Amplifier + speaker,1,350,350,Cost allocation / target; glove total uses owner estimate; not an invoice
+Voice,Power + wiring,1,250,250,Cost allocation / target; glove total uses owner estimate; not an invoice
+Gaze,USB camera: proposed economy option,1,2000,2000,Cost allocation / target; glove total uses owner estimate; not an invoice
+Gaze,Mount + illumination allowance,1,500,500,Cost allocation / target; glove total uses owner estimate; not an invoice
+Gaze,Power + cabling,1,500,500,Cost allocation / target; glove total uses owner estimate; not an invoice
+Gaze,Display mounting; screen reused,1,500,500,Cost allocation / target; glove total uses owner estimate; not an invoice
+Wheelchair add-on,ESP32-S3 supervision board,1,650,650,Cost allocation / target; glove total uses owner estimate; not an invoice
+Wheelchair add-on,Obstacle sensors: allowance,1,1500,1500,Cost allocation / target; glove total uses owner estimate; not an invoice
+Wheelchair add-on,E-stop + protected interface allowance,1,5000,5000,Cost allocation / target; glove total uses owner estimate; not an invoice
+Wheelchair add-on,Power conversion + wiring,1,2000,2000,Cost allocation / target; glove total uses owner estimate; not an invoice
+Wheelchair add-on,Enclosure + mounting,1,1500,1500,Cost allocation / target; glove total uses owner estimate; not an invoice
+Wheelchair add-on,Integration allowance,1,1350,1350,Cost allocation / target; glove total uses owner estimate; not an invoice
+CORE TOTAL,Glove + Braille + hub,,,23000,Cost target; existing screen reused
+COMMUNICATION TOTAL,Core + voice + gaze,,,28000,Includes proposed voice/gaze; excludes wheelchair
+RESERVE,10 percent of communication target,,,2800,Planning contingency
+COMMUNICATION WITH RESERVE,Target budget,,,30800,"Not actual expenditure; excludes labor, tax, shipping"
+OPTIONAL ADD-ON,Wheelchair control interface,,,12000,"Excludes EEG, electrodes, chair, motors, brakes, battery and validation"

@@ -13,7 +13,7 @@
  *     This firmware only uses safe, available GPIOs.
  *
  * WHAT THIS DOES:
- *   1. RECEIVES text via secure cloud MQTT, WiFi web UI, or Serial Monitor
+ *   1. RECEIVES text via WiFi web UI or Serial Monitor
  *      → drives 8 servos across 4 Braille cells to display it
  *   2. READS 6 push buttons as a Braille keyboard
  *      → detects which dots are pressed, decodes to A-Z,
@@ -59,7 +59,7 @@
  *     [Dot 3]  [Dot 6]
  *
  * ── LIBRARIES REQUIRED ─────────────────────────────────────
- *   - ESP32Servo, PubSubClient, ArduinoJson  (Arduino Library Manager)
+ *   - ESP32Servo  (Arduino Library Manager)
  *
  * ── SERIAL COMMANDS ─────────────────────────────────────────
  *   test    → display all 26 letters a-z on servos
@@ -74,16 +74,9 @@
  * ══════════════════════════════════════════════════════════════
  */
 
-#include <ArduinoJson.h>
 #include <ESP32Servo.h>
-#include <PubSubClient.h>
 #include <WebServer.h>
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
-#include <time.h>
-
-#include "emqx_ca.h"
-#include "secrets.h"
 
 // ══════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -92,18 +85,6 @@
 // ── WiFi Access Point ────────────────────────────────────────
 const char *AP_SSID = "BrailleModule";
 const char *AP_PASS = "braille123";
-
-// ── Secure cloud MQTT ───────────────────────────────────────
-const char *MQTT_SERVER = "z91cfe11.ala.asia-southeast1.emqxsl.com";
-const uint16_t MQTT_PORT = 8883;
-const char *MODULE_ID = "braille_01";
-const char *TOPIC_CLOUD_DISPLAY = "ability/v1/braille_01/output";
-const char *TOPIC_CLOUD_STATUS = "ability/v1/braille_01/status";
-
-#define MAX_CLOUD_PATTERNS 64
-#define CLOUD_STATUS_INTERVAL 10000UL
-#define CLOUD_CLOCK_RETRY_INTERVAL 30000UL
-#define CLOUD_MQTT_RETRY_INTERVAL 5000UL
 
 // ── Servo Pins (4 modules × 2 servos) ───────────────────────
 // All on safe N16R8 GPIOs (no conflict with flash/PSRAM)
@@ -294,22 +275,6 @@ String lastWord = "";
 bool isBusy = false;
 String pendingWord = "";
 bool hasPending = false;
-
-// Secure cloud connection and one-message receive queue. MQTT callbacks only
-// queue work; servo movement remains in loop() so callbacks stay short.
-WiFiClientSecure secureClient;
-PubSubClient mqtt(secureClient);
-uint8_t cloudPendingPatterns[MAX_CLOUD_PATTERNS];
-uint8_t cloudPendingCount = 0;
-String cloudPendingText = "";
-char cloudPendingMessageId[48] = "";
-bool cloudPendingIsText = false;
-bool cloudHasPending = false;
-bool cloudClockReady = false;
-bool cloudWiFiStarted = false;
-unsigned long lastCloudStatusTime = 0;
-unsigned long lastCloudClockAttempt = 0;
-unsigned long lastCloudMqttAttempt = 0;
 
 // Keyboard state (7 buttons: Dots 1-6, Action/Enter)
 bool btnLastState[NUM_BUTTONS] = {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH};
@@ -651,185 +616,6 @@ void handleStatus() {
                 lastWord + "\",\"kb\":\"" + kbInputBuffer +
                 "\",\"dots\":\"" + getDotsString(pendingPattern) + "\"}";
   server.send(200, "application/json", json);
-}
-
-// ══════════════════════════════════════════════════════════════
-// SECURE CLOUD MQTT — EMQX over TLS
-// ══════════════════════════════════════════════════════════════
-
-void publishCloudStatus(const char *eventName, const char *messageId) {
-  if (!mqtt.connected())
-    return;
-
-  JsonDocument doc;
-  doc["module"] = MODULE_ID;
-  doc["online"] = true;
-  doc["busy"] = isBusy;
-  doc["queued"] = cloudHasPending;
-  doc["event"] = eventName;
-  doc["status"] = currentStatus;
-  doc["rssi"] = WiFi.RSSI();
-  if (messageId != nullptr && messageId[0] != '\0')
-    doc["message_id"] = messageId;
-
-  JsonArray modules = doc["modules_ok"].to<JsonArray>();
-  for (int module = 0; module < NUM_MODULES; module++)
-    modules.add(moduleOK[module]);
-
-  char buffer[512];
-  size_t length = serializeJson(doc, buffer, sizeof(buffer));
-  mqtt.publish(TOPIC_CLOUD_STATUS,
-               reinterpret_cast<const uint8_t *>(buffer), length, false);
-}
-
-void cloudMqttCallback(char *topic, byte *payload, unsigned int length) {
-  if (strcmp(topic, TOPIC_CLOUD_DISPLAY) != 0)
-    return;
-
-  JsonDocument doc;
-  DeserializationError error = deserializeJson(doc, payload, length);
-  if (error) {
-    Serial.print("[Cloud] Invalid JSON: ");
-    Serial.println(error.c_str());
-    return;
-  }
-
-  const char *messageId = doc["message_id"] | "unknown";
-  if (cloudHasPending) {
-    Serial.println("[Cloud] Queue full; message rejected.");
-    publishCloudStatus("queue_rejected", messageId);
-    return;
-  }
-
-  JsonArray patterns = doc["braille"].as<JsonArray>();
-  if (!patterns.isNull()) {
-    cloudPendingCount = 0;
-    for (JsonVariant value : patterns) {
-      if (cloudPendingCount >= MAX_CLOUD_PATTERNS)
-        break;
-      int pattern = value.as<int>();
-      if (pattern >= 0 && pattern <= 63)
-        cloudPendingPatterns[cloudPendingCount++] =
-            static_cast<uint8_t>(pattern);
-    }
-
-    if (cloudPendingCount == 0) {
-      Serial.println("[Cloud] Braille array is empty or invalid.");
-      return;
-    }
-    cloudPendingText = "";
-    cloudPendingIsText = false;
-  } else {
-    // Also accept {"text":"..."} for direct testing and cloud commands.
-    const char *text = doc["text"] | "";
-    cloudPendingText = String(text);
-    cloudPendingText.trim();
-    if (cloudPendingText.length() == 0) {
-      Serial.println("[Cloud] Message has neither braille patterns nor text.");
-      return;
-    }
-    cloudPendingCount = 0;
-    cloudPendingIsText = true;
-  }
-
-  strlcpy(cloudPendingMessageId, messageId,
-          sizeof(cloudPendingMessageId));
-  cloudHasPending = true;
-  Serial.print("[Cloud] Queued message: ");
-  Serial.println(cloudPendingMessageId);
-  publishCloudStatus("queued", cloudPendingMessageId);
-}
-
-void startCloudWiFi() {
-  // WiFi.begin() starts an asynchronous connection attempt. Calling it again
-  // while that attempt is active produces "sta is connecting, cannot set
-  // config" on ESP32-S3. Start once and use the ESP32 auto-reconnect feature.
-  if (WiFi.status() == WL_CONNECTED || cloudWiFiStarted)
-    return;
-
-  cloudWiFiStarted = true;
-  Serial.print("[Cloud] Connecting STA to WiFi: ");
-  Serial.println(ABILITY_WIFI_SSID);
-  WiFi.begin(ABILITY_WIFI_SSID, ABILITY_WIFI_PASSWORD);
-}
-
-bool syncCloudClock() {
-  if (cloudClockReady)
-    return true;
-
-  lastCloudClockAttempt = millis();
-  configTime(0, 0, "pool.ntp.org", "time.google.com");
-  Serial.print("[Cloud] Synchronizing TLS clock");
-  for (int attempt = 0; attempt < 30; attempt++) {
-    if (time(nullptr) >= 1700000000) {
-      cloudClockReady = true;
-      Serial.println(" synchronized.");
-      return true;
-    }
-    delay(500);
-    Serial.print('.');
-  }
-
-  Serial.println(" timed out; will retry later.");
-  return false;
-}
-
-void connectCloudMqtt() {
-  if (mqtt.connected() || WiFi.status() != WL_CONNECTED ||
-      !cloudClockReady)
-    return;
-  if (millis() - lastCloudMqttAttempt < CLOUD_MQTT_RETRY_INTERVAL)
-    return;
-
-  lastCloudMqttAttempt = millis();
-  String clientId =
-      String(MODULE_ID) + "-" + String((uint32_t)ESP.getEfuseMac(), HEX);
-  const char *offline = "{\"module\":\"braille_01\",\"online\":false}";
-
-  Serial.print("[Cloud] Connecting securely to EMQX...");
-  bool connected = mqtt.connect(
-      clientId.c_str(), ABILITY_MQTT_USERNAME, ABILITY_MQTT_PASSWORD,
-      TOPIC_CLOUD_STATUS, 1, true, offline);
-
-  if (connected) {
-    Serial.println(" connected.");
-    mqtt.subscribe(TOPIC_CLOUD_DISPLAY, 1);
-    Serial.print("[Cloud] Subscribed: ");
-    Serial.println(TOPIC_CLOUD_DISPLAY);
-    publishCloudStatus("connected", "");
-  } else {
-    Serial.print(" failed, MQTT state=");
-    Serial.println(mqtt.state());
-  }
-}
-
-void maintainCloudConnection() {
-  if (WiFi.status() != WL_CONNECTED) {
-    startCloudWiFi();
-    return;
-  }
-
-  if (!cloudClockReady) {
-    if (lastCloudClockAttempt != 0 &&
-        millis() - lastCloudClockAttempt < CLOUD_CLOCK_RETRY_INTERVAL)
-      return;
-    if (!syncCloudClock())
-      return;
-  }
-
-  connectCloudMqtt();
-  if (mqtt.connected())
-    mqtt.loop();
-}
-
-void serviceCloudDelay(unsigned long durationMs) {
-  unsigned long started = millis();
-  while (millis() - started < durationMs) {
-    server.handleClient();
-    if (mqtt.connected())
-      mqtt.loop();
-    delay(10);
-  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1178,12 +964,12 @@ void displayWord(String word) {
       }
     }
 
-    serviceCloudDelay(SERVO_MOVE_TIME);
+    delay(SERVO_MOVE_TIME);
 
     Serial.print("  Holding ");
     Serial.print(CHAR_HOLD_TIME / 1000);
     Serial.println("s...");
-    serviceCloudDelay(CHAR_HOLD_TIME);
+    delay(CHAR_HOLD_TIME);
 
     Serial.println("  Returning to home...");
     homeAllServos();
@@ -1192,56 +978,13 @@ void displayWord(String word) {
       Serial.print("  Pause ");
       Serial.print(BATCH_GAP_TIME / 1000);
       Serial.println("s...");
-      serviceCloudDelay(BATCH_GAP_TIME);
+      delay(BATCH_GAP_TIME);
     }
 
     Serial.println();
   }
 
   Serial.println("Word complete!");
-}
-
-// Display device-ready six-dot patterns produced by the Ability cloud hub.
-void displayCloudPatterns(const uint8_t *patterns, int patternCount,
-                          const char *messageId) {
-  isBusy = true;
-  currentStatus = "Displaying cloud message";
-  publishCloudStatus("display_started", messageId);
-
-  int totalBatches = (patternCount + NUM_MODULES - 1) / NUM_MODULES;
-  Serial.print("[Cloud] Displaying ");
-  Serial.print(patternCount);
-  Serial.print(" patterns in ");
-  Serial.print(totalBatches);
-  Serial.println(" batch(es)");
-
-  for (int batch = 0; batch < totalBatches; batch++) {
-    int startIndex = batch * NUM_MODULES;
-    int patternsInBatch = min(NUM_MODULES, patternCount - startIndex);
-    currentStatus = "Cloud batch " + String(batch + 1) + "/" +
-                    String(totalBatches);
-
-    for (int module = 0; module < NUM_MODULES; module++) {
-      uint8_t pattern = 0b000000;
-      if (module < patternsInBatch)
-        pattern = patterns[startIndex + module] & 0x3F;
-      if (moduleOK[module]) {
-        driveModule(module, pattern);
-        delay(200);
-      }
-    }
-
-    serviceCloudDelay(SERVO_MOVE_TIME);
-    serviceCloudDelay(CHAR_HOLD_TIME);
-    homeAllServos();
-    if (batch < totalBatches - 1)
-      serviceCloudDelay(BATCH_GAP_TIME);
-  }
-
-  currentStatus = "Ready";
-  isBusy = false;
-  publishCloudStatus("display_complete", messageId);
-  Serial.println("[Cloud] Display complete.");
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1270,10 +1013,10 @@ void runTestAllLetters() {
       }
     }
 
-    serviceCloudDelay(SERVO_MOVE_TIME);
-    serviceCloudDelay(CHAR_HOLD_TIME);
+    delay(SERVO_MOVE_TIME);
+    delay(CHAR_HOLD_TIME);
     homeAllServos();
-    serviceCloudDelay(BATCH_GAP_TIME);
+    delay(BATCH_GAP_TIME);
   }
 
   Serial.println("All 26 letters complete!");
@@ -1297,21 +1040,21 @@ void testSingleModule(int m) {
 
   Serial.println("  Left servo -> 90°...");
   writeLeftServo(m, 90);
-  serviceCloudDelay(1000);
+  delay(1000);
   Serial.println("  Left servo -> 22° (home)...");
   writeLeftServo(m, 22);
-  serviceCloudDelay(1000);
+  delay(1000);
 
   Serial.println("  Right servo -> 90°...");
   writeRightServo(m, 90);
-  serviceCloudDelay(1000);
+  delay(1000);
   Serial.println("  Right servo -> 22° (home)...");
   writeRightServo(m, 22);
-  serviceCloudDelay(1000);
+  delay(1000);
 
   Serial.println("  Testing Braille 'a'...");
   driveModule(m, charToBraille('a'));
-  serviceCloudDelay(2000);
+  delay(2000);
   homeModule(m);
   Serial.println("  Done module test.");
 }
@@ -1332,21 +1075,21 @@ void runDiagnostics() {
 
     // Test left servo
     writeLeftServo(m, 90);
-    serviceCloudDelay(500);
+    delay(500);
     writeLeftServo(m, 22);
-    serviceCloudDelay(500);
+    delay(500);
 
     // Test right servo
     writeRightServo(m, 90);
-    serviceCloudDelay(500);
+    delay(500);
     writeRightServo(m, 22);
-    serviceCloudDelay(500);
+    delay(500);
 
     // Test with letter 'a'
     driveModule(m, charToBraille('a'));
-    serviceCloudDelay(2000);
+    delay(2000);
     homeModule(m);
-    serviceCloudDelay(300);
+    delay(300);
 
     Serial.println("  done.");
   }
@@ -1372,22 +1115,22 @@ void runSweepTest() {
     // Sweep left
     for (int angle = 0; angle <= 180; angle += 10) {
       writeLeftServo(m, angle);
-      serviceCloudDelay(150);
+      delay(150);
     }
     for (int angle = 180; angle >= 0; angle -= 10) {
       writeLeftServo(m, angle);
-      serviceCloudDelay(150);
+      delay(150);
     }
     Serial.println("  Left done.");
 
     // Sweep right
     for (int angle = 0; angle <= 180; angle += 10) {
       writeRightServo(m, angle);
-      serviceCloudDelay(150);
+      delay(150);
     }
     for (int angle = 180; angle >= 0; angle -= 10) {
       writeRightServo(m, angle);
-      serviceCloudDelay(150);
+      delay(150);
     }
     Serial.println("  Right done.");
   }
@@ -1488,10 +1231,7 @@ void setup() {
   Serial.println(BTN_ACTION);
   Serial.println("     [Action Logic: 1-Click=Commit, 2-Clicks=Space, 3-Clicks=Send, Hold=Clear]");
 
-  // ── Setup local AP + cloud WiFi station ────────────────
-  WiFi.mode(WIFI_AP_STA);
-  WiFi.setSleep(false);
-  WiFi.setAutoReconnect(true);
+  // ── Setup WiFi AP ──────────────────────────────────────
   WiFi.softAP(AP_SSID, AP_PASS);
   Serial.print("[WiFi] AP: ");
   Serial.print(AP_SSID);
@@ -1506,13 +1246,6 @@ void setup() {
   server.on("/status", handleStatus);
   server.begin();
   Serial.println("[Web] Server started on port 80");
-
-  secureClient.setCACert(EMQX_ROOT_CA);
-  mqtt.setServer(MQTT_SERVER, MQTT_PORT);
-  mqtt.setCallback(cloudMqttCallback);
-  mqtt.setBufferSize(2048);
-  mqtt.setKeepAlive(30);
-  startCloudWiFi();
 
   // ── Setup Servos ────────────────────────────────────────
   // ESP32-S3: Allocate all 4 timers (0, 1, 2, 3) to enable all 8 channels for
@@ -1573,17 +1306,12 @@ void setup() {
   delay(1000);
   Serial.println("All servos at home.");
 
-  lastCloudMqttAttempt = millis() - CLOUD_MQTT_RETRY_INTERVAL;
-  if (WiFi.status() == WL_CONNECTED)
-    maintainCloudConnection();
-
   // Ready message
   Serial.println();
   Serial.println("════════════════════════════════════════");
   Serial.println("  READY!");
   Serial.println("════════════════════════════════════════");
   Serial.println("WiFi: " + String(AP_SSID) + " → http://192.168.4.1");
-  Serial.println("Cloud: " + String(TOPIC_CLOUD_DISPLAY));
   Serial.println();
   Serial.println("Serial commands:");
   Serial.println("  test    → display A-Z on servos");
@@ -1604,43 +1332,16 @@ void setup() {
 // ══════════════════════════════════════════════════════════════
 
 void loop() {
-  // 1. Maintain secure cloud WiFi/MQTT while keeping the local AP active
-  maintainCloudConnection();
-
-  // 2. Handle web requests
+  // 1. Handle web requests
   server.handleClient();
 
-  // 3. Handle pending commands from web UI
+  // 2. Handle pending commands from web UI
   if (hasPending) {
     hasPending = false;
     processInput(pendingWord);
   }
 
-  // 4. Handle queued cloud input outside the MQTT callback
-  if (cloudHasPending && !isBusy) {
-    uint8_t currentPatterns[MAX_CLOUD_PATTERNS];
-    uint8_t currentCount = cloudPendingCount;
-    String currentText = cloudPendingText;
-    bool currentIsText = cloudPendingIsText;
-    char currentMessageId[48];
-
-    memcpy(currentPatterns, cloudPendingPatterns, currentCount);
-    strlcpy(currentMessageId, cloudPendingMessageId,
-            sizeof(currentMessageId));
-    cloudHasPending = false;
-    cloudPendingCount = 0;
-    cloudPendingText = "";
-
-    if (currentIsText) {
-      publishCloudStatus("command_started", currentMessageId);
-      processInput(currentText);
-      publishCloudStatus("command_complete", currentMessageId);
-    } else {
-      displayCloudPatterns(currentPatterns, currentCount, currentMessageId);
-    }
-  }
-
-  // 5. Handle serial input
+  // 3. Handle serial input
   if (Serial.available() > 0) {
     String serialInput = Serial.readStringUntil('\n');
     serialInput.trim();
@@ -1651,15 +1352,9 @@ void loop() {
     }
   }
 
-  // 6. Read keyboard buttons (every loop iteration)
+  // 4. Read keyboard buttons (every loop iteration)
   readKeyboard();
 
-  // 7. Periodic cloud health status
-  if (millis() - lastCloudStatusTime >= CLOUD_STATUS_INTERVAL) {
-    publishCloudStatus("status", "");
-    lastCloudStatusTime = millis();
-  }
-
-  // 8. Short yield (5ms) for WiFi and background tasks
+  // 5. Short yield (5ms) for WiFi and background tasks
   delay(5);
 }

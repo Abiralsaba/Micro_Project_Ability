@@ -1,0 +1,26 @@
+{
+  "checks": [
+    "Both hub Python files parse and load with a mocked MQTT dependency; no network opened.",
+    "Mock local glove HELP message produces Braille and voice-command publications; no physical output verified.",
+    "Mock cloud route encodes HELP as [19,17,7,15] for braille_01.",
+    "All 26 alphabet entries in current cloud keyboard decoder agree with the cloud hub map; this is a static lookup check, not tactile accuracy."
+  ],
+  "hardware_tested": false,
+  "firmware_compiled": false,
+  "model_accuracy_measured": false,
+  "cloud_keyboard_alphabet_matches": 26,
+  "cloud_env_base_current": "/Users/abiralsaba/Documents",
+  "expected_repo_env_base": "/Users/abiralsaba/Documents/Micro_Project_Ability",
+  "sketch_entrypoints": {
+    "braille_mqtt.ino": 2,
+    "demomodule.ino": 2,
+    "braille_module.ino": 2,
+    "servo.ino": 2,
+    "v2working.ino": 2,
+    "braille_keyboard.ino": 2,
+    "brailv1.ino": 2
+  },
+  "model_artifacts": [],
+  "trained_model_artifacts_found": 0,
+  "date": "2026-09-30"
+}

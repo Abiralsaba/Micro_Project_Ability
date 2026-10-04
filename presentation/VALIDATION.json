@@ -1,0 +1,18 @@
+{
+  "console_errors": [],
+  "layout_overflows": [],
+  "module_targets_bdt": {
+    "Hub": 15000,
+    "Glove": 4500,
+    "Braille": 3500,
+    "Voice": 1500,
+    "Gaze": 3500,
+    "Wheelchair add-on": 12000
+  },
+  "slide_prices_in_bdt": "passed",
+  "slide_count": 15,
+  "navigation_notes_blackout_appendix": "passed",
+  "mobile_fit": "passed",
+  "pptx_slide_count": 15,
+  "pptx_fade_transitions": 15
+}
