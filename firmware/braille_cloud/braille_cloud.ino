@@ -28,20 +28,20 @@
  *   Servo GND     : J1 Pin 22
  *
  * ── KEYBOARD PINS (All 7 buttons on RIGHT side header J3!) ─
- *   Button 1 (Dot 1): GPIO 1   [J3 Pin 5]
- *   Button 2 (Dot 2): GPIO 2   [J3 Pin 6]
- *   Button 3 (Dot 3): GPIO 42  [J3 Pin 7]
- *   Button 4 (Dot 4): GPIO 41  [J3 Pin 8]
- *   Button 5 (Dot 5): GPIO 40  [J3 Pin 9]
- *   Button 6 (Dot 6): GPIO 39  [J3 Pin 10]
- *   Button 7 (ACTION): GPIO 47 [J3 Pin 17]
+ *   Button 1 (Dot 1): GPIO 1
+ *   Button 2 (Dot 2): GPIO 38
+ *   Button 3 (Dot 3): GPIO 39
+ *   Button 4 (Dot 4): GPIO 2
+ *   Button 5 (Dot 5): GPIO 42
+ *   Button 6 (Dot 6): GPIO 41
+ *   Button 7 (ENTER): GPIO 40
  *   Common GND      : J3 Pin 21 or Pin 22
  *
  *   TYPING LOGIC (7th Button Multi-Click):
  *   - Press Buttons 1-6 (Dots 1-6): accumulates the dot pattern.
  *   - Button 7 (1 Click)  → Merge dot clicks & commit letter to word/buffer!
  *   - Button 7 (2 Clicks) → Insert SPACE (' ') into buffer!
- *   - Button 7 (3 Clicks) → SEND FULL DATA to display on servos!
+ *   - Button 7 (3 Clicks) → SEND FULL DATA to Ability Chat and preview it!
  *   - Button 7 (Long Press >1.2s) → Clear buffer and pending dots!
  *
  *   Wire each button between its GPIO pin and J3 GND.
@@ -68,7 +68,7 @@
  *   diag    → test each module individually
  *   m1..m4  → test single module (e.g. 'm4')
  *   clear   → clear the keyboard input buffer
- *   send_kb → display keyboard buffer on servos, then clear it
+ *   send_kb → send keyboard buffer to Ability Chat, preview, then clear it
  *   <text>  → display that text on the Braille cells
  *
  * ══════════════════════════════════════════════════════════════
@@ -126,13 +126,13 @@ const char *TOPIC_CLOUD_STATUS = "ability/v1/braille_01/status";
 #define SERVO_SETTLE_MS 30  // Settle time after each servo write
 
 // ── Keyboard Button Pins (7 buttons → GND on Right Header J3) ──
-#define BTN_DOT1   1    // Header J3, Pin 5  (Button 1: Braille Dot 1)
-#define BTN_DOT2   2    // Header J3, Pin 6  (Button 2: Braille Dot 2)
-#define BTN_DOT3   42   // Header J3, Pin 7  (Button 3: Braille Dot 3)
-#define BTN_DOT4   41   // Header J3, Pin 8  (Button 4: Braille Dot 4)
-#define BTN_DOT5   40   // Header J3, Pin 9  (Button 5: Braille Dot 5)
-#define BTN_DOT6   39   // Header J3, Pin 10 (Button 6: Braille Dot 6)
-#define BTN_ACTION 47   // Header J3, Pin 17 (Button 7: 1-click=Commit, 2-click=Space, 3-click=Send)
+#define BTN_DOT1   1    // Button 1: Braille Dot 1
+#define BTN_DOT2   38   // Button 2: Braille Dot 2
+#define BTN_DOT3   39   // Button 3: Braille Dot 3
+#define BTN_DOT4   2    // Button 4: Braille Dot 4
+#define BTN_DOT5   42   // Button 5: Braille Dot 5
+#define BTN_DOT6   41   // Button 6: Braille Dot 6
+#define BTN_ACTION 40   // Button 7/Enter: 1-click=Commit, 2-click=Space, 3-click=Send
 
 #define NUM_BUTTONS 7
 const int BTN_PINS[NUM_BUTTONS] = {
@@ -680,7 +680,7 @@ void publishCloudStatus(const char *eventName, const char *messageId) {
   char buffer[512];
   size_t length = serializeJson(doc, buffer, sizeof(buffer));
   mqtt.publish(TOPIC_CLOUD_STATUS,
-               reinterpret_cast<const uint8_t *>(buffer), length, false);
+               reinterpret_cast<const uint8_t *>(buffer), length, true);
 }
 
 void publishCloudInput(const String &text) {
