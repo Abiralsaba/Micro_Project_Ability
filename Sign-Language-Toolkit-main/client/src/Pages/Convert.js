@@ -75,18 +75,37 @@ function Convert({ navigate }) {
 
     ref.renderer = new THREE.WebGLRenderer({ antialias: true });
     ref.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    ref.camera = new THREE.PerspectiveCamera(30, 1, 0.1, 1000);
-    ref.camera.position.set(0, 1.4, 1.6);
-    ref.camera.lookAt(0, 1.4, 0);
+    ref.camera = new THREE.PerspectiveCamera(30, 1, 0.05, 100);
     container.innerHTML = "";
     container.appendChild(ref.renderer.domElement);
+
+    // XBOT and YBOT use the same Mixamo rig space. Box3.setFromObject() is not
+    // reliable here: animated SkinnedMesh bounds can include transformed bone
+    // space and place the camera far away from the visible model. Frame the
+    // known rig dimensions instead (mesh: x -0.97..0.97, y 0..1.80).
+    const frameAvatar = () => {
+      const target = new THREE.Vector3(0, 0.92, 0);
+      const framedHeight = 2.05;
+      const framedWidth = 2.20;
+      const verticalFov = THREE.MathUtils.degToRad(ref.camera.fov);
+      const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * ref.camera.aspect);
+      const verticalDistance = (framedHeight / 2) / Math.tan(verticalFov / 2);
+      const horizontalDistance = (framedWidth / 2) / Math.tan(horizontalFov / 2);
+      const distance = Math.max(verticalDistance, horizontalDistance) * 1.04;
+      ref.camera.position.set(target.x, target.y, target.z + distance);
+      ref.camera.lookAt(target);
+      ref.camera.updateProjectionMatrix();
+    };
 
     const resize = () => {
       const width = Math.max(container.clientWidth, 320);
       const height = Math.max(container.clientHeight, 360);
       ref.camera.aspect = width / height;
-      ref.camera.updateProjectionMatrix();
-      ref.renderer.setSize(width, height, false);
+      frameAvatar();
+      // Let Three.js also set the CSS size. With `false`, a Retina display's
+      // pixel-ratio-scaled drawing buffer becomes the canvas layout width, so
+      // the visual center lands at the right edge of this clipped container.
+      ref.renderer.setSize(width, height);
       ref.renderer.render(ref.scene, ref.camera);
     };
     resize();
