@@ -12,6 +12,7 @@ Sits alongside the existing system as an additional MQTT client.
 
 import json
 import logging
+import math
 import os
 import ssl
 import subprocess
@@ -157,9 +158,9 @@ def emit_message(msg):
     """Send one stored message to chat clients and, when applicable, sign UI."""
     socketio.emit("new_message", msg)
     receiver = USERS.get(msg["receiver_id"], {})
-    if receiver.get("device_type") == "braille":
-        # The next physical Braille-keyboard message automatically replies to
-        # the person who most recently messaged this user.
+    if receiver.get("device_type") in ("braille", "gaze"):
+        # Input-only accessibility devices reply to the person who most
+        # recently messaged them unless their interface selects another user.
         active_recipient[msg["receiver_id"]] = msg["sender_id"]
         socketio.emit("recipient_set", {
             "user_id": msg["receiver_id"],
@@ -206,6 +207,10 @@ def on_mqtt_connect(client, userdata, flags, reason_code, properties):
     client.subscribe("ability/v1/+/input", qos=1)
     log.info("  Subscribed: ability/v1/+/input")
 
+    # Live normalized cursor frames from the Parkinson gaze interface.
+    client.subscribe("ability/v1/+/cursor", qos=0)
+    log.info("  Subscribed: ability/v1/+/cursor")
+
     # Subscribe to local topics too (if broker bridges them)
     client.subscribe(TOPIC_LOCAL_GLOVE_TEXT, qos=0)
     client.subscribe(TOPIC_LOCAL_GLOVE_STATUS, qos=0)
@@ -238,6 +243,39 @@ def on_mqtt_message(client, userdata, message):
     # ── Device status updates ────────────────────────────
     # Cloud status: ability/v1/{device}/status
     parts = topic.split("/")
+    if (
+        len(parts) >= 4
+        and parts[0] == "ability"
+        and parts[1] == "v1"
+        and parts[3] == "cursor"
+    ):
+        device_id = parts[2]
+        user_id = DEVICE_TO_USER.get(device_id)
+        user = USERS.get(user_id) if user_id else None
+        if not user or user.get("device_type") != "gaze":
+            return
+        try:
+            data = json.loads(payload)
+            x = float(data.get("x"))
+            y = float(data.get("y"))
+            blink = float(data.get("blink", 0.0))
+        except (json.JSONDecodeError, TypeError, ValueError):
+            return
+        if not all(math.isfinite(value) for value in (x, y, blink)):
+            return
+        device_online[device_id] = time.time()
+        socketio.emit("gaze_cursor", {
+            "user_id": user_id,
+            "device_id": device_id,
+            "x": max(0.0, min(1.0, x)),
+            "y": max(0.0, min(1.0, y)),
+            "face_present": bool(data.get("face_present", True)),
+            "blink": max(0.0, min(1.0, blink)),
+            "selecting": bool(data.get("selecting", False)),
+            "timestamp_ms": data.get("timestamp_ms"),
+        })
+        return
+
     if len(parts) >= 4 and parts[0] == "ability" and parts[1] == "v1" and parts[3] == "status":
         device_id = parts[2]
         try:
@@ -283,9 +321,18 @@ def on_mqtt_message(client, userdata, message):
         if not text:
             return
 
-        # If this user has an active recipient, route as chat message
-        recipient = active_recipient.get(user_id)
+        # A cloud accessibility interface may include an explicit device/user
+        # target. Otherwise, use the conversation selected in Ability Chat.
+        requested_target = data.get("target")
+        if requested_target in DEVICE_TO_USER:
+            requested_target = DEVICE_TO_USER[requested_target]
+        recipient = (
+            requested_target
+            if requested_target in USERS and requested_target != user_id
+            else active_recipient.get(user_id)
+        )
         if recipient:
+            active_recipient[user_id] = recipient
             msg = store_message(user_id, recipient, text)
             emit_message(msg)
             log.info("  Chat: %s → %s: %s",
@@ -378,6 +425,22 @@ def deliver_to_device(target_user_id, text, source_user_id):
     elif device_type == "voice":
         # Voice module — future TTS delivery
         log.info("  → Voice user sees message in web UI: %s", text)
+
+    elif device_type == "gaze":
+        # The Parkinson gaze application subscribes to its cloud output topic
+        # and shows the incoming text in its full-screen camera interface.
+        payload = json.dumps({
+            "version": 1,
+            "message_id": str(uuid.uuid4()),
+            "source": USERS[source_user_id]["device"],
+            "target": device,
+            "type": "text",
+            "text": text,
+            "timestamp": int(time.time()),
+        })
+        topic = TOPIC_OUTPUT.format(device=device)
+        mqtt_client.publish(topic, payload, qos=1)
+        log.info("  → Delivered to Gaze keyboard: %s", text)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -545,7 +608,7 @@ def handle_send_message(data):
 
     # If receiver has the sender as active, update their recipient in backend
     receiver_device_type = USERS[receiver_id].get("device_type")
-    if receiver_device_type == "braille":
+    if receiver_device_type in ("braille", "gaze"):
         active_recipient[receiver_id] = sender_id
 
     log.info("Message: %s → %s: %s",

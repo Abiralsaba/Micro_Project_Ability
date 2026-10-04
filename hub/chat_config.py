@@ -30,6 +30,12 @@ USERS = {
         "device_type": "voice",
         "icon": "🔊",
     },
+    "user_04": {
+        "name": "Parkinson User",
+        "device": "gaze_01",
+        "device_type": "gaze",
+        "icon": "👁",
+    },
 }
 
 # Reverse lookup: device_id → user_id
