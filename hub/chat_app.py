@@ -12,7 +12,6 @@ Sits alongside the existing system as an additional MQTT client.
 
 import json
 import logging
-import math
 import os
 import ssl
 import subprocess
@@ -207,10 +206,6 @@ def on_mqtt_connect(client, userdata, flags, reason_code, properties):
     client.subscribe("ability/v1/+/input", qos=1)
     log.info("  Subscribed: ability/v1/+/input")
 
-    # Live normalized cursor frames from the Parkinson gaze interface.
-    client.subscribe("ability/v1/+/cursor", qos=0)
-    log.info("  Subscribed: ability/v1/+/cursor")
-
     # Subscribe to local topics too (if broker bridges them)
     client.subscribe(TOPIC_LOCAL_GLOVE_TEXT, qos=0)
     client.subscribe(TOPIC_LOCAL_GLOVE_STATUS, qos=0)
@@ -243,39 +238,6 @@ def on_mqtt_message(client, userdata, message):
     # ── Device status updates ────────────────────────────
     # Cloud status: ability/v1/{device}/status
     parts = topic.split("/")
-    if (
-        len(parts) >= 4
-        and parts[0] == "ability"
-        and parts[1] == "v1"
-        and parts[3] == "cursor"
-    ):
-        device_id = parts[2]
-        user_id = DEVICE_TO_USER.get(device_id)
-        user = USERS.get(user_id) if user_id else None
-        if not user or user.get("device_type") != "gaze":
-            return
-        try:
-            data = json.loads(payload)
-            x = float(data.get("x"))
-            y = float(data.get("y"))
-            blink = float(data.get("blink", 0.0))
-        except (json.JSONDecodeError, TypeError, ValueError):
-            return
-        if not all(math.isfinite(value) for value in (x, y, blink)):
-            return
-        device_online[device_id] = time.time()
-        socketio.emit("gaze_cursor", {
-            "user_id": user_id,
-            "device_id": device_id,
-            "x": max(0.0, min(1.0, x)),
-            "y": max(0.0, min(1.0, y)),
-            "face_present": bool(data.get("face_present", True)),
-            "blink": max(0.0, min(1.0, blink)),
-            "selecting": bool(data.get("selecting", False)),
-            "timestamp_ms": data.get("timestamp_ms"),
-        })
-        return
-
     if len(parts) >= 4 and parts[0] == "ability" and parts[1] == "v1" and parts[3] == "status":
         device_id = parts[2]
         try:
