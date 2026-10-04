@@ -1066,6 +1066,130 @@ body {
   transform: translate(-1px, -1px);
 }
 
+/* ── Parkinson eye-control overlay ─────────────────────────── */
+.gaze-only-control {
+  display: none;
+}
+
+.gaze-cursor {
+  --gaze-progress: 0deg;
+  position: fixed;
+  left: 50vw;
+  top: 50vh;
+  z-index: 10020;
+  width: 42px;
+  height: 42px;
+  display: none;
+  transform: translate(-50%, -50%);
+  border: 4px solid var(--c-purple-deep);
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--c-neon-gold) var(--gaze-progress),
+    rgba(255, 255, 255, 0.9) 0deg
+  );
+  box-shadow: 0 0 0 4px rgba(0, 245, 212, 0.7), 4px 4px 0 rgba(30, 17, 54, 0.45);
+  pointer-events: none;
+}
+
+.gaze-cursor::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 3px solid var(--c-purple-deep);
+  border-radius: 50%;
+  background: var(--c-neon-cyan);
+}
+
+.gaze-cursor.selecting::after {
+  background: var(--c-orange-hot);
+}
+
+.gaze-status-pill {
+  position: fixed;
+  top: 92px;
+  right: 24px;
+  z-index: 10010;
+  display: none;
+  padding: 7px 11px;
+  border: var(--pixel-border-sm);
+  background: var(--c-neon-gold);
+  box-shadow: var(--pixel-shadow-sm);
+  font-family: var(--font-pixel-head);
+  font-size: 8px;
+  pointer-events: none;
+}
+
+body.gaze-control-active .gaze-cursor,
+body.gaze-control-active .gaze-status-pill {
+  display: block;
+}
+
+.gaze-hover-target {
+  outline: 5px solid var(--c-neon-cyan) !important;
+  outline-offset: 3px;
+}
+
+.eye-keyboard-panel {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  z-index: 10000;
+  display: none;
+  width: min(960px, calc(100vw - 44px));
+  padding: 12px;
+  transform: translateX(-50%);
+  border: var(--pixel-border);
+  background: var(--c-cream-card);
+  box-shadow: var(--pixel-shadow-lg);
+}
+
+.eye-keyboard-panel.open {
+  display: block;
+}
+
+.eye-keyboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-family: var(--font-pixel-head);
+  font-size: 10px;
+}
+
+.eye-keyboard-grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(54px, 1fr));
+  gap: 7px;
+}
+
+.eye-key {
+  min-height: 52px;
+  padding: 6px;
+  border: 3px solid var(--c-purple-deep);
+  background: var(--c-cream-light);
+  box-shadow: 3px 3px 0 var(--c-purple-deep);
+  color: var(--c-purple-deep);
+  font-family: var(--font-pixel-head);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.eye-key.action {
+  background: var(--c-orange-warm);
+  color: #fff;
+}
+
+.eye-key.wide {
+  grid-column: span 2;
+}
+
+.eye-key:hover,
+.eye-key:focus {
+  background: var(--c-neon-cyan);
+  color: var(--c-purple-deep);
+}
+
 /* ════════════════════════════════════════════════════════════════════
    ANIMATED PIXEL ART SPRITES (SVG & CSS PIXEL ART)
    ════════════════════════════════════════════════════════════════════ */
@@ -1132,6 +1256,10 @@ body {
 
       <button class="retro-btn" id="btnOpenSignDisplay" title="Open the synchronized sign avatar in a new window">
         <span>🤟</span> SIGN DISPLAY
+      </button>
+
+      <button class="retro-btn gaze-only-control" id="btnToggleEyeKeyboard" title="Show or hide the eye-accessible keyboard">
+        <span>👁</span> EYE KEYBOARD
       </button>
 
       <!-- 8-Bit Chiptune Sound FX Toggle -->
@@ -1282,6 +1410,17 @@ body {
     </main>
   </div>
 </div>
+
+<div class="gaze-cursor" id="gazeCursor" aria-hidden="true"></div>
+<div class="gaze-status-pill" id="gazeStatusPill" aria-live="polite">EYE CONTROL · WAITING FOR CAMERA</div>
+
+<section class="eye-keyboard-panel" id="eyeKeyboardPanel" aria-label="Eye controlled keyboard">
+  <div class="eye-keyboard-header">
+    <span>👁 LOOK AT A KEY — HOLD OR BLINK TO SELECT</span>
+    <button type="button" class="retro-btn" id="btnHideEyeKeyboard">HIDE KEYBOARD</button>
+  </div>
+  <div class="eye-keyboard-grid" id="eyeKeyboardGrid"></div>
+</section>
 
 <!-- ════════════════════════════════════════════════════════════════════
      RETRO ENGINE SCRIPT (CANVAS SUNSET, 3D VOXELS & CHIPTUNE AUDIO)
@@ -1485,6 +1624,20 @@ function getHeroSpriteSVG(deviceType, size = 34) {
         <rect x="9" y="13" width="2" height="3" fill="#3b0764"/>
       </svg>
     `;
+  } else if (deviceType === "gaze") {
+    return `
+      <svg class="sprite-svg" style="width:${size}px; height:${size}px;" viewBox="0 0 16 16">
+        <rect x="5" y="1" width="6" height="2" fill="#1e1136"/>
+        <rect x="3" y="3" width="10" height="8" fill="#38bdf8"/>
+        <rect x="4" y="4" width="8" height="6" fill="#e0f2fe"/>
+        <rect x="5" y="6" width="6" height="2" fill="#1e1136"/>
+        <rect x="7" y="5" width="2" height="4" fill="#8b5cf6"/>
+        <rect x="7" y="6" width="2" height="2" fill="#ffffff"/>
+        <rect x="2" y="11" width="12" height="2" fill="#ff6b35"/>
+        <rect x="4" y="13" width="8" height="2" fill="#1e1136"/>
+        <rect x="6" y="15" width="4" height="1" fill="#ffd166"/>
+      </svg>
+    `;
   } else {
     return `
       <svg class="sprite-svg" style="width:${size}px; height:${size}px;" viewBox="0 0 16 16">
@@ -1642,7 +1795,7 @@ function setVoxelModel(modelType) {
 
   vGloveGroup.visible = (modelType === "glove");
   vBrailleGroup.visible = (modelType === "braille");
-  vVoiceGroup.visible = (modelType === "voice");
+  vVoiceGroup.visible = (modelType === "voice" || modelType === "gaze");
 
   const hud = document.getElementById("voxelHudLabel");
   const title = document.getElementById("drawerModelTitle");
@@ -1659,11 +1812,16 @@ function setVoxelModel(modelType) {
     title.textContent = "3D BRAILLE CELL TELEMETRY";
     act.textContent = "6-PIN ROTARY SERVO MATRIX";
     chan.textContent = "ability/v1/braille_01/output";
-  } else {
+  } else if (modelType === "voice") {
     hud.textContent = "VOXEL RENDER: ACOUSTIC AUDIO ENGINE";
     title.textContent = "3D AUDIO TELEMETRY";
     act.textContent = "TTS DUAL COIL SPEAKER";
     chan.textContent = "ability/v1/voice_01/output";
+  } else {
+    hud.textContent = "VOXEL RENDER: EYE-GAZE CAMERA INTERFACE";
+    title.textContent = "GAZE KEYBOARD TELEMETRY";
+    act.textContent = "MEDIAPIPE IRIS + SMOOTHED GAZE";
+    chan.textContent = "ability/v1/gaze_01/output";
   }
 }
 
@@ -1676,6 +1834,20 @@ let users = {};
 let conversations = {};
 let unreadCounts = {};
 let contactSelectionVersion = 0;
+
+const gazeControl = {
+  enabled: false,
+  cursorReady: false,
+  x: 0.5,
+  y: 0.5,
+  target: null,
+  targetSince: 0,
+  activatedTarget: null,
+  dwellMs: 1200,
+  blinkLatched: false,
+  lastPacketAt: 0,
+  textTarget: null
+};
 
 const socket = io();
 
@@ -1693,6 +1865,11 @@ socket.on("mqtt_status", (data) => {
     pill.classList.add("offline");
     txt.textContent = "MQTT: OFFLINE";
   }
+});
+
+socket.on("gaze_cursor", (data) => {
+  if (!gazeControl.enabled || data.user_id !== myUserId) return;
+  updateGazeCursor(data);
 });
 
 socket.on("user_status", (list) => {
@@ -1761,6 +1938,172 @@ function escapeHtml(str) {
   return d.innerHTML;
 }
 
+function setGazeControlEnabled(enabled) {
+  gazeControl.enabled = !!enabled;
+  document.body.classList.toggle("gaze-control-active", gazeControl.enabled);
+  document.getElementById("btnToggleEyeKeyboard").style.display = gazeControl.enabled ? "flex" : "none";
+
+  if (gazeControl.enabled) {
+    document.getElementById("eyeKeyboardPanel").classList.remove("open");
+    document.getElementById("gazeCursor").style.display = "none";
+    document.getElementById("gazeStatusPill").textContent = "EYE CONTROL · WAITING FOR CAMERA";
+    gazeControl.textTarget = document.getElementById("messageInput");
+    gazeControl.lastPacketAt = 0;
+  } else {
+    document.getElementById("eyeKeyboardPanel").classList.remove("open");
+    document.getElementById("gazeCursor").style.display = "none";
+    resetGazeTarget();
+    gazeControl.cursorReady = false;
+    gazeControl.lastPacketAt = 0;
+  }
+}
+
+function resetGazeTarget() {
+  if (gazeControl.target) gazeControl.target.classList.remove("gaze-hover-target");
+  gazeControl.target = null;
+  gazeControl.targetSince = 0;
+  gazeControl.activatedTarget = null;
+  document.getElementById("gazeCursor").style.setProperty("--gaze-progress", "0deg");
+}
+
+function findGazeTarget(x, y) {
+  const element = document.elementFromPoint(x, y);
+  if (!element) return null;
+  const target = element.closest("button, input, textarea, select, [data-gaze-action]");
+  if (!target || target.disabled || target.getAttribute("aria-hidden") === "true") return null;
+  return target;
+}
+
+function activateGazeTarget(target) {
+  if (!target || !document.documentElement.contains(target)) return;
+
+  if (target.tagName === "SELECT") {
+    if (!target.options.length) return;
+    target.selectedIndex = (target.selectedIndex + 1) % target.options.length;
+    target.dispatchEvent(new Event("change", { bubbles: true }));
+    return;
+  }
+
+  if (target.matches("input[type='text'], textarea")) {
+    gazeControl.textTarget = target;
+    target.focus();
+    document.getElementById("eyeKeyboardPanel").classList.add("open");
+    return;
+  }
+
+  target.click();
+}
+
+function updateGazeCursor(data) {
+  const cursor = document.getElementById("gazeCursor");
+  const status = document.getElementById("gazeStatusPill");
+  gazeControl.lastPacketAt = performance.now();
+
+  if (!data.face_present) {
+    cursor.style.display = "none";
+    status.textContent = "EYE CONTROL · FACE NOT FOUND";
+    gazeControl.cursorReady = false;
+    gazeControl.blinkLatched = false;
+    resetGazeTarget();
+    return;
+  }
+
+  const rawX = Math.max(0, Math.min(1, Number(data.x)));
+  const rawY = Math.max(0, Math.min(1, Number(data.y)));
+  if (!Number.isFinite(rawX) || !Number.isFinite(rawY)) return;
+
+  if (!gazeControl.cursorReady) {
+    gazeControl.x = rawX;
+    gazeControl.y = rawY;
+    gazeControl.cursorReady = true;
+  } else {
+    const follow = 0.42;
+    gazeControl.x += (rawX - gazeControl.x) * follow;
+    gazeControl.y += (rawY - gazeControl.y) * follow;
+  }
+
+  const margin = 18;
+  const screenX = margin + gazeControl.x * Math.max(1, window.innerWidth - margin * 2);
+  const screenY = margin + gazeControl.y * Math.max(1, window.innerHeight - margin * 2);
+  cursor.style.display = "block";
+  cursor.style.left = `${screenX}px`;
+  cursor.style.top = `${screenY}px`;
+  cursor.classList.toggle("selecting", !!data.selecting);
+  status.textContent = data.selecting ? "EYE CONTROL · BLINK SELECT" : "EYE CONTROL · TRACKING";
+
+  const target = findGazeTarget(screenX, screenY);
+  const now = performance.now();
+  if (target !== gazeControl.target) {
+    if (gazeControl.target) gazeControl.target.classList.remove("gaze-hover-target");
+    gazeControl.target = target;
+    gazeControl.targetSince = now;
+    gazeControl.activatedTarget = null;
+    if (target) target.classList.add("gaze-hover-target");
+  }
+
+  const heldFor = target ? now - gazeControl.targetSince : 0;
+  const progress = Math.min(1, heldFor / gazeControl.dwellMs);
+  cursor.style.setProperty("--gaze-progress", `${progress * 360}deg`);
+
+  const blinkStarted = !!data.selecting && !gazeControl.blinkLatched;
+  gazeControl.blinkLatched = !!data.selecting;
+  const blinkSelect = blinkStarted && heldFor >= 250;
+  const dwellSelect = target && progress >= 1;
+  if (target && gazeControl.activatedTarget !== target && (blinkSelect || dwellSelect)) {
+    gazeControl.activatedTarget = target;
+    cursor.style.setProperty("--gaze-progress", "360deg");
+    activateGazeTarget(target);
+    retroAudio.playClick();
+  }
+}
+
+function buildEyeKeyboard() {
+  const grid = document.getElementById("eyeKeyboardGrid");
+  const keys = [
+    ..."QWERTYUIOP", ..."ASDFGHJKL", ..."ZXCVBNM",
+    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    ".", ",", "?", "!", "SPACE", "BACK", "CLEAR", "SEND"
+  ];
+  grid.innerHTML = "";
+  keys.forEach(key => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `eye-key ${key.length > 1 ? "action" : ""} ${key === "SPACE" ? "wide" : ""}`;
+    button.textContent = key === "BACK" ? "⌫ BACK" : key;
+    button.dataset.gazeKey = key;
+    button.addEventListener("click", () => applyEyeKey(key));
+    grid.appendChild(button);
+  });
+}
+
+function applyEyeKey(key) {
+  const target = gazeControl.textTarget && document.documentElement.contains(gazeControl.textTarget)
+    ? gazeControl.textTarget
+    : document.getElementById("messageInput");
+  if (!target) return;
+
+  if (key === "SEND") {
+    if (target.id === "messageInput") sendChatMessage();
+    else if (target.id === "voiceCmdInput") runVoiceInput();
+    return;
+  }
+  if (key === "BACK") target.value = target.value.slice(0, -1);
+  else if (key === "CLEAR") target.value = "";
+  else if (key === "SPACE") target.value += " ";
+  else target.value += key;
+  target.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+setInterval(() => {
+  if (!gazeControl.enabled || !gazeControl.lastPacketAt) return;
+  if (performance.now() - gazeControl.lastPacketAt > 1500) {
+    document.getElementById("gazeCursor").style.display = "none";
+    document.getElementById("gazeStatusPill").textContent = "EYE CONTROL · CAMERA STREAM LOST";
+    gazeControl.cursorReady = false;
+    resetGazeTarget();
+  }
+}, 500);
+
 /* ────────────────────────────────────────────────────────────────────
    6. IDENTITY SELECTOR & CONTACT LIST RENDERING
    ──────────────────────────────────────────────────────────────────── */
@@ -1790,6 +2133,7 @@ function setMyIdentity(uid) {
   document.getElementById("myNameTitle").textContent = `${u.name.toUpperCase()} (YOU)`;
   document.getElementById("myDeviceSubtitle").textContent = `${u.device} · ${u.device_type.toUpperCase()}`;
   document.getElementById("myAvatarBox").innerHTML = getHeroSpriteSVG(u.device_type, 38);
+  setGazeControlEnabled(u.device_type === "gaze");
 
   // Filter contacts to ONLY EXCLUDE YOURSELF
   const otherUsers = Object.keys(users).filter(id => id !== myUserId);
@@ -1937,6 +2281,7 @@ function updateStageBanner(u) {
   const label3D = document.getElementById("label3DHardware");
   if (u.device_type === "braille") label3D.textContent = "3D BRAILLE CELL";
   else if (u.device_type === "voice") label3D.textContent = "3D AUDIO DROID";
+  else if (u.device_type === "gaze") label3D.textContent = "GAZE KEYBOARD";
   else label3D.textContent = "3D SMART GLOVE";
 }
 
@@ -2195,9 +2540,18 @@ document.getElementById("btnOpenSignDisplay").addEventListener("click", () => {
   if (signWindow) signWindow.focus();
 });
 
+document.getElementById("btnToggleEyeKeyboard").addEventListener("click", () => {
+  document.getElementById("eyeKeyboardPanel").classList.toggle("open");
+});
+
+document.getElementById("btnHideEyeKeyboard").addEventListener("click", () => {
+  document.getElementById("eyeKeyboardPanel").classList.remove("open");
+});
+
 window.addEventListener("DOMContentLoaded", () => {
   initPixelSunsetBackground();
   init3DVoxelStage();
+  buildEyeKeyboard();
 });
 </script>
 </body>
