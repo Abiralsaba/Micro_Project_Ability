@@ -5,12 +5,12 @@ from __future__ import annotations
 
 import argparse
 from collections import deque
-from dataclasses import dataclass, replace
+from dataclasses import replace
 from pathlib import Path
 from statistics import median
 import sys
 import time
-from typing import Deque, Dict, Optional, Tuple
+from typing import Deque, Optional
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -27,7 +27,6 @@ from camera_app import (  # noqa: E402
     draw_interface,
     draw_text,
     ensure_model,
-    iris_gaze_score,
     load_calibration,
     save_calibration,
 )
@@ -62,134 +61,6 @@ class MedianGazeSmoother:
             return sample
         self._scores.append(sample.gaze_score)
         return replace(sample, gaze_score=median(self._scores))
-
-
-def iris_vertical_position(landmarks) -> float:
-    """Return iris height inside the eyelids: 0 is up and 1 is down."""
-    positions = []
-    # MediaPipe right iris/upper/lower, then left iris/upper/lower.
-    for iris_index, upper_index, lower_index in (
-        (468, 159, 145),
-        (473, 386, 374),
-    ):
-        top_y, bottom_y = sorted(
-            (landmarks[upper_index].y, landmarks[lower_index].y)
-        )
-        eye_height = bottom_y - top_y
-        if eye_height <= 1e-6:
-            raise ValueError("Eye landmarks are too close")
-        positions.append((landmarks[iris_index].y - top_y) / eye_height)
-    return sum(positions) / len(positions)
-
-
-class CursorFaceTracker(FaceTracker):
-    """Face tracker that preserves the vertical iris value for cursor motion."""
-
-    def __init__(self, model_path: Path):
-        super().__init__(model_path)
-        self.vertical_position: Optional[float] = None
-
-    def detect(self, bgr_frame, timestamp: float) -> VisionSample:
-        import cv2
-
-        timestamp_ms = max(int(timestamp * 1000), self._last_timestamp_ms + 1)
-        self._last_timestamp_ms = timestamp_ms
-        rgb = cv2.cvtColor(bgr_frame, cv2.COLOR_BGR2RGB)
-        image = self._mp.Image(image_format=self._mp.ImageFormat.SRGB, data=rgb)
-        result = self._landmarker.detect_for_video(image, timestamp_ms)
-        self.vertical_position = None
-
-        if not result.face_landmarks or not result.face_blendshapes:
-            return VisionSample(timestamp=timestamp, face_present=False)
-
-        scores: Dict[str, float] = {
-            item.category_name: float(item.score)
-            for item in result.face_blendshapes[0]
-        }
-        if "eyeBlinkLeft" not in scores or "eyeBlinkRight" not in scores:
-            return VisionSample(timestamp=timestamp, face_present=False)
-
-        landmarks = result.face_landmarks[0]
-        if len(landmarks) < 474:
-            return VisionSample(timestamp=timestamp, face_present=False)
-        try:
-            gaze_score = iris_gaze_score(landmarks)
-            self.vertical_position = iris_vertical_position(landmarks)
-        except ValueError:
-            return VisionSample(timestamp=timestamp, face_present=False)
-
-        return VisionSample(
-            timestamp=timestamp,
-            face_present=True,
-            gaze_score=gaze_score,
-            blink_score=min(scores["eyeBlinkLeft"], scores["eyeBlinkRight"]),
-        )
-
-
-@dataclass(frozen=True)
-class CursorPosition:
-    x: float
-    y: float
-    selecting: bool = False
-
-
-class GazeCursorMapper:
-    """Map the existing calibration and live iris height to screen space."""
-
-    VERTICAL_TOP = 0.20
-    VERTICAL_BOTTOM = 0.80
-
-    def __init__(self, calibration, window_size: int = 7) -> None:
-        self.calibration = calibration
-        self._x: Deque[float] = deque(maxlen=window_size)
-        self._y: Deque[float] = deque(maxlen=window_size)
-        self._last: Optional[CursorPosition] = None
-
-    def reset(self) -> None:
-        self._x.clear()
-        self._y.clear()
-        self._last = None
-
-    def update(
-        self,
-        sample: VisionSample,
-        vertical_position: Optional[float],
-    ) -> Optional[CursorPosition]:
-        if not sample.face_present:
-            self.reset()
-            return None
-
-        selecting = sample.blink_score >= self.calibration.blink_threshold
-        # Closing the eyes distorts the iris/eyelid geometry. Keep the last
-        # stable point so a calibrated blink clicks what the user was viewing.
-        if selecting and self._last is not None:
-            return replace(self._last, selecting=True)
-
-        corrected = sample.gaze_score * self.calibration.gaze_direction
-        neutral = (
-            self.calibration.left_threshold
-            + self.calibration.right_threshold
-        ) / 2.0
-        left_extent = 2.0 * self.calibration.left_threshold - neutral
-        right_extent = 2.0 * self.calibration.right_threshold - neutral
-        horizontal_span = max(right_extent - left_extent, 1e-6)
-        x = (corrected - left_extent) / horizontal_span
-
-        if vertical_position is None:
-            y = self._last.y if self._last is not None else 0.5
-        else:
-            y = (
-                vertical_position - self.VERTICAL_TOP
-            ) / (self.VERTICAL_BOTTOM - self.VERTICAL_TOP)
-
-        self._x.append(max(0.0, min(1.0, x)))
-        self._y.append(max(0.0, min(1.0, y)))
-        self._last = CursorPosition(
-            x=median(self._x),
-            y=median(self._y),
-            selecting=selecting,
-        )
-        return self._last
 
 
 class ParkinsonKeyboardController(CameraController):
@@ -296,8 +167,7 @@ def run(args) -> int:
     if cloud:
         cloud.start()
 
-    tracker = CursorFaceTracker(args.model)
-    cursor_mapper = GazeCursorMapper(calibration, args.smoothing_window) if calibration else None
+    tracker = FaceTracker(args.model)
     camera = cv2.VideoCapture(args.camera)
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
@@ -310,7 +180,6 @@ def run(args) -> int:
         return 2
 
     last_presence = 0.0
-    last_cursor_publish = 0.0
     window = "Ability Parkinson Eye-Gaze Keyboard"
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
 
@@ -325,21 +194,6 @@ def run(args) -> int:
             raw_sample = tracker.detect(frame, now)
             sample = smoother.update(raw_sample)
 
-            if cloud and now - last_cursor_publish >= 0.05:
-                cursor = (
-                    cursor_mapper.update(sample, tracker.vertical_position)
-                    if cursor_mapper is not None
-                    else None
-                )
-                cloud.publish_cursor(
-                    cursor.x if cursor else 0.5,
-                    cursor.y if cursor else 0.5,
-                    cursor is not None,
-                    sample.blink_score if sample.face_present else 0.0,
-                    cursor.selecting if cursor else False,
-                )
-                last_cursor_publish = now
-
             if calibrator is not None:
                 completed, message = calibrator.update(raw_sample, now)
                 if completed is not None:
@@ -352,7 +206,6 @@ def run(args) -> int:
                     )
                     calibrator = None
                     smoother = MedianGazeSmoother(args.smoothing_window)
-                    cursor_mapper = GazeCursorMapper(completed, args.smoothing_window)
             elif controller is not None:
                 output = controller.update(sample)
                 if output.reason:
@@ -385,7 +238,6 @@ def run(args) -> int:
                 break
             if key == ord("c"):
                 controller = None
-                cursor_mapper = None
                 calibrator = GuidedCalibration(now)
                 smoother = MedianGazeSmoother(args.smoothing_window)
                 message = calibrator.instruction

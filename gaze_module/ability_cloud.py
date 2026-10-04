@@ -39,7 +39,6 @@ class AbilityGazeCloud:
         self.input_topic = TOPIC_INPUT.format(device=device_id)
         self.output_topic = TOPIC_OUTPUT.format(device=device_id)
         self.status_topic = TOPIC_STATUS.format(device=device_id)
-        self.cursor_topic = f"ability/v1/{device_id}/cursor"
         self.connected = threading.Event()
         self._lock = threading.Lock()
         self._incoming: Optional[IncomingMessage] = None
@@ -137,35 +136,6 @@ class AbilityGazeCloud:
             "timestamp": int(time.time()),
         })
         result = self.client.publish(self.input_topic, payload, qos=1)
-        return result.rc == mqtt.MQTT_ERR_SUCCESS
-
-    def publish_cursor(
-        self,
-        x: float,
-        y: float,
-        face_present: bool,
-        blink_score: float = 0.0,
-        selecting: bool = False,
-    ) -> bool:
-        """Stream normalized app-cursor telemetry without queueing stale frames."""
-        if not self.connected.is_set():
-            return False
-        payload = json.dumps({
-            "module": self.device_id,
-            "profile": "parkinsons",
-            "x": max(0.0, min(1.0, float(x))),
-            "y": max(0.0, min(1.0, float(y))),
-            "face_present": bool(face_present),
-            "blink": max(0.0, min(1.0, float(blink_score))),
-            "selecting": bool(selecting),
-            "timestamp_ms": int(time.time() * 1000),
-        })
-        result = self.client.publish(
-            self.cursor_topic,
-            payload,
-            qos=0,
-            retain=False,
-        )
         return result.rc == mqtt.MQTT_ERR_SUCCESS
 
     def latest_incoming(self) -> Optional[IncomingMessage]:
