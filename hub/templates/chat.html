@@ -357,6 +357,7 @@ body {
 
 /* Individual Hero Contact Card */
 .hero-contact-card {
+  width: 100%;
   background: var(--c-cream-light);
   border: 3px solid #1e1136;
   box-shadow: 3px 3px 0 #1e1136;
@@ -367,6 +368,11 @@ body {
   cursor: pointer;
   transition: all 0.1s ease;
   position: relative;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .hero-contact-card:hover {
@@ -1669,6 +1675,7 @@ let activeContactId = null;
 let users = {};
 let conversations = {};
 let unreadCounts = {};
+let contactSelectionVersion = 0;
 
 const socket = io();
 
@@ -1730,6 +1737,7 @@ socket.on("conversation_history", (data) => {
 
 socket.on("recipient_set", (data) => {
   if (data.user_id === myUserId && data.target_id !== activeContactId) {
+    contactSelectionVersion++;
     activeContactId = data.target_id;
     openConversation(data.target_id);
     renderContacts();
@@ -1793,9 +1801,7 @@ function setMyIdentity(uid) {
       selectContact(otherUsers[0]);
     } else {
       activeContactId = null;
-      document.getElementById("stageBanner").style.display = "none";
-      document.getElementById("bottomPanel").style.display = "none";
-      document.getElementById("emptyStage").style.display = "block";
+      renderEmptyConversationState();
     }
   } else {
     // Refresh conversation with current contact
@@ -1823,7 +1829,11 @@ function renderContacts() {
     const isActive = (uid === activeContactId);
     const unread = unreadCounts[uid] || 0;
 
-    const card = document.createElement("div");
+    const card = document.createElement("button");
+    card.type = "button";
+    card.dataset.contactId = uid;
+    card.setAttribute("aria-label", `Open conversation with ${u.name}`);
+    card.setAttribute("aria-pressed", isActive ? "true" : "false");
     card.className = `hero-contact-card ${isActive ? 'active' : ''}`;
 
     const isOnline = !!u.online;
@@ -1856,12 +1866,22 @@ function renderContacts() {
 
 function selectContact(uid) {
   if (!myUserId || uid === myUserId) return;
+  const selectedByUser = myUserId;
+  const selectionVersion = ++contactSelectionVersion;
   activeContactId = uid;
   unreadCounts[uid] = 0;
-  
-  socket.emit("set_recipient", { user_id: myUserId, target_id: uid });
+
+  // Update every contact-dependent label before rebuilding the clicked card.
+  // This keeps the header/log/input atomic even if an optional effect fails.
   openConversation(uid);
   renderContacts();
+  socket.emit("set_recipient", { user_id: selectedByUser, target_id: uid }, (response) => {
+    // Ignore acknowledgements from older clicks or a previous identity.
+    if (!response || !response.ok || selectionVersion !== contactSelectionVersion ||
+        selectedByUser !== myUserId || uid !== activeContactId) return;
+    conversations[convKey(selectedByUser, uid)] = response.messages || [];
+    renderMessages(uid);
+  });
   retroAudio.playClick();
 }
 
@@ -1869,19 +1889,23 @@ function openConversation(contactId) {
   const u = users[contactId];
   if (!u) return;
 
-  document.getElementById("emptyStage").style.display = "none";
   document.getElementById("stageBanner").style.display = "flex";
   document.getElementById("bottomPanel").style.display = "flex";
 
+  // Core conversation state: these must always update together.
   updateStageBanner(u);
-  setVoxelModel(u.device_type);
-  populateSimulationButtons();
-
-  renderMessages();
-  
+  renderMessages(contactId);
   const input = document.getElementById("messageInput");
   input.placeholder = `MESSAGE ${u.name.toUpperCase()} (${u.device})… [ENTER TO SEND]`;
   input.focus();
+
+  // Optional visual/demo systems must not be able to break contact selection.
+  try { setVoxelModel(u.device_type); } catch (error) {
+    console.error("Unable to update 3D hardware model", error);
+  }
+  try { populateSimulationButtons(); } catch (error) {
+    console.error("Unable to update simulation buttons", error);
+  }
 }
 
 function updateStageBanner(u) {
@@ -1995,28 +2019,39 @@ function toggleContactPower(deviceId) {
 /* ────────────────────────────────────────────────────────────────────
    8. MESSAGES RENDERING & TRANSMITTING
    ──────────────────────────────────────────────────────────────────── */
-function renderMessages() {
+function renderEmptyConversationState() {
+  document.getElementById("stageBanner").style.display = "none";
+  document.getElementById("bottomPanel").style.display = "none";
+  document.getElementById("chatArea").innerHTML = `
+    <div class="pixel-empty-stage" id="emptyStage">
+      <h3>[ SELECT A CONTACT TO START ]</h3>
+      <p>Choose an accessibility module from the left list to start communicating!</p>
+    </div>
+  `;
+}
+
+function renderMessages(contactId = activeContactId) {
   const area = document.getElementById("chatArea");
   area.innerHTML = "";
 
-  if (!myUserId || !activeContactId) {
-    document.getElementById("emptyStage").style.display = "block";
+  if (!myUserId || !contactId || contactId !== activeContactId) {
+    renderEmptyConversationState();
     return;
   }
 
-  const key = convKey(myUserId, activeContactId);
+  const key = convKey(myUserId, contactId);
   const msgs = conversations[key] || [];
 
   const dateMarker = document.createElement("div");
   dateMarker.className = "pixel-date-marker";
-  dateMarker.textContent = `★ LOG: ${users[myUserId]?.name.toUpperCase()} <-> ${users[activeContactId]?.name.toUpperCase()} ★`;
+  dateMarker.textContent = `★ LOG: ${users[myUserId]?.name.toUpperCase()} <-> ${users[contactId]?.name.toUpperCase()} ★`;
   area.appendChild(dateMarker);
 
   if (msgs.length === 0) {
     const hint = document.createElement("div");
     hint.className = "pixel-date-marker";
     hint.style.background = "var(--c-orange-warm)";
-    hint.textContent = `NO LOGS YET. SEND A MESSAGE TO ${users[activeContactId]?.name.toUpperCase()}!`;
+    hint.textContent = `NO LOGS YET. SEND A MESSAGE TO ${users[contactId]?.name.toUpperCase()}!`;
     area.appendChild(hint);
   }
 
@@ -2153,7 +2188,11 @@ document.getElementById("btnSoundToggle").addEventListener("click", () => {
 });
 
 document.getElementById("btnOpenSignDisplay").addEventListener("click", () => {
-  window.open("/sign/", "abilitySignDisplay");
+  // Reusing the named second-screen window is convenient, but opening the
+  // exact same URL can leave an older compiled avatar bundle running there.
+  // The query value refreshes the page while the hashed assets remain cached.
+  const signWindow = window.open(`/sign/?display=${Date.now()}`, "abilitySignDisplay");
+  if (signWindow) signWindow.focus();
 });
 
 window.addEventListener("DOMContentLoaded", () => {
