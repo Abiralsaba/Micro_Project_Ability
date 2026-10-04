@@ -22,7 +22,7 @@ import uuid
 
 from pathlib import Path
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, jsonify, render_template, request, send_from_directory
 from flask_socketio import SocketIO, emit
 import paho.mqtt.client as mqtt
 
@@ -37,6 +37,7 @@ from chat_config import (
     TOPIC_CHAT_MESSAGE,
     WEB_HOST, WEB_PORT,
 )
+from ai_services import AIServiceError, GeminiClient, WhisperCppTranscriber
 
 # ═══════════════════════════════════════════════════════════
 # LOGGING
@@ -56,7 +57,11 @@ log = logging.getLogger("ability-chat")
 app = Flask(__name__, template_folder="templates")
 app.config["SECRET_KEY"] = "ability-chat-secret"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+
+whisper_transcriber = WhisperCppTranscriber()
+gemini_client = GeminiClient()
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SIGN_BUILD_DIR = PROJECT_ROOT / "Sign-Language-Toolkit-main" / "client" / "build"
@@ -471,9 +476,66 @@ def process_voice_command(command_text, from_user_id=None):
         speak(response)
 
     else:
-        response = f"Unknown command: {command_text}"
+        response, action = process_voice_with_gemini(command_text, from_user_id)
 
     return response, action
+
+
+def process_voice_with_gemini(command_text, from_user_id=None):
+    """Interpret Bengali/English commands and general questions with Gemini."""
+    contacts = [u["name"] for uid, u in USERS.items() if uid != from_user_id]
+    instruction = """
+You are the bilingual Bengali/English voice controller for an accessibility chat.
+Understand Bangla, English, and code-switched speech. Return JSON only with:
+{{"intent":"select_contact|reply|contacts|current|status|answer",
+ "contact":"contact name or empty", "response":"brief answer or empty"}}.
+Use select_contact when the user asks to message, call, open, or talk to a contact.
+Use answer for ordinary conversation and answer in the user's language.
+Never invent a contact. Available contacts: {}.
+""".format(", ".join(contacts))
+    try:
+        raw = gemini_client.generate(
+            command_text,
+            system_instruction=instruction,
+            json_output=True,
+        )
+        cleaned = raw.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0]
+        result = json.loads(cleaned)
+    except (AIServiceError, json.JSONDecodeError, TypeError, ValueError) as error:
+        return str(error), None
+
+    intent = result.get("intent")
+    if intent == "select_contact":
+        contact = str(result.get("contact", "")).strip()
+        target_uid = get_user_by_name(contact)
+        if not target_uid or target_uid == from_user_id:
+            return f"Contact {contact or 'requested'} not found.", None
+        if from_user_id:
+            active_recipient[from_user_id] = target_uid
+        target_name = USERS[target_uid]["name"]
+        response = f"{target_name} selected."
+        speak(response)
+        return response, {
+            "type": "set_recipient",
+            "user_id": from_user_id,
+            "target": target_uid,
+        }
+    if intent == "reply":
+        return process_voice_command("reply", from_user_id)
+    if intent == "contacts":
+        return process_voice_command("contacts", from_user_id)
+    if intent == "current":
+        return process_voice_command("current", from_user_id)
+    if intent == "status":
+        return process_voice_command("status", from_user_id)
+
+    response = str(result.get("response", "")).strip()
+    if not response:
+        response = "I could not understand that request."
+    speak(response)
+    return response, None
 
 
 # ═══════════════════════════════════════════════════════════
@@ -494,6 +556,55 @@ def sign_display():
 @app.route("/sign/<path:asset_path>")
 def sign_assets(asset_path):
     return send_from_directory(SIGN_BUILD_DIR, asset_path)
+
+
+@app.route("/api/ai/status")
+def ai_status():
+    return jsonify({
+        "whisper": whisper_transcriber.status(),
+        "gemini": gemini_client.status(),
+    })
+
+
+@app.route("/api/transcribe", methods=["POST"])
+def transcribe_audio():
+    upload = request.files.get("audio")
+    if upload is None:
+        return jsonify({"ok": False, "error": "No audio recording was uploaded."}), 400
+    language = request.form.get("language", "auto")
+    suffix = Path(upload.filename or "recording.webm").suffix
+    try:
+        text = whisper_transcriber.transcribe(upload.read(), suffix, language)
+    except AIServiceError as error:
+        return jsonify({"ok": False, "error": str(error)}), 503
+    return jsonify({
+        "ok": True,
+        "text": text,
+        "engine": "whisper.cpp",
+        "model": whisper_transcriber.model_for(language).name,
+    })
+
+
+@app.route("/api/gemini/chat", methods=["POST"])
+def gemini_chat():
+    data = request.get_json(silent=True) or {}
+    message = data.get("message", "")
+    history = data.get("history", [])
+    if not isinstance(message, str) or not isinstance(history, list):
+        return jsonify({"ok": False, "error": "Invalid Gemini chat request."}), 400
+    try:
+        response = gemini_client.generate(
+            message,
+            history,
+            system_instruction=(
+                "You are Ability Assistant, a helpful bilingual Bengali and English "
+                "assistant inside an accessibility communication app. Be clear, kind, "
+                "concise, and reply in the language used by the user."
+            ),
+        )
+    except AIServiceError as error:
+        return jsonify({"ok": False, "error": str(error)}), 503
+    return jsonify({"ok": True, "response": response, "model": gemini_client.model})
 
 
 # ═══════════════════════════════════════════════════════════
