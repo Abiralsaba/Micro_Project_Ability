@@ -97,6 +97,7 @@ const char *AP_PASS = "braille123";
 const char *MQTT_SERVER = "z91cfe11.ala.asia-southeast1.emqxsl.com";
 const uint16_t MQTT_PORT = 8883;
 const char *MODULE_ID = "braille_01";
+const char *TOPIC_CLOUD_INPUT = "ability/v1/braille_01/input";
 const char *TOPIC_CLOUD_DISPLAY = "ability/v1/braille_01/output";
 const char *TOPIC_CLOUD_STATUS = "ability/v1/braille_01/status";
 
@@ -682,6 +683,26 @@ void publishCloudStatus(const char *eventName, const char *messageId) {
                reinterpret_cast<const uint8_t *>(buffer), length, false);
 }
 
+void publishCloudInput(const String &text) {
+  if (!mqtt.connected() || text.length() == 0)
+    return;
+
+  JsonDocument doc;
+  doc["version"] = 1;
+  doc["message_id"] = String(MODULE_ID) + "-" + String(millis());
+  doc["source"] = MODULE_ID;
+  doc["type"] = "text";
+  doc["text"] = text;
+  doc["timestamp"] = static_cast<unsigned long>(time(nullptr));
+
+  char buffer[512];
+  size_t length = serializeJson(doc, buffer, sizeof(buffer));
+  mqtt.publish(TOPIC_CLOUD_INPUT,
+               reinterpret_cast<const uint8_t *>(buffer), length, false);
+  Serial.print("[Cloud] Published keyboard text: ");
+  Serial.println(text);
+}
+
 void cloudMqttCallback(char *topic, byte *payload, unsigned int length) {
   if (strcmp(topic, TOPIC_CLOUD_DISPLAY) != 0)
     return;
@@ -969,7 +990,7 @@ void insertSpace() {
   Serial.println("\"");
 }
 
-// Button 7 — 3 Clicks: Send Full Data to Servos
+// Button 7 — 3 Clicks: send the full buffer to Ability Chat and preview it.
 void sendFullBufferToServos() {
   // If dots are pending, commit them first
   if (pendingPattern != 0) {
@@ -981,9 +1002,10 @@ void sendFullBufferToServos() {
   }
 
   if (kbInputBuffer.length() > 0) {
-    Serial.print("[KB] Button 7 (3 Clicks) → SEND FULL DATA to servos: \"");
+    Serial.print("[KB] Button 7 (3 Clicks) → SEND FULL DATA: \"");
     Serial.print(kbInputBuffer);
     Serial.println("\"");
+    publishCloudInput(kbInputBuffer);
     currentStatus = "KB → Display: " + kbInputBuffer;
     displayWord(kbInputBuffer);
     kbInputBuffer = "";
@@ -1432,6 +1454,7 @@ void processInput(String text) {
   } else if (text.equalsIgnoreCase("send_kb")) {
     // Display whatever was typed via keyboard buttons
     if (kbInputBuffer.length() > 0) {
+      publishCloudInput(kbInputBuffer);
       currentStatus = "KB → Display: " + kbInputBuffer;
       Serial.print("[KB → Display] ");
       Serial.println(kbInputBuffer);
