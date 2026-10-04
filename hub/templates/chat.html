@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABILITY // 8-BIT RETRO ASSISTIVE MESH</title>
+
+<!-- Retro 8-bit & Arcade Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+<!-- Three.js for 3D Voxel Hardware Visualization -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<style>
+/* ════════════════════════════════════════════════════════════════════
+   PIXEL-ART RETRO 16-BIT DESIGN SYSTEM (CREAM, ORANGE & SUNSET)
+   ════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+:root {
+  /* Rich Cream & Orange Palette */
+  --c-cream-bg: #fffbf0;
+  --c-cream-card: #fff6e5;
+  --c-cream-light: #fffdf7;
+  --c-cream-dark: #fde8c3;
+  
+  --c-orange-hot: #ff5722;
+  --c-orange-main: #ff6b35;
+  --c-orange-sunset: #f77f00;
+  --c-orange-warm: #ff8c42;
+  --c-orange-glow: rgba(255, 107, 53, 0.35);
+
+  /* Sunset Violet & Deep Arcade Tones */
+  --c-purple-deep: #1e1136;
+  --c-purple-dark: #2b184c;
+  --c-purple-mid: #4d2477;
+  --c-magenta-hot: #d91b7e;
+  --c-magenta-light: #f72585;
+
+  /* Accent Mint & Neon Gold */
+  --c-neon-gold: #ffd166;
+  --c-neon-green: #06d6a0;
+  --c-neon-cyan: #00f5d4;
+
+  /* Chunky Pixel Borders & 3D Extrusions */
+  --pixel-border: 4px solid #1e1136;
+  --pixel-border-sm: 3px solid #1e1136;
+  --pixel-shadow: 5px 5px 0px #1e1136;
+  --pixel-shadow-sm: 3px 3px 0px #1e1136;
+  --pixel-shadow-lg: 8px 8px 0px #1e1136;
+
+  /* Typography */
+  --font-pixel-head: 'Press Start 2P', monospace;
+  --font-pixel-body: 'Pixelify Sans', cursive, sans-serif;
+  --font-terminal: 'VT323', monospace;
+}
+
+body {
+  font-family: var(--font-pixel-body);
+  background-color: var(--c-purple-deep);
+  color: var(--c-purple-deep);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PIXEL SUNSET ANIMATED CANVAS BACKGROUND
+   ════════════════════════════════════════════════════════════════════ */
+#pixel-bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.14) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.02),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.02)
+  );
+  background-size: 100% 4px, 6px 100%;
+  opacity: 0.7;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   APPLICATION CONTAINER (FULL SCREEN RETRO ARCADIA)
+   ════════════════════════════════════════════════════════════════════ */
+.arcade-app {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  padding: 10px 14px 14px;
+  gap: 10px;
+}
+
+/* ── Top Arcade Marquee Header ────────────────────────── */
+.arcade-header {
+  background: var(--c-cream-card);
+  border: var(--pixel-border);
+  box-shadow: var(--pixel-shadow);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.brand-marquee {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-badge {
+  background: var(--c-orange-main);
+  color: #fff;
+  border: 3px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  font-family: var(--font-pixel-head);
+  font-size: 11px;
+  padding: 5px 8px;
+  letter-spacing: -0.5px;
+}
+
+.brand-marquee h1 {
+  font-family: var(--font-pixel-head);
+  font-size: 15px;
+  color: var(--c-purple-deep);
+  letter-spacing: 0.5px;
+  text-shadow: 2px 2px 0 var(--c-orange-warm);
+}
+
+.brand-marquee p {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-purple-mid);
+  margin-top: 1px;
+}
+
+.header-retro-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mqtt-arcade-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--c-cream-light);
+  border: 3px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  padding: 5px 10px;
+  font-family: var(--font-terminal);
+  font-size: 15px;
+  font-weight: bold;
+  color: #1e1136;
+}
+
+.pixel-blinker {
+  width: 8px;
+  height: 8px;
+  background: var(--c-neon-green);
+  border: 1.5px solid #1e1136;
+}
+
+.mqtt-arcade-pill.offline .pixel-blinker {
+  background: var(--c-magenta-hot);
+  animation: pixelBlink 1s steps(2, start) infinite;
+}
+
+@keyframes pixelBlink {
+  to { visibility: hidden; }
+}
+
+.retro-btn {
+  background: var(--c-orange-warm);
+  color: #fff;
+  border: 3px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  font-family: var(--font-pixel-head);
+  font-size: 9.5px;
+  padding: 7px 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.retro-btn:hover {
+  background: var(--c-orange-hot);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #1e1136;
+}
+
+.retro-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0 #1e1136;
+}
+
+.retro-btn.alt-purple {
+  background: var(--c-purple-mid);
+}
+.retro-btn.alt-purple:hover {
+  background: var(--c-magenta-hot);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   MAIN WORKSPACE (SPLIT: PIXEL SIDEBAR + CHAT/3D STAGE)
+   ════════════════════════════════════════════════════════════════════ */
+.arcade-workspace {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  min-height: 0;
+}
+
+/* ── Left Sidebar (Cream & Warm Orange) ─────────────────────── */
+.pixel-sidebar {
+  width: 360px;
+  min-width: 320px;
+  background: var(--c-cream-card);
+  border: var(--pixel-border);
+  box-shadow: var(--pixel-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* Section 1: MY PROFILE (LOGGED IN AS) */
+.my-profile-panel {
+  background: linear-gradient(135deg, var(--c-orange-warm), var(--c-orange-main));
+  border-bottom: var(--pixel-border);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #fff;
+}
+
+.my-profile-header {
+  font-family: var(--font-pixel-head);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: var(--c-neon-gold);
+  text-shadow: 1px 1px 0 #1e1136;
+}
+
+.my-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-avatar-frame {
+  width: 48px;
+  height: 48px;
+  background: var(--c-cream-bg);
+  border: 3px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.my-profile-text h3 {
+  font-family: var(--font-pixel-head);
+  font-size: 11px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #1e1136;
+}
+
+.my-profile-text p {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-cream-light);
+  margin-top: 2px;
+}
+
+.hero-select-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-select-label {
+  font-family: var(--font-pixel-head);
+  font-size: 8px;
+  color: #fff;
+}
+
+.hero-select-dropdown {
+  flex: 1;
+  background: var(--c-cream-light);
+  border: 3px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  color: #1e1136;
+  font-family: var(--font-pixel-body);
+  font-size: 13px;
+  font-weight: bold;
+  padding: 6px 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Section 2: CONTACTS TO CHAT WITH (EXCLUDES SELF!) */
+.sidebar-list-title {
+  padding: 10px 14px 6px;
+  font-family: var(--font-pixel-head);
+  font-size: 9.5px;
+  color: var(--c-purple-deep);
+  letter-spacing: 0.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px dashed rgba(30, 17, 54, 0.15);
+}
+
+.hero-contacts-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Individual Hero Contact Card */
+.hero-contact-card {
+  background: var(--c-cream-light);
+  border: 3px solid #1e1136;
+  box-shadow: 3px 3px 0 #1e1136;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  position: relative;
+}
+
+.hero-contact-card:hover {
+  background: #ffffff;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #1e1136;
+}
+
+/* HIGH-IMPACT ACTIVE CONTACT STATE (UNMISTAKABLE SPECIFIC INDICATION) */
+.hero-contact-card.active {
+  background: var(--c-orange-main);
+  border-color: #1e1136;
+  color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 #1e1136;
+}
+
+.hero-contact-card.active::before {
+  content: '▶ ACTIVE';
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  background: var(--c-neon-gold);
+  color: #1e1136;
+  border: 2px solid #1e1136;
+  font-family: var(--font-pixel-head);
+  font-size: 8px;
+  padding: 1px 6px;
+  box-shadow: 1px 1px 0 #1e1136;
+}
+
+.pixel-sprite-box {
+  width: 44px;
+  height: 44px;
+  background: var(--c-cream-dark);
+  border: 2px solid #1e1136;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.hero-contact-card.active .pixel-sprite-box {
+  background: #ffffff;
+}
+
+.contact-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.contact-name {
+  font-family: var(--font-pixel-head);
+  font-size: 10.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-role-tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  background: var(--c-purple-deep);
+  color: var(--c-neon-gold);
+  padding: 1px 5px;
+  border: 1px solid #1e1136;
+  text-transform: uppercase;
+}
+
+.hero-contact-card.active .contact-role-tag {
+  background: #ffffff;
+  color: var(--c-orange-hot);
+}
+
+.contact-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pixel-dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #1e1136;
+  flex-shrink: 0;
+}
+
+.status-pixel-dot.online {
+  background: var(--c-neon-green);
+  box-shadow: 0 0 6px var(--c-neon-green);
+}
+
+.status-pixel-dot.offline {
+  background: #9ca3af;
+}
+
+.status-text-label {
+  color: var(--c-purple-mid);
+}
+
+.hero-contact-card.active .status-text-label {
+  color: #fff;
+}
+
+.unread-pixel-bubble {
+  min-width: 20px;
+  height: 20px;
+  background: var(--c-magenta-hot);
+  color: #fff;
+  border: 2px solid #1e1136;
+  font-family: var(--font-pixel-head);
+  font-size: 9px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.unread-pixel-bubble.visible {
+  display: flex;
+}
+
+/* Sidebar Section 3: Retro 8-Bit Voice Dock */
+.sidebar-voice-dock {
+  background: var(--c-cream-bg);
+  border-top: var(--pixel-border);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.voice-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+.retro-voice-input {
+  flex: 1;
+  background: #fff;
+  border: 3px solid #1e1136;
+  padding: 6px 8px;
+  font-family: var(--font-pixel-body);
+  font-size: 13px;
+  color: #1e1136;
+  outline: none;
+}
+
+.retro-mic-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--c-orange-main);
+  border: 3px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.retro-mic-btn.active {
+  background: var(--c-magenta-hot);
+}
+
+.voice-feedback-banner {
+  background: var(--c-purple-deep);
+  color: var(--c-neon-gold);
+  border: 2px solid #1e1136;
+  font-family: var(--font-terminal);
+  font-size: 14px;
+  padding: 3px 6px;
+  display: none;
+}
+
+.voice-feedback-banner.show {
+  display: block;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   MAIN STAGE: INTERACTIVE CHAT & 3D VOXEL HUD
+   ════════════════════════════════════════════════════════════════════ */
+.arcade-main-stage {
+  flex: 1;
+  background: var(--c-cream-card);
+  border: var(--pixel-border);
+  box-shadow: var(--pixel-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stage Top Banner: Specifically Indicates Selected Contact */
+.stage-character-banner {
+  background: linear-gradient(90deg, #fff4e0, #ffe9c8);
+  border-bottom: var(--pixel-border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.stage-hero-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.animated-hero-stage {
+  width: 52px;
+  height: 52px;
+  background: var(--c-cream-bg);
+  border: 3px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stage-hero-titles h2 {
+  font-family: var(--font-pixel-head);
+  font-size: 13px;
+  color: var(--c-purple-deep);
+  letter-spacing: -0.2px;
+}
+
+.stage-hero-titles p {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-purple-mid);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-terminal);
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.stage-status-badge.online {
+  color: var(--c-neon-green);
+}
+
+.stage-status-badge.offline {
+  color: var(--c-magenta-hot);
+}
+
+/* Single Contextual 3D Hardware Action Button in Header */
+.stage-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-open-3d-hud {
+  background: var(--c-orange-main);
+  color: #fff;
+  border: 3px solid #1e1136;
+  box-shadow: 3px 3px 0 #1e1136;
+  font-family: var(--font-pixel-head);
+  font-size: 9.5px;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.08s ease;
+}
+
+.btn-open-3d-hud:hover {
+  background: var(--c-orange-hot);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #1e1136;
+}
+
+/* ── 3D Voxel Hardware Drawer (Slide-in) ───────────────────────── */
+.voxel-3d-drawer {
+  position: absolute;
+  top: 72px;
+  right: 0;
+  width: 440px;
+  bottom: 0;
+  background: var(--c-cream-bg);
+  border-left: var(--pixel-border);
+  box-shadow: -8px 0 0 #1e1136;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(105%);
+  transition: transform 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.voxel-3d-drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-top-bar {
+  background: var(--c-purple-deep);
+  color: var(--c-cream-bg);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--pixel-border);
+}
+
+.drawer-top-bar h3 {
+  font-family: var(--font-pixel-head);
+  font-size: 10px;
+  color: var(--c-neon-gold);
+}
+
+.drawer-close-btn {
+  background: var(--c-orange-hot);
+  border: 2px solid #fff;
+  color: #fff;
+  font-family: var(--font-pixel-head);
+  font-size: 12px;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voxel-viewport-wrap {
+  width: 100%;
+  height: 220px;
+  background: #190f2b;
+  position: relative;
+  border-bottom: var(--pixel-border);
+}
+
+#voxel-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.voxel-status-hud {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  background: rgba(30, 17, 54, 0.9);
+  border: 2px solid var(--c-neon-gold);
+  color: var(--c-neon-gold);
+  font-family: var(--font-terminal);
+  font-size: 15px;
+  padding: 2px 8px;
+}
+
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.drawer-section-title {
+  font-family: var(--font-pixel-head);
+  font-size: 9.5px;
+  color: var(--c-purple-deep);
+  margin-bottom: 6px;
+}
+
+.retro-sim-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.sim-macro-btn {
+  background: var(--c-cream-light);
+  border: 3px solid #1e1136;
+  box-shadow: 3px 3px 0 #1e1136;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-pixel-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e1136;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.08s;
+}
+
+.sim-macro-btn:hover {
+  background: var(--c-orange-warm);
+  color: #fff;
+  transform: translate(-1px, -1px);
+}
+
+.sim-macro-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #1e1136;
+}
+
+.sim-macro-btn small {
+  font-family: var(--font-terminal);
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* ── Chat Messages Flow (Stepped Pixel Dialogue Bubbles) ─────── */
+.arcade-chat-flow {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  background: var(--c-cream-bg);
+}
+
+.pixel-date-marker {
+  align-self: center;
+  background: var(--c-purple-deep);
+  color: var(--c-neon-gold);
+  border: 3px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  font-family: var(--font-pixel-head);
+  font-size: 9px;
+  padding: 4px 14px;
+  margin: 4px 0 10px;
+}
+
+.pixel-dialogue-wrap {
+  display: flex;
+  flex-direction: column;
+  max-width: 65%;
+  position: relative;
+  animation: dialoguePop 0.18s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes dialoguePop {
+  0% { transform: scale(0.94); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pixel-dialogue-wrap.sent {
+  align-self: flex-end;
+}
+
+.pixel-dialogue-wrap.received {
+  align-self: flex-start;
+}
+
+.pixel-dialogue-bubble {
+  padding: 10px 16px;
+  border: 3px solid #1e1136;
+  box-shadow: 4px 4px 0 #1e1136;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 600;
+  position: relative;
+  word-wrap: break-word;
+}
+
+/* Sent: Sunset Orange */
+.sent .pixel-dialogue-bubble {
+  background: var(--c-orange-warm);
+  color: #fff;
+}
+
+/* Received: Crisp Retro Cream */
+.received .pixel-dialogue-bubble {
+  background: #ffffff;
+  color: var(--c-purple-deep);
+}
+
+.dialogue-speaker-tag {
+  font-family: var(--font-pixel-head);
+  font-size: 9px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sent .dialogue-speaker-tag {
+  color: var(--c-cream-light);
+  text-shadow: 1px 1px 0 #1e1136;
+}
+
+.received .dialogue-speaker-tag {
+  color: var(--c-orange-hot);
+}
+
+.device-glyph-badge {
+  font-family: var(--font-terminal);
+  font-size: 13px;
+  background: var(--c-purple-deep);
+  color: var(--c-neon-gold);
+  padding: 1px 5px;
+  border: 1px solid #1e1136;
+}
+
+.dialogue-text {
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.dialogue-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+  font-family: var(--font-terminal);
+  font-size: 14px;
+}
+
+.sent .dialogue-meta-row {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.received .dialogue-meta-row {
+  color: var(--c-purple-mid);
+}
+
+/* Bubble Reaction Bar */
+.bubble-reaction-deck {
+  position: absolute;
+  top: -16px;
+  right: 6px;
+  background: var(--c-cream-light);
+  border: 2px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 5;
+}
+
+.pixel-dialogue-wrap:hover .bubble-reaction-deck {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.deck-react-btn {
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+}
+.deck-react-btn:hover {
+  transform: scale(1.3);
+}
+
+/* Empty Conversation Screen */
+.pixel-empty-stage {
+  margin: auto;
+  text-align: center;
+  background: var(--c-cream-light);
+  border: var(--pixel-border);
+  box-shadow: var(--pixel-shadow);
+  padding: 30px;
+  max-width: 440px;
+}
+
+.pixel-empty-stage h3 {
+  font-family: var(--font-pixel-head);
+  font-size: 13px;
+  color: var(--c-orange-hot);
+  margin-bottom: 8px;
+}
+
+.pixel-empty-stage p {
+  font-size: 14px;
+  color: var(--c-purple-mid);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* ── Bottom Input Console & Retro Macro Belt ──────────────────── */
+.arcade-bottom-panel {
+  padding: 10px 20px 12px;
+  background: var(--c-cream-card);
+  border-top: var(--pixel-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.input-console-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.retro-main-input {
+  flex: 1;
+  background: #ffffff;
+  border: var(--pixel-border-sm);
+  box-shadow: var(--pixel-shadow-sm);
+  padding: 10px 14px;
+  font-family: var(--font-pixel-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-purple-deep);
+  outline: none;
+}
+
+.retro-main-input:focus {
+  border-color: var(--c-orange-hot);
+}
+
+.retro-send-btn {
+  background: var(--c-orange-main);
+  color: #fff;
+  border: var(--pixel-border-sm);
+  box-shadow: var(--pixel-shadow-sm);
+  font-family: var(--font-pixel-head);
+  font-size: 10px;
+  padding: 12px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.retro-send-btn:hover {
+  background: var(--c-orange-hot);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #1e1136;
+}
+
+.quick-macros-belt {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.macro-chip-btn {
+  background: var(--c-cream-light);
+  border: 2px solid #1e1136;
+  box-shadow: 2px 2px 0 #1e1136;
+  font-family: var(--font-pixel-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-purple-deep);
+  padding: 3px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.08s ease;
+}
+
+.macro-chip-btn:hover {
+  background: var(--c-orange-warm);
+  color: #fff;
+  transform: translate(-1px, -1px);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ANIMATED PIXEL ART SPRITES (SVG & CSS PIXEL ART)
+   ════════════════════════════════════════════════════════════════════ */
+.sprite-svg {
+  width: 34px;
+  height: 34px;
+  display: block;
+}
+
+.hero-bob {
+  animation: spriteBob 1.6s steps(4, start) infinite alternate;
+}
+
+@keyframes spriteBob {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+.glow-spark {
+  animation: sparkFlicker 0.4s steps(2, start) infinite;
+}
+
+@keyframes sparkFlicker {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 900px) {
+  .arcade-app { padding: 6px; }
+  .pixel-sidebar { width: 280px; }
+  .arcade-chat-flow { padding: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     CANVAS 1: RETRO PIXEL SUNSET LANDSCAPE
+     ════════════════════════════════════════════════════════════════════ -->
+<canvas id="pixel-bg-canvas"></canvas>
+<div class="crt-overlay"></div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     MAIN APPLICATION (PIXEL ARCADE MESH)
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="arcade-app">
+
+  <!-- ── 1. Top Arcade Marquee Header ───────────────────────── -->
+  <header class="arcade-header">
+    <div class="brand-marquee">
+      <div class="brand-badge">★ 8-BIT ★</div>
+      <div>
+        <h1>ABILITY ARCADE</h1>
+        <p>Cross-Disability Retro Mesh // ESP32 · EMQX TLS</p>
+      </div>
+    </div>
+
+    <div class="header-retro-controls">
+      <!-- MQTT Connection Status -->
+      <div class="mqtt-arcade-pill offline" id="mqttPill">
+        <div class="pixel-blinker"></div>
+        <span id="mqttStatusText">MQTT: CONNECTING</span>
+      </div>
+
+      <button class="retro-btn" id="btnOpenSignDisplay" title="Open the synchronized sign avatar in a new window">
+        <span>🤟</span> SIGN DISPLAY
+      </button>
+
+      <!-- 8-Bit Chiptune Sound FX Toggle -->
+      <button class="retro-btn alt-purple" id="btnSoundToggle" title="Toggle 8-bit sound effects">
+        <span>🔊</span> FX: ON
+      </button>
+    </div>
+  </header>
+
+  <!-- ── 2. Main Workspace ──────────────────────────────────── -->
+  <div class="arcade-workspace">
+
+    <!-- ── Left Sidebar (Cream & Warm Orange) ───────────────── -->
+    <aside class="pixel-sidebar">
+      
+      <!-- Section 1: MY PROFILE (LOGGED IN AS) -->
+      <div class="my-profile-panel">
+        <div class="my-profile-header">★ MY HERO PROFILE (ACTIVE SENDER)</div>
+        <div class="my-profile-info">
+          <div class="hero-avatar-frame hero-bob" id="myAvatarBox">
+            <!-- Injected Pixel Sprite -->
+          </div>
+          <div class="my-profile-text">
+            <h3 id="myNameTitle">ABIR (YOU)</h3>
+            <p id="myDeviceSubtitle">glove_01 · SMART GLOVE</p>
+          </div>
+        </div>
+
+        <div class="hero-select-row">
+          <span class="hero-select-label">SWITCH:</span>
+          <select class="hero-select-dropdown" id="identitySelect" title="Switch your active hero profile">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Section 2: CONTACTS TO CHAT WITH (EXCLUDES SELF!) -->
+      <div class="sidebar-list-title">
+        <span>CONTACTS TO CHAT WITH</span>
+        <span id="contactCountBadge" style="font-family: var(--font-terminal); font-size: 14px;">[2 CONTACTS]</span>
+      </div>
+
+      <!-- Hero Contacts Scroll (Only shows OTHER people!) -->
+      <div class="hero-contacts-scroll" id="contactList">
+        <!-- Dynamically injected -->
+      </div>
+
+      <!-- Section 3: Retro Voice Assistant Dock -->
+      <div class="sidebar-voice-dock">
+        <div class="voice-input-row">
+          <input type="text" class="retro-voice-input" id="voiceCmdInput" placeholder="Voice cmd: 'Message Braille'…">
+          <button class="retro-mic-btn" id="btnMicTrigger" title="Speak Voice Command">🎙</button>
+        </div>
+        <div class="voice-feedback-banner" id="voiceFeedbackBanner"></div>
+      </div>
+    </aside>
+
+    <!-- ── Right Main Stage ─────────────────────────────────── -->
+    <main class="arcade-main-stage">
+      
+      <!-- Stage Banner: Specifically Indicates Selected Contact -->
+      <div class="stage-character-banner" id="stageBanner" style="display: none;">
+        <div class="stage-hero-profile">
+          <div class="animated-hero-stage hero-bob" id="stageHeroAvatar">
+            <!-- Contact Pixel Sprite -->
+          </div>
+          <div class="stage-hero-titles">
+            <h2 id="stageTargetName">CONVERSATION: BRAILLE USER</h2>
+            <p>
+              <span class="stage-status-badge offline" id="stageStatusBadge">
+                <span class="status-pixel-dot offline" id="stageStatusDot"></span>
+                <span id="stageStatusText">OFFLINE (NO MQTT HEARTBEAT)</span>
+              </span>
+              <span>·</span>
+              <span id="stageTargetDevice">HARDWARE: braille_01 (BRAILLE)</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Single Contextual 3D Hardware Button -->
+        <div class="stage-hero-actions">
+          <button class="btn-open-3d-hud" id="btnOpenContextual3D">
+            <span>📦</span> <span id="label3DHardware">3D BRAILLE CELL</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3D Voxel Hardware Drawer (Slide-in) -->
+      <div class="voxel-3d-drawer" id="voxelDrawer">
+        <div class="drawer-top-bar">
+          <h3 id="drawerModelTitle">3D VOXEL HARDWARE HUD</h3>
+          <button class="drawer-close-btn" id="btnCloseVoxel">✕</button>
+        </div>
+
+        <div class="voxel-viewport-wrap">
+          <div class="voxel-status-hud" id="voxelHudLabel">VOXEL RENDER: BRAILLE SERVO CELL</div>
+          <canvas id="voxel-canvas"></canvas>
+        </div>
+
+        <div class="drawer-content">
+          <div>
+            <div class="drawer-section-title">HARDWARE SIMULATION MACROS</div>
+            <div class="retro-sim-grid" id="simButtonsContainer">
+              <!-- Dynamically populated based on active contact & your device! -->
+            </div>
+          </div>
+
+          <div>
+            <div class="drawer-section-title">LIVE TELEMETRY METRICS</div>
+            <div style="background: var(--c-cream-light); border: 2px solid #1e1136; padding: 10px; font-family: var(--font-terminal); font-size: 15px; display: flex; flex-direction: column; gap: 4px;">
+              <div>MQTT BROKER: <span style="color: var(--c-orange-hot);">EMQX CLOUD TLS (PORT 8883)</span></div>
+              <div>CLIENT HEARTBEAT: <span id="telemetryStatusVal" style="color: var(--c-magenta-hot);">OFFLINE</span></div>
+              <div>ACTUATOR / SENSOR: <span id="telemetryActuator">6-PIN ROTARY SERVO MATRIX</span></div>
+              <div>ROUTING CHANNEL: <span id="telemetryTopicChannel" style="color: var(--c-purple-mid);">ability/v1/braille_01/output</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages Dialogue Stream -->
+      <div class="arcade-chat-flow" id="chatArea">
+        <div class="pixel-empty-stage" id="emptyStage">
+          <h3>[ SELECT A CONTACT TO START ]</h3>
+          <p>Choose an accessibility module from the left list to start communicating!</p>
+        </div>
+      </div>
+
+      <!-- Bottom Panel: Input Console & Quick 8-Bit Macro Belt -->
+      <div class="arcade-bottom-panel" id="bottomPanel" style="display: none;">
+        <div class="input-console-row">
+          <input type="text" class="retro-main-input" id="messageInput" placeholder="TYPE MESSAGE (PRESS ENTER TO SEND)…">
+          <button class="retro-send-btn" id="btnSend">
+            <span>🚀</span> SEND
+          </button>
+        </div>
+
+        <!-- Quick 8-Bit Assistive Macros -->
+        <div class="quick-macros-belt">
+          <button class="macro-chip-btn" onclick="quickSend('Hello! How are you?')">👋 HELLO</button>
+          <button class="macro-chip-btn" onclick="quickSend('Yes, understood.')">✅ YES</button>
+          <button class="macro-chip-btn" onclick="quickSend('No, please repeat.')">❌ NO</button>
+          <button class="macro-chip-btn" onclick="quickSend('Where are you right now?')">📍 LOCATION</button>
+          <button class="macro-chip-btn" onclick="quickSend('I need immediate assistance!')">🚨 HELP</button>
+          <button class="macro-chip-btn" onclick="quickSend('Thank you so much!')">⭐ THANKS</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     RETRO ENGINE SCRIPT (CANVAS SUNSET, 3D VOXELS & CHIPTUNE AUDIO)
+     ════════════════════════════════════════════════════════════════════ -->
+<script>
+/* ────────────────────────────────────────────────────────────────────
+   1. AUTHENTIC 8-BIT CHIPTUNE SOUND SYNTHESIZER (Web Audio API)
+   ──────────────────────────────────────────────────────────────────── */
+class RetroSoundEngine {
+  constructor() {
+    this.ctx = null;
+    this.enabled = true;
+  }
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AudioCtx();
+    }
+  }
+  playCoin() {
+    if (!this.enabled) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(987.77, now);
+    osc.frequency.setValueAtTime(1318.51, now + 0.08);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.36);
+  }
+  playLaser() {
+    if (!this.enabled) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(160, now + 0.15);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.18);
+  }
+  playClick() {
+    if (!this.enabled) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(440, now);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+  }
+}
+const retroAudio = new RetroSoundEngine();
+
+/* ────────────────────────────────────────────────────────────────────
+   2. RETRO PIXEL SUNSET ANIMATED CANVAS
+   ──────────────────────────────────────────────────────────────────── */
+function initPixelSunsetBackground() {
+  const canvas = document.getElementById("pixel-bg-canvas");
+  const ctx = canvas.getContext("2d");
+
+  const pixelWidth = 320;
+  const pixelHeight = 180;
+  canvas.width = pixelWidth;
+  canvas.height = pixelHeight;
+
+  let cloudX1 = 20, cloudX2 = 180, cloudX3 = 280;
+
+  function drawPixelTree(ctx, baseX, baseY) {
+    ctx.fillStyle = "#201238";
+    ctx.fillRect(baseX + 18, baseY - 40, 8, 40);
+    ctx.fillRect(baseX + 16, baseY - 50, 12, 12);
+    ctx.fillRect(baseX + 14, baseY - 20, 6, 20);
+
+    ctx.fillStyle = "#059669";
+    ctx.fillRect(baseX, baseY - 80, 48, 36);
+    ctx.fillRect(baseX + 6, baseY - 92, 36, 14);
+    ctx.fillRect(baseX + 14, baseY - 100, 20, 10);
+    ctx.fillRect(baseX - 4, baseY - 70, 10, 20);
+
+    ctx.fillStyle = "#34d399";
+    ctx.fillRect(baseX + 8, baseY - 88, 12, 8);
+    ctx.fillRect(baseX + 24, baseY - 76, 14, 8);
+    ctx.fillRect(baseX + 10, baseY - 66, 10, 8);
+
+    ctx.fillStyle = "#f472b6";
+    ctx.fillRect(baseX + 12, baseY - 82, 3, 3);
+    ctx.fillRect(baseX + 28, baseY - 70, 3, 3);
+    ctx.fillRect(baseX + 34, baseY - 84, 3, 3);
+    ctx.fillRect(baseX + 6, baseY - 62, 3, 3);
+
+    ctx.fillStyle = "#ea580c";
+    ctx.fillRect(baseX + 10, baseY - 14, 26, 3);
+    ctx.fillRect(baseX + 10, baseY - 10, 26, 3);
+    ctx.fillStyle = "#7c2d12";
+    ctx.fillRect(baseX + 12, baseY - 7, 3, 7);
+    ctx.fillRect(baseX + 31, baseY - 7, 3, 7);
+  }
+
+  function drawPixelCloud(ctx, x, y, size) {
+    ctx.fillStyle = "#f472b6";
+    ctx.fillRect(x, y + 4, size, size * 0.45);
+    ctx.fillRect(x + 4, y, size * 0.7, size * 0.3);
+    ctx.fillStyle = "#fbbf24";
+    ctx.fillRect(x + 4, y, size * 0.5, 3);
+  }
+
+  function render() {
+    const bands = [
+      { y: 0, h: 40, col: "#2a0845" },
+      { y: 40, h: 30, col: "#64147c" },
+      { y: 70, h: 30, col: "#c026d3" },
+      { y: 100, h: 30, col: "#f43f5e" },
+      { y: 130, h: 25, col: "#f97316" },
+      { y: 155, h: 15, col: "#fbbf24" }
+    ];
+    bands.forEach(b => {
+      ctx.fillStyle = b.col;
+      ctx.fillRect(0, b.y, pixelWidth, b.h);
+    });
+
+    ctx.fillStyle = "#fef08a";
+    ctx.fillRect(230, 95, 36, 36);
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillRect(226, 105, 44, 20);
+
+    drawPixelCloud(ctx, cloudX1, 15, 36);
+    drawPixelCloud(ctx, cloudX2, 28, 48);
+    drawPixelCloud(ctx, cloudX3, 10, 32);
+
+    cloudX1 = (cloudX1 + 0.12) % (pixelWidth + 60);
+    cloudX2 = (cloudX2 + 0.08) % (pixelWidth + 60);
+    cloudX3 = (cloudX3 + 0.15) % (pixelWidth + 60);
+
+    drawPixelTree(ctx, 240, 165);
+
+    const groundY = 165;
+    ctx.fillStyle = "#431407";
+    ctx.fillRect(0, groundY, pixelWidth, 15);
+    ctx.fillStyle = "#ea580c";
+    for (let x = 0; x < pixelWidth; x += 8) {
+      ctx.fillRect(x, groundY + 2, 6, 4);
+      ctx.fillRect(x + 4, groundY + 8, 6, 4);
+    }
+
+    requestAnimationFrame(render);
+  }
+  render();
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   3. ANIMATED PIXEL HERO SPRITES (SVG & CSS PIXEL ART)
+   ──────────────────────────────────────────────────────────────────── */
+function getHeroSpriteSVG(deviceType, size = 34) {
+  if (deviceType === "glove") {
+    return `
+      <svg class="sprite-svg" style="width:${size}px; height:${size}px;" viewBox="0 0 16 16">
+        <rect x="5" y="1" width="6" height="3" fill="#1e1136"/>
+        <rect x="4" y="2" width="8" height="5" fill="#f59e0b"/>
+        <rect x="5" y="4" width="6" height="4" fill="#fed7aa"/>
+        <rect x="4" y="5" width="8" height="2" fill="#00f5d4"/>
+        <rect x="6" y="5" width="2" height="1" fill="#ffffff"/>
+        <rect x="4" y="8" width="8" height="5" fill="#ff6b35"/>
+        <rect x="6" y="8" width="4" height="5" fill="#fff6e5"/>
+        <rect x="1" y="9" width="3" height="4" fill="#00f5d4" class="glow-spark"/>
+        <rect x="2" y="8" width="2" height="2" fill="#ffffff"/>
+        <rect x="5" y="13" width="2" height="3" fill="#1e1136"/>
+        <rect x="9" y="13" width="2" height="3" fill="#1e1136"/>
+      </svg>
+    `;
+  } else if (deviceType === "braille") {
+    return `
+      <svg class="sprite-svg" style="width:${size}px; height:${size}px;" viewBox="0 0 16 16">
+        <rect x="4" y="1" width="8" height="3" fill="#581c87"/>
+        <rect x="3" y="3" width="10" height="2" fill="#a855f7"/>
+        <rect x="5" y="4" width="6" height="4" fill="#fed7aa"/>
+        <rect x="8" y="5" width="3" height="3" fill="#ffd166"/>
+        <rect x="9" y="6" width="1" height="1" fill="#ffffff"/>
+        <rect x="4" y="8" width="8" height="5" fill="#6b21a8"/>
+        <rect x="7" y="8" width="2" height="5" fill="#fff6e5"/>
+        <rect x="1" y="8" width="4" height="4" fill="#ffd166"/>
+        <rect x="2" y="9" width="1" height="1" fill="#1e1136"/>
+        <rect x="3" y="9" width="1" height="1" fill="#1e1136"/>
+        <rect x="2" y="11" width="1" height="1" fill="#1e1136"/>
+        <rect x="5" y="13" width="2" height="3" fill="#3b0764"/>
+        <rect x="9" y="13" width="2" height="3" fill="#3b0764"/>
+      </svg>
+    `;
+  } else {
+    return `
+      <svg class="sprite-svg" style="width:${size}px; height:${size}px;" viewBox="0 0 16 16">
+        <rect x="7" y="1" width="2" height="2" fill="#ff5722"/>
+        <rect x="7" y="3" width="2" height="2" fill="#1e1136"/>
+        <rect x="4" y="4" width="8" height="6" fill="#059669"/>
+        <rect x="5" y="5" width="6" height="4" fill="#10b981"/>
+        <rect x="6" y="6" width="1" height="1" fill="#1e1136"/>
+        <rect x="9" y="6" width="1" height="1" fill="#1e1136"/>
+        <rect x="7" y="7" width="2" height="1" fill="#1e1136"/>
+        <rect x="2" y="5" width="2" height="4" fill="#ff6b35"/>
+        <rect x="12" y="5" width="2" height="4" fill="#ff6b35"/>
+        <rect x="4" y="10" width="8" height="4" fill="#047857"/>
+        <rect x="6" y="11" width="4" height="2" fill="#fbbf24"/>
+        <rect x="3" y="14" width="10" height="2" fill="#1e1136"/>
+      </svg>
+    `;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   4. 3D VOXEL HARDWARE STAGE (THREE.JS VOXEL ART)
+   ──────────────────────────────────────────────────────────────────── */
+let vScene, vCamera, vRenderer;
+let vGloveGroup, vBrailleGroup, vVoiceGroup;
+let currentVoxelModel = "braille";
+
+function init3DVoxelStage() {
+  const canvas = document.getElementById("voxel-canvas");
+  vScene = new THREE.Scene();
+  vCamera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+  vCamera.position.set(5, 5, 8);
+  vCamera.lookAt(0, 0, 0);
+
+  vRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false });
+  vRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+  const dirLight = new THREE.DirectionalLight(0xfff7ed, 1.2);
+  dirLight.position.set(6, 10, 8);
+  vScene.add(dirLight);
+
+  const ambLight = new THREE.AmbientLight(0xffedd5, 0.7);
+  vScene.add(ambLight);
+
+  function makeVoxel(x, y, z, color, size = 0.5) {
+    const geo = new THREE.BoxGeometry(size, size, size);
+    const mat = new THREE.MeshLambertMaterial({ color: color });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(x, y, z);
+    return mesh;
+  }
+
+  // Model 1: 3D Voxel Glove
+  vGloveGroup = new THREE.Group();
+  for (let x = -1; x <= 1; x += 0.5) {
+    for (let y = -1; y <= 1; y += 0.5) {
+      vGloveGroup.add(makeVoxel(x, y, 0, 0xff6b35));
+    }
+  }
+  vGloveGroup.fingers = [];
+  [-1.0, -0.5, 0.0, 0.5, 1.0].forEach((fx) => {
+    const fGroup = new THREE.Group();
+    fGroup.position.set(fx, 1.25, 0);
+    fGroup.add(makeVoxel(0, 0.25, 0, 0x1e1136));
+    fGroup.add(makeVoxel(0, 0.75, 0, 0x00f5d4));
+    vGloveGroup.add(fGroup);
+    vGloveGroup.fingers.push(fGroup);
+  });
+  vScene.add(vGloveGroup);
+
+  // Model 2: 3D Voxel 6-Dot Braille Cell
+  vBrailleGroup = new THREE.Group();
+  for (let x = -1.2; x <= 1.2; x += 0.6) {
+    for (let y = -1.8; y <= 1.8; y += 0.6) {
+      vBrailleGroup.add(makeVoxel(x, y, -0.3, 0x2b184c, 0.6));
+    }
+  }
+  vBrailleGroup.pins = [];
+  const coords = [
+    [-0.6, 1.0], [0.6, 1.0],
+    [-0.6, 0.0], [0.6, 0.0],
+    [-0.6, -1.0], [0.6, -1.0]
+  ];
+  coords.forEach(([px, py]) => {
+    const pin = makeVoxel(px, py, 0.4, 0xffd166, 0.45);
+    vBrailleGroup.add(pin);
+    vBrailleGroup.pins.push(pin);
+  });
+  vScene.add(vBrailleGroup);
+
+  // Model 3: 3D Voxel Audio Synthesizer Boombox
+  vVoiceGroup = new THREE.Group();
+  for (let x = -1.5; x <= 1.5; x += 0.5) {
+    for (let y = -1.0; y <= 1.0; y += 0.5) {
+      vVoiceGroup.add(makeVoxel(x, y, 0, 0x059669));
+    }
+  }
+  vVoiceGroup.add(makeVoxel(-0.9, 0, 0.3, 0xff6b35, 0.6));
+  vVoiceGroup.add(makeVoxel(0.9, 0, 0.3, 0xff6b35, 0.6));
+  vVoiceGroup.bars = [];
+  [-0.3, 0, 0.3].forEach((bx) => {
+    const bar = makeVoxel(bx, 0, 0.3, 0xfacc15, 0.25);
+    vVoiceGroup.add(bar);
+    vVoiceGroup.bars.push(bar);
+  });
+  vScene.add(vVoiceGroup);
+
+  setVoxelModel("braille");
+
+  let isDragging = false, prevMouseX = 0;
+  canvas.addEventListener("mousedown", (e) => { isDragging = true; prevMouseX = e.clientX; });
+  window.addEventListener("mouseup", () => isDragging = false);
+  window.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+      const delta = e.clientX - prevMouseX;
+      vScene.rotation.y += delta * 0.015;
+      prevMouseX = e.clientX;
+    }
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = Date.now() * 0.003;
+
+    if (!isDragging) {
+      vScene.rotation.y += 0.008;
+    }
+
+    if (vBrailleGroup.visible) {
+      vBrailleGroup.pins.forEach((p, idx) => {
+        p.position.z = 0.2 + Math.abs(Math.sin(t * 3 + idx * 1.2)) * 0.6;
+      });
+    }
+
+    if (vGloveGroup.visible) {
+      vGloveGroup.fingers.forEach((f, idx) => {
+        f.rotation.x = Math.sin(t * 2 + idx * 0.8) * 0.4;
+      });
+    }
+
+    if (vVoiceGroup.visible) {
+      vVoiceGroup.bars.forEach((b, idx) => {
+        b.scale.y = 1 + Math.abs(Math.sin(t * 5 + idx * 1.5)) * 2;
+      });
+    }
+
+    vRenderer.render(vScene, vCamera);
+  }
+  animate();
+}
+
+function setVoxelModel(modelType) {
+  currentVoxelModel = modelType;
+  if (!vGloveGroup) return;
+
+  vGloveGroup.visible = (modelType === "glove");
+  vBrailleGroup.visible = (modelType === "braille");
+  vVoiceGroup.visible = (modelType === "voice");
+
+  const hud = document.getElementById("voxelHudLabel");
+  const title = document.getElementById("drawerModelTitle");
+  const act = document.getElementById("telemetryActuator");
+  const chan = document.getElementById("telemetryTopicChannel");
+
+  if (modelType === "glove") {
+    hud.textContent = "VOXEL RENDER: 5-FINGER SMART GLOVE";
+    title.textContent = "3D GLOVE TELEMETRY";
+    act.textContent = "5X FLEX RESISTOR MATRIX";
+    chan.textContent = "ability/v1/glove_01/output";
+  } else if (modelType === "braille") {
+    hud.textContent = "VOXEL RENDER: 6-PIN BRAILLE SERVO CELL";
+    title.textContent = "3D BRAILLE CELL TELEMETRY";
+    act.textContent = "6-PIN ROTARY SERVO MATRIX";
+    chan.textContent = "ability/v1/braille_01/output";
+  } else {
+    hud.textContent = "VOXEL RENDER: ACOUSTIC AUDIO ENGINE";
+    title.textContent = "3D AUDIO TELEMETRY";
+    act.textContent = "TTS DUAL COIL SPEAKER";
+    chan.textContent = "ability/v1/voice_01/output";
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   5. CHAT APPLICATION STATE & SOCKET.IO INTEGRATION
+   ──────────────────────────────────────────────────────────────────── */
+let myUserId = null;
+let activeContactId = null;
+let users = {};
+let conversations = {};
+let unreadCounts = {};
+
+const socket = io();
+
+socket.on("connect", () => {
+  console.log("Socket.IO connected to backend");
+});
+
+socket.on("mqtt_status", (data) => {
+  const pill = document.getElementById("mqttPill");
+  const txt = document.getElementById("mqttStatusText");
+  if (data.connected) {
+    pill.classList.remove("offline");
+    txt.textContent = "MQTT: ONLINE";
+  } else {
+    pill.classList.add("offline");
+    txt.textContent = "MQTT: OFFLINE";
+  }
+});
+
+socket.on("user_status", (list) => {
+  list.forEach(u => users[u.user_id] = u);
+  populateIdentityDropdown();
+  renderContacts();
+  if (activeContactId && users[activeContactId]) {
+    updateStageBanner(users[activeContactId]);
+  }
+});
+
+socket.on("new_message", (msg) => {
+  const key = convKey(msg.sender_id, msg.receiver_id);
+  if (!conversations[key]) conversations[key] = [];
+  if (!conversations[key].find(m => m.id === msg.id)) {
+    conversations[key].push(msg);
+  }
+
+  const activeKey = myUserId && activeContactId ? convKey(myUserId, activeContactId) : null;
+  if (key === activeKey) {
+    renderMessages();
+    if (msg.sender_id === myUserId) {
+      retroAudio.playLaser();
+    } else {
+      retroAudio.playCoin();
+    }
+  } else if (msg.receiver_id === myUserId && msg.sender_id !== myUserId) {
+    // Only increment unread if received from SOMEONE ELSE!
+    unreadCounts[msg.sender_id] = (unreadCounts[msg.sender_id] || 0) + 1;
+    renderContacts();
+    retroAudio.playCoin();
+  }
+});
+
+socket.on("conversation_history", (data) => {
+  const key = convKey(data.user_id, data.target_id);
+  conversations[key] = data.messages || [];
+  if (myUserId === data.user_id && activeContactId === data.target_id) {
+    renderMessages();
+  }
+});
+
+socket.on("recipient_set", (data) => {
+  if (data.user_id === myUserId && data.target_id !== activeContactId) {
+    activeContactId = data.target_id;
+    openConversation(data.target_id);
+    renderContacts();
+  }
+});
+
+socket.on("voice_response", (data) => {
+  const banner = document.getElementById("voiceFeedbackBanner");
+  banner.textContent = "🎙 " + (data.response || "Command executed");
+  banner.classList.add("show");
+  setTimeout(() => banner.classList.remove("show"), 4000);
+});
+
+function convKey(a, b) {
+  return [a, b].sort().join("|");
+}
+
+function escapeHtml(str) {
+  const d = document.createElement("div");
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   6. IDENTITY SELECTOR & CONTACT LIST RENDERING
+   ──────────────────────────────────────────────────────────────────── */
+function populateIdentityDropdown() {
+  const sel = document.getElementById("identitySelect");
+  const prevVal = sel.value;
+  sel.innerHTML = '';
+
+  Object.entries(users).forEach(([uid, u]) => {
+    const opt = document.createElement("option");
+    opt.value = uid;
+    opt.textContent = `${u.name} [${u.device}]`;
+    if (uid === myUserId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+
+  if (!myUserId && Object.keys(users).length > 0) {
+    setMyIdentity(Object.keys(users)[0]);
+  }
+}
+
+function setMyIdentity(uid) {
+  myUserId = uid;
+  const u = users[uid];
+  if (!u) return;
+
+  document.getElementById("myNameTitle").textContent = `${u.name.toUpperCase()} (YOU)`;
+  document.getElementById("myDeviceSubtitle").textContent = `${u.device} · ${u.device_type.toUpperCase()}`;
+  document.getElementById("myAvatarBox").innerHTML = getHeroSpriteSVG(u.device_type, 38);
+
+  // Filter contacts to ONLY EXCLUDE YOURSELF
+  const otherUsers = Object.keys(users).filter(id => id !== myUserId);
+  document.getElementById("contactCountBadge").textContent = `[${otherUsers.length} CONTACTS]`;
+
+  // If current activeContactId is invalid or is oneself, select first contact
+  if (!activeContactId || activeContactId === myUserId || !users[activeContactId]) {
+    if (otherUsers.length > 0) {
+      selectContact(otherUsers[0]);
+    } else {
+      activeContactId = null;
+      document.getElementById("stageBanner").style.display = "none";
+      document.getElementById("bottomPanel").style.display = "none";
+      document.getElementById("emptyStage").style.display = "block";
+    }
+  } else {
+    // Refresh conversation with current contact
+    selectContact(activeContactId);
+  }
+
+  renderContacts();
+}
+
+document.getElementById("identitySelect").addEventListener("change", (e) => {
+  if (e.target.value) {
+    setMyIdentity(e.target.value);
+    retroAudio.playClick();
+  }
+});
+
+function renderContacts() {
+  const container = document.getElementById("contactList");
+  container.innerHTML = "";
+
+  // ONLY SHOW CONTACTS THAT ARE NOT ONESELF!
+  Object.entries(users).forEach(([uid, u]) => {
+    if (uid === myUserId) return; // Skip myself!
+
+    const isActive = (uid === activeContactId);
+    const unread = unreadCounts[uid] || 0;
+
+    const card = document.createElement("div");
+    card.className = `hero-contact-card ${isActive ? 'active' : ''}`;
+
+    const isOnline = !!u.online;
+    const statusText = isOnline ? "ONLINE (MQTT)" : "OFFLINE";
+
+    card.innerHTML = `
+      <div class="pixel-sprite-box">
+        ${getHeroSpriteSVG(u.device_type, 34)}
+      </div>
+      <div class="contact-meta">
+        <div class="contact-name-row">
+          <div class="contact-name">${u.name}</div>
+          <span class="contact-role-tag">${u.device_type}</span>
+        </div>
+        <div class="contact-status-row">
+          <div class="status-pixel-dot ${isOnline ? 'online' : 'offline'}"></div>
+          <span class="status-text-label">${statusText}</span>
+        </div>
+      </div>
+      <div class="unread-pixel-bubble ${unread > 0 ? 'visible' : ''}">${unread}</div>
+    `;
+
+    card.addEventListener("click", () => {
+      selectContact(uid);
+    });
+
+    container.appendChild(card);
+  });
+}
+
+function selectContact(uid) {
+  if (!myUserId || uid === myUserId) return;
+  activeContactId = uid;
+  unreadCounts[uid] = 0;
+  
+  socket.emit("set_recipient", { user_id: myUserId, target_id: uid });
+  openConversation(uid);
+  renderContacts();
+  retroAudio.playClick();
+}
+
+function openConversation(contactId) {
+  const u = users[contactId];
+  if (!u) return;
+
+  document.getElementById("emptyStage").style.display = "none";
+  document.getElementById("stageBanner").style.display = "flex";
+  document.getElementById("bottomPanel").style.display = "flex";
+
+  updateStageBanner(u);
+  setVoxelModel(u.device_type);
+  populateSimulationButtons();
+
+  renderMessages();
+  
+  const input = document.getElementById("messageInput");
+  input.placeholder = `MESSAGE ${u.name.toUpperCase()} (${u.device})… [ENTER TO SEND]`;
+  input.focus();
+}
+
+function updateStageBanner(u) {
+  document.getElementById("stageHeroAvatar").innerHTML = getHeroSpriteSVG(u.device_type, 44);
+  document.getElementById("stageTargetName").textContent = `CONVERSATION: ${u.name.toUpperCase()}`;
+  
+  const isOnline = !!u.online;
+  const statusBadge = document.getElementById("stageStatusBadge");
+  const statusDot = document.getElementById("stageStatusDot");
+  const statusText = document.getElementById("stageStatusText");
+
+  if (isOnline) {
+    statusBadge.className = "stage-status-badge online";
+    statusDot.className = "status-pixel-dot online";
+    statusText.textContent = "ONLINE (ACTIVE ON MQTT)";
+    document.getElementById("telemetryStatusVal").textContent = "ONLINE (HEARTBEAT OK)";
+    document.getElementById("telemetryStatusVal").style.color = "var(--c-neon-green)";
+  } else {
+    statusBadge.className = "stage-status-badge offline";
+    statusDot.className = "status-pixel-dot offline";
+    statusText.textContent = "OFFLINE (NO MQTT HEARTBEAT)";
+    document.getElementById("telemetryStatusVal").textContent = "OFFLINE (NO PING IN 30S)";
+    document.getElementById("telemetryStatusVal").style.color = "var(--c-magenta-hot)";
+  }
+
+  document.getElementById("stageTargetDevice").textContent = `HARDWARE: ${u.device.toUpperCase()} (${u.device_type.toUpperCase()})`;
+
+  // Update contextual 3D hardware button label
+  const label3D = document.getElementById("label3DHardware");
+  if (u.device_type === "braille") label3D.textContent = "3D BRAILLE CELL";
+  else if (u.device_type === "voice") label3D.textContent = "3D AUDIO DROID";
+  else label3D.textContent = "3D SMART GLOVE";
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   7. DYNAMIC HARDWARE SIMULATION BUTTONS (CONTEXT-AWARE!)
+   ──────────────────────────────────────────────────────────────────── */
+function populateSimulationButtons() {
+  const container = document.getElementById("simButtonsContainer");
+  container.innerHTML = "";
+
+  if (!myUserId || !activeContactId) return;
+
+  const target = users[activeContactId];
+  const me = users[myUserId];
+  if (!target || !me) return;
+
+  // Button 1: Simulate active contact transmitting to YOU
+  const btn1 = document.createElement("button");
+  btn1.className = "sim-macro-btn";
+  btn1.innerHTML = `
+    <span>${target.icon} SIMULATE ${target.name.toUpperCase()} -> YOU: "CONFIRMED"</span>
+    <small>Device: ${target.device}</small>
+  `;
+  btn1.onclick = () => simulateHardware(target.device, "Confirmed message read!", myUserId);
+  container.appendChild(btn1);
+
+  // Button 2: Simulate active contact transmitting an alert
+  const btn2 = document.createElement("button");
+  btn2.className = "sim-macro-btn";
+  btn2.innerHTML = `
+    <span>${target.icon} SIMULATE ${target.name.toUpperCase()} -> YOU: "I NEED HELP"</span>
+    <small>Device: ${target.device}</small>
+  `;
+  btn2.onclick = () => simulateHardware(target.device, "I need assistance right now!", myUserId);
+  container.appendChild(btn2);
+
+  // Button 3: Simulate YOUR hardware transmitting to contact
+  const btn3 = document.createElement("button");
+  btn3.className = "sim-macro-btn";
+  btn3.innerHTML = `
+    <span>${me.icon} SIMULATE YOUR ${me.device.toUpperCase()} -> ${target.name.toUpperCase()}</span>
+    <small>Payload: "HELLO FROM SENSOR"</small>
+  `;
+  btn3.onclick = () => simulateHardware(me.device, "HELLO FROM PHYSICAL HARDWARE!", activeContactId);
+  container.appendChild(btn3);
+
+  // Button 4: Simulate Online / Offline toggle for target device
+  const btn4 = document.createElement("button");
+  btn4.className = "sim-macro-btn";
+  btn4.innerHTML = `
+    <span id="powerToggleText">⚡ TOGGLE ${target.name.toUpperCase()} ONLINE STATE</span>
+    <small>Simulates MQTT connect/disconnect</small>
+  `;
+  btn4.onclick = () => toggleContactPower(target.device);
+  container.appendChild(btn4);
+}
+
+function simulateHardware(senderDeviceId, text, recipientUserId) {
+  socket.emit("simulate_device_event", {
+    device_id: senderDeviceId,
+    type: "message",
+    text: text,
+    target_id: recipientUserId
+  });
+  retroAudio.playCoin();
+}
+
+function toggleContactPower(deviceId) {
+  const dev = users[activeContactId];
+  if (!dev) return;
+  const newOnline = !dev.online;
+  socket.emit("simulate_device_event", {
+    device_id: deviceId,
+    type: "status",
+    online: newOnline
+  });
+  retroAudio.playClick();
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   8. MESSAGES RENDERING & TRANSMITTING
+   ──────────────────────────────────────────────────────────────────── */
+function renderMessages() {
+  const area = document.getElementById("chatArea");
+  area.innerHTML = "";
+
+  if (!myUserId || !activeContactId) {
+    document.getElementById("emptyStage").style.display = "block";
+    return;
+  }
+
+  const key = convKey(myUserId, activeContactId);
+  const msgs = conversations[key] || [];
+
+  const dateMarker = document.createElement("div");
+  dateMarker.className = "pixel-date-marker";
+  dateMarker.textContent = `★ LOG: ${users[myUserId]?.name.toUpperCase()} <-> ${users[activeContactId]?.name.toUpperCase()} ★`;
+  area.appendChild(dateMarker);
+
+  if (msgs.length === 0) {
+    const hint = document.createElement("div");
+    hint.className = "pixel-date-marker";
+    hint.style.background = "var(--c-orange-warm)";
+    hint.textContent = `NO LOGS YET. SEND A MESSAGE TO ${users[activeContactId]?.name.toUpperCase()}!`;
+    area.appendChild(hint);
+  }
+
+  msgs.forEach(msg => {
+    const isSent = (msg.sender_id === myUserId);
+    const wrap = document.createElement("div");
+    wrap.className = `pixel-dialogue-wrap ${isSent ? 'sent' : 'received'}`;
+
+    const senderDev = users[msg.sender_id]?.device_type || "mesh";
+
+    wrap.innerHTML = `
+      <div class="bubble-reaction-deck">
+        <button class="deck-react-btn" onclick="quickSend('👍')">👍</button>
+        <button class="deck-react-btn" onclick="quickSend('❤️')">❤️</button>
+        <button class="deck-react-btn" onclick="quickSend('🔥')">🔥</button>
+        <button class="deck-react-btn" onclick="quickSend('⚡')">⚡</button>
+        <button class="deck-react-btn" onclick="speakMessage('${escapeHtml(msg.text)}')" title="Speak aloud">🔊</button>
+      </div>
+      <div class="pixel-dialogue-bubble">
+        <div class="dialogue-speaker-tag">
+          <span>${escapeHtml(msg.sender_name)}</span>
+          <span class="device-glyph-badge">${senderDev.toUpperCase()}</span>
+        </div>
+        <div class="dialogue-text">${escapeHtml(msg.text)}</div>
+        <div class="dialogue-meta-row">
+          <span>${msg.time_str || ''}</span>
+          ${isSent ? '<span>✓✓</span>' : ''}
+        </div>
+      </div>
+    `;
+
+    area.appendChild(wrap);
+  });
+
+  area.scrollTop = area.scrollHeight;
+}
+
+function sendChatMessage() {
+  const input = document.getElementById("messageInput");
+  const text = input.value.trim();
+  if (!text || !myUserId || !activeContactId) return;
+
+  socket.emit("send_message", {
+    sender_id: myUserId,
+    receiver_id: activeContactId,
+    text: text
+  });
+
+  input.value = "";
+  input.focus();
+}
+
+function quickSend(phrase) {
+  const input = document.getElementById("messageInput");
+  input.value = phrase;
+  sendChatMessage();
+  retroAudio.playLaser();
+}
+
+document.getElementById("btnSend").addEventListener("click", sendChatMessage);
+document.getElementById("messageInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+});
+
+function speakMessage(text) {
+  if ("speechSynthesis" in window) {
+    const u = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(u);
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   9. RETRO VOICE COMMAND DOCK
+   ──────────────────────────────────────────────────────────────────── */
+function runVoiceInput() {
+  const input = document.getElementById("voiceCmdInput");
+  const cmd = input.value.trim();
+  if (!cmd) return;
+  socket.emit("voice_command", { command: cmd, from_user: myUserId || "user_02" });
+  input.value = "";
+  retroAudio.playLaser();
+}
+
+document.getElementById("voiceCmdInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") runVoiceInput();
+});
+
+const micBtn = document.getElementById("btnMicTrigger");
+if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recog = new SR();
+  recog.continuous = false;
+  recog.lang = "en-US";
+
+  recog.onresult = (ev) => {
+    document.getElementById("voiceCmdInput").value = ev.results[0][0].transcript;
+    micBtn.classList.remove("active");
+    runVoiceInput();
+  };
+  recog.onerror = () => micBtn.classList.remove("active");
+  recog.onend = () => micBtn.classList.remove("active");
+
+  micBtn.addEventListener("click", () => {
+    if (micBtn.classList.contains("active")) {
+      recog.stop();
+    } else {
+      recog.start();
+      micBtn.classList.add("active");
+      retroAudio.playClick();
+    }
+  });
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   10. BUTTON CONTROLS & INITIALIZATION
+   ──────────────────────────────────────────────────────────────────── */
+document.getElementById("btnOpenContextual3D").addEventListener("click", () => {
+  const drawer = document.getElementById("voxelDrawer");
+  drawer.classList.add("open");
+  retroAudio.playClick();
+});
+
+document.getElementById("btnCloseVoxel").addEventListener("click", () => {
+  document.getElementById("voxelDrawer").classList.remove("open");
+  retroAudio.playClick();
+});
+
+document.getElementById("btnSoundToggle").addEventListener("click", () => {
+  retroAudio.enabled = !retroAudio.enabled;
+  document.getElementById("btnSoundToggle").textContent = retroAudio.enabled ? "🔊 FX: ON" : "🔇 FX: OFF";
+});
+
+document.getElementById("btnOpenSignDisplay").addEventListener("click", () => {
+  window.open("/sign/", "abilitySignDisplay");
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  initPixelSunsetBackground();
+  init3DVoxelStage();
+});
+</script>
+</body>
+</html>
