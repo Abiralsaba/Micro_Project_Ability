@@ -1,0 +1,199 @@
+body { padding-top: 0; }
+
+.heading{
+    margin-top: 30px;
+    text-align: center;
+}
+.space-between{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.label-style{
+    font-size: 20px;
+    margin-top: 30px;
+}
+
+.input-style{
+    padding: 5px;
+    font-size: 20px !important;
+    margin-top: 20px !important;
+}
+
+.btn-style{
+    padding: 10px !important;
+    font-size: 20px !important;
+    margin-top: 20px !important;
+}
+
+.w-33{
+    width: 32%;
+}
+
+.btn-gap{
+    margin-top: 50px !important;
+}
+
+.bot-label{
+    margin-top: 20px;
+    font-size: 25px;
+    text-align: center;
+}
+
+.bot-image{
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    margin-top: 10px;
+    border-radius: 30px;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.bot-image:hover{
+    border-width: 5px;
+}
+
+canvas{
+    border-style: solid;
+    border-width: 3px;
+}
+
+.btn-start{
+    border: none !important;
+    background-color: #4CAF50 !important;
+}
+
+i{
+    margin-left: 20px;
+}
+
+.home-gradient {
+    background: rgb(33,37,41);
+    background: linear-gradient(180deg, rgba(33,37,41,1) 6%, rgba(9,9,121,1) 45%, rgba(12,186,235,0.5186449579831933) 100%);
+    height: calc(100vh - 70px);
+    flex-direction: column
+}
+
+.divider {
+    display: block;
+    height: 4px;
+    width: 5rem !important;
+    background: #f76c2f;
+}
+
+.section-heading {
+    color: red;
+}
+
+.normal-text {
+    font-size: large;
+}
+
+.footer-text, .footer-link {
+    text-decoration: none;
+    color:darkgray;
+}
+
+.footer-link:hover {
+    color: white;
+}
+
+.card-footer-style {
+    background-color: darkblue !important;
+    color: white !important;
+    
+}
+
+.card-background {
+    background:  linear-gradient(50deg, rgb(191, 231, 241), #fff) !important;
+}
+
+.card-background:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.signs{
+    margin-top: 10px;
+    height: 35px;
+    color: white;
+    font-weight: bold;
+    background-color: blue;
+    border-radius: 5px;
+}
+
+/* Synchronized second-screen sign display */
+.sign-display-shell {
+    min-height: 100vh;
+    padding: 18px;
+    color: #1e1136;
+    background: linear-gradient(135deg, #1e1136, #4d2477);
+}
+
+.sign-display-header {
+    min-height: 82px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #fff6e5;
+    border: 4px solid #1e1136;
+    box-shadow: 6px 6px 0 #ff6b35;
+}
+
+.sign-display-header h1 { margin: 0; font-weight: 900; letter-spacing: .04em; }
+.sign-display-header p { margin: 3px 0 0; }
+.sign-connection { padding: 10px 14px; border: 3px solid #1e1136; font-weight: 800; white-space: nowrap; }
+.sign-connection.online { color: #075d49; background: #bdf5e5; }
+.sign-connection.offline { color: #8a1748; background: #ffd1df; }
+
+.sign-display-grid {
+    height: calc(100vh - 136px);
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(420px, 1fr) 180px;
+    gap: 14px;
+}
+
+.sign-control-panel, .avatar-picker {
+    padding: 16px;
+    overflow: auto;
+    background: #fff6e5;
+    border: 4px solid #1e1136;
+}
+
+.sign-control-panel { display: flex; flex-direction: column; gap: 9px; }
+.sign-control-panel label { margin-top: 8px; font-weight: 800; }
+.sign-control-panel textarea { padding: 10px; border: 3px solid #1e1136; resize: vertical; }
+.live-message-card { padding: 14px; display: flex; flex-direction: column; gap: 8px; background: #ff8c42; border: 3px solid #1e1136; }
+.live-message-card span { font-size: 12px; font-weight: 900; letter-spacing: .12em; }
+.live-message-card strong { font-size: 22px; line-height: 1.15; }
+.translated-output { min-height: 48px; padding: 10px; background: white; border: 3px solid #1e1136; font-size: 19px; font-weight: 800; }
+.sign-action-button, .sign-secondary-button { padding: 10px; border: 3px solid #1e1136; box-shadow: 3px 3px 0 #1e1136; font-weight: 900; }
+.sign-action-button { color: white; background: #ff6b35; }
+.sign-secondary-button { margin-top: auto; background: #ffd166; }
+
+.sign-avatar-stage { min-width: 0; min-height: 360px; overflow: hidden; background: #fff6e5; border: 4px solid #1e1136; }
+.sign-avatar-stage canvas { display: block; border: 0; }
+.avatar-picker { display: flex; flex-direction: column; gap: 12px; }
+.avatar-picker h2 { font-size: 18px; font-weight: 900; }
+.avatar-picker button { padding: 5px; background: white; border: 3px solid transparent; }
+.avatar-picker button.selected { border-color: #ff6b35; box-shadow: 3px 3px 0 #1e1136; }
+.avatar-picker img { width: 100%; }
+.avatar-picker p { font-size: 13px; }
+
+@media (max-width: 950px) {
+    .sign-display-grid { height: auto; grid-template-columns: 260px 1fr; }
+    .avatar-picker { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+    .avatar-picker button { width: 100px; }
+}
+
+.hor-line {
+    border: 0;
+    clear:both;
+    display:block;
+    width: 85%;               
+    background-color: gainsboro;
+    height: 1px;
+}
