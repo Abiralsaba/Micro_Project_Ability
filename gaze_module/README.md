@@ -12,7 +12,7 @@ Install the added MQTT dependency in the Electronic_Shawon environment once:
 cd Electronic_Shawon
 .venv-mac/bin/python -m pip install -r requirements.txt
 cd ..
-./gaze_module/start_gaze.sh
+./gaze.sh
 ```
 
 Do not use the copied `.venv-mac/bin/activate` script after moving the project;
