@@ -157,6 +157,15 @@ def emit_message(msg):
     """Send one stored message to chat clients and, when applicable, sign UI."""
     socketio.emit("new_message", msg)
     receiver = USERS.get(msg["receiver_id"], {})
+    if receiver.get("device_type") == "braille":
+        # The next physical Braille-keyboard message automatically replies to
+        # the person who most recently messaged this user.
+        active_recipient[msg["receiver_id"]] = msg["sender_id"]
+        socketio.emit("recipient_set", {
+            "user_id": msg["receiver_id"],
+            "target_id": msg["sender_id"],
+            "target_name": USERS[msg["sender_id"]]["name"],
+        })
     if receiver.get("device_type") == "glove":
         # The sign display receives the exact same message object/text as chat.
         socketio.emit("sign_message", msg)
@@ -490,25 +499,22 @@ def handle_select_user(data):
 @socketio.on("set_recipient")
 def handle_set_recipient(data):
     """Set active conversation: user_id wants to talk to target_id."""
+    if not isinstance(data, dict):
+        return {"ok": False, "error": "invalid request"}
     user_id = data.get("user_id")
     target_id = data.get("target_id")
     if user_id in USERS and target_id in USERS and user_id != target_id:
         active_recipient[user_id] = target_id
         log.info("Chat: %s → %s", USERS[user_id]["name"], USERS[target_id]["name"])
-        emit("recipient_set", {
+        key = conversation_key(user_id, target_id)
+        return {
+            "ok": True,
             "user_id": user_id,
             "target_id": target_id,
             "target_name": USERS[target_id]["name"],
-        })
-
-        # Load conversation history
-        key = conversation_key(user_id, target_id)
-        history = message_history.get(key, [])
-        emit("conversation_history", {
-            "user_id": user_id,
-            "target_id": target_id,
-            "messages": history,
-        })
+            "messages": message_history.get(key, []),
+        }
+    return {"ok": False, "error": "invalid sender or recipient"}
 
 
 @socketio.on("send_message")
