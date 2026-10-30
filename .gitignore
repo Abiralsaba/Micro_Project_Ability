@@ -105,6 +105,7 @@ site/
 *.local.yaml
 *.local.json
 config.local.*
+hub/module_languages.local.json
 
 # Documentation and Rules
 PROJECT_BRAIN.md
@@ -112,4 +113,3 @@ PROJECT_BRAIN.md
 
 # External nested projects
 Electronic_Shawon/
-
