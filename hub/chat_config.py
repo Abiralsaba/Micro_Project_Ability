@@ -68,6 +68,7 @@ MQTT_USE_TLS = os.getenv("ABILITY_MQTT_USE_TLS", "true").lower() not in ("0", "f
 TOPIC_INPUT = "ability/v1/{device}/input"       # device publishes here
 TOPIC_OUTPUT = "ability/v1/{device}/output"      # hub publishes here
 TOPIC_STATUS = "ability/v1/{device}/status"      # device status
+TOPIC_CONTROL = "ability/v1/{device}/control"    # retained language/settings
 
 # Local topics (used by glove_mqtt.ino + braille_mqtt.ino)
 TOPIC_LOCAL_GLOVE_TEXT = "ability/glove/text"
