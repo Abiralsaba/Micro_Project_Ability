@@ -21,6 +21,7 @@ from hub.chat_config import (
     TOPIC_INPUT,
     TOPIC_OUTPUT,
     TOPIC_STATUS,
+    TOPIC_CONTROL,
 )
 
 
@@ -34,16 +35,18 @@ class IncomingMessage:
 class AbilityGazeCloud:
     """Publishes gaze text and receives messages for ``gaze_01``."""
 
-    def __init__(self, device_id: str = "gaze_01") -> None:
+    def __init__(self, device_id: str = "gaze_01", language: str = "en") -> None:
         self.device_id = device_id
         self.input_topic = TOPIC_INPUT.format(device=device_id)
         self.output_topic = TOPIC_OUTPUT.format(device=device_id)
         self.status_topic = TOPIC_STATUS.format(device=device_id)
+        self.control_topic = TOPIC_CONTROL.format(device=device_id)
         self.connected = threading.Event()
         self._lock = threading.Lock()
         self._incoming: Optional[IncomingMessage] = None
         self._calibrated = False
         self._target = "glove_01"
+        self._language = "bn" if language == "bn" else "en"
 
         self.client = mqtt.Client(
             mqtt.CallbackAPIVersion.VERSION2,
@@ -74,6 +77,7 @@ class AbilityGazeCloud:
             return
         self.connected.set()
         client.subscribe(self.output_topic, qos=1)
+        client.subscribe(self.control_topic, qos=1)
         self.publish_presence(self._calibrated, self._target)
 
     def _on_disconnect(
@@ -82,11 +86,17 @@ class AbilityGazeCloud:
         self.connected.clear()
 
     def _on_message(self, client, userdata, message) -> None:
-        if message.topic != self.output_topic:
-            return
         try:
             data = json.loads(message.payload.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError):
+            return
+        if message.topic == self.control_topic:
+            language = str(data.get("language", "")).lower()
+            if language in ("en", "bn"):
+                with self._lock:
+                    self._language = language
+            return
+        if message.topic != self.output_topic:
             return
         text = data.get("text")
         if not isinstance(text, str) or not text.strip():
@@ -116,6 +126,7 @@ class AbilityGazeCloud:
             "online": True,
             "calibrated": calibrated,
             "target": target,
+            "language": self.latest_language(),
             "timestamp": int(time.time()),
         })
         result = self.client.publish(self.status_topic, payload, qos=1, retain=True)
@@ -133,6 +144,7 @@ class AbilityGazeCloud:
             "type": "text",
             "text": clean_text,
             "profile": "parkinsons",
+            "language": self.latest_language(),
             "timestamp": int(time.time()),
         })
         result = self.client.publish(self.input_topic, payload, qos=1)
@@ -141,6 +153,10 @@ class AbilityGazeCloud:
     def latest_incoming(self) -> Optional[IncomingMessage]:
         with self._lock:
             return self._incoming
+
+    def latest_language(self) -> str:
+        with self._lock:
+            return self._language
 
     def close(self) -> None:
         if self.connected.is_set():
