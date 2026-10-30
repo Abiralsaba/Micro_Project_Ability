@@ -52,5 +52,19 @@ class KeyboardTests(unittest.TestCase):
         spoken = controller._activate_selected(0.0)
         self.assertEqual(spoken, "I NEED HELP")
         self.assertEqual(controller.pop_outgoing_text(), "I NEED HELP")
+
+    def test_bangla_layout_reuses_calibration_and_emits_unicode(self):
+        controller = ParkinsonKeyboardController(CALIBRATION, language="bn")
+        self.assertIs(controller.calibration, CALIBRATION)
+        self.assertIn("ক", controller.KEYS)
+        controller.selected_index = controller.KEYS.index("ক")
+        controller._activate_selected(0.0)
+        self.assertEqual(controller.text, "ক")
+
+    def test_bangla_help_phrase(self):
+        controller = ParkinsonKeyboardController(CALIBRATION, language="bn")
+        controller.selected_index = controller.KEYS.index("সাহায্য")
+        self.assertEqual(controller._activate_selected(0.0), "আমার সাহায্য দরকার")
+        self.assertEqual(controller.pop_outgoing_text(), "আমার সাহায্য দরকার")
 if __name__ == "__main__":
     unittest.main()
