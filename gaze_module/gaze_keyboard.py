@@ -46,6 +46,25 @@ TARGETS = {
 }
 TARGET_LABELS = {device: label[3:] for label, device in TARGETS.items()}
 
+ENGLISH_KEYS = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+BANGLA_KEYS = list(
+    "অআইঈউঊঋএঐওঔ"
+    "কখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহড়ঢ়য়ৎ"
+    "ািীুূৃেৈোৌংঃঁ"
+)
+ACTION_LABELS = {
+    "en": {
+        "SPACE": "SPACE", "BACK": "BACK", "CLEAR": "CLEAR", "SEND": "SEND",
+        "TO ABIR": "TO ABIR", "TO BRAILLE": "TO BRAILLE", "TO VOICE": "TO VOICE",
+        "HELP": "HELP", "WATER": "WATER",
+    },
+    "bn": {
+        "SPACE": "ফাঁক", "BACK": "মুছুন", "CLEAR": "পরিষ্কার", "SEND": "পাঠান",
+        "TO ABIR": "→ আবির", "TO BRAILLE": "→ ব্রেইল", "TO VOICE": "→ ভয়েস",
+        "HELP": "সাহায্য", "WATER": "পানি",
+    },
+}
+
 
 class MedianGazeSmoother:
     """Reject short gaze spikes while preserving the calibrated scale."""
@@ -66,23 +85,29 @@ class MedianGazeSmoother:
 class ParkinsonKeyboardController(CameraController):
     """Communication-only keyboard with eye-selectable cloud recipients."""
 
-    KEYS = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ") + [
-        "SPACE",
-        "BACK",
-        "CLEAR",
-        "SEND",
-        "TO ABIR",
-        "TO BRAILLE",
-        "TO VOICE",
-        "HELP",
-        "WATER",
-    ]
+    KEYS = ENGLISH_KEYS + list(ACTION_LABELS["en"].values())
     KEYBOARD_COLUMNS = 7
 
-    def __init__(self, *args, target_device: str = "glove_01", **kwargs) -> None:
+    def __init__(
+        self, *args, target_device: str = "glove_01", language: str = "en", **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.target_device = target_device
         self._outgoing_text: Optional[str] = None
+        self.language = "en"
+        self._display_to_action = {}
+        self.set_language(language)
+
+    def set_language(self, language: str) -> None:
+        language = "bn" if language == "bn" else "en"
+        if language == self.language and self._display_to_action:
+            return
+        self.language = language
+        labels = ACTION_LABELS[language]
+        alphabet = BANGLA_KEYS if language == "bn" else ENGLISH_KEYS
+        self.KEYS = alphabet + list(labels.values())
+        self._display_to_action = {display: action for action, display in labels.items()}
+        self.selected_index = 0
 
     @property
     def target_label(self) -> str:
@@ -95,25 +120,26 @@ class ParkinsonKeyboardController(CameraController):
 
     def _activate_selected(self, now: float) -> Optional[str]:
         key = self.selected_key
-        if len(key) == 1:
+        action = self._display_to_action.get(key)
+        if action is None:
             self.text += key
-        elif key == "SPACE":
+        elif action == "SPACE":
             if self.text and not self.text.endswith(" "):
                 self.text += " "
-        elif key == "BACK":
+        elif action == "BACK":
             self.text = self.text[:-1]
-        elif key == "CLEAR":
+        elif action == "CLEAR":
             self.text = ""
-        elif key == "SEND":
+        elif action == "SEND":
             self._outgoing_text = self.text.strip() or None
-        elif key in TARGETS:
-            self.target_device = TARGETS[key]
-        elif key == "HELP":
-            self.text = "I NEED HELP"
+        elif action in TARGETS:
+            self.target_device = TARGETS[action]
+        elif action == "HELP":
+            self.text = "আমার সাহায্য দরকার" if self.language == "bn" else "I NEED HELP"
             self._outgoing_text = self.text
             return self.text
-        elif key == "WATER":
-            self.text = "I NEED WATER"
+        elif action == "WATER":
+            self.text = "আমার পানি দরকার" if self.language == "bn" else "I NEED WATER"
             self._outgoing_text = self.text
             return self.text
         return None
@@ -125,7 +151,7 @@ def draw_ability_status(frame, controller, cloud, message: str) -> None:
     cloud_color = (80, 220, 80) if cloud and cloud.connected.is_set() else (40, 40, 240)
     draw_text(
         frame,
-        f"{cloud_text}  |  TO: {controller.target_label}",
+        f"{cloud_text}  |  TO: {controller.target_label}  |  {controller.language.upper()}",
         (max(15, width - 500), 115),
         scale=0.55,
         color=cloud_color,
@@ -155,6 +181,7 @@ def run(args) -> int:
             calibration,
             invert_horizontal=True,
             target_device=args.target,
+            language=args.language,
         )
         if calibration
         else None
@@ -163,7 +190,7 @@ def run(args) -> int:
     smoother = MedianGazeSmoother(args.smoothing_window)
     message = "CURRENT CALIBRATION LOADED" if calibration else calibrator.instruction
 
-    cloud = None if args.offline else AbilityGazeCloud("gaze_01")
+    cloud = None if args.offline else AbilityGazeCloud("gaze_01", language=args.language)
     if cloud:
         cloud.start()
 
@@ -202,11 +229,14 @@ def run(args) -> int:
                     controller = ParkinsonKeyboardController(
                         completed,
                         invert_horizontal=True,
-                        target_device=args.target,
+                    target_device=args.target,
+                    language=args.language,
                     )
                     calibrator = None
                     smoother = MedianGazeSmoother(args.smoothing_window)
             elif controller is not None:
+                if cloud:
+                    controller.set_language(cloud.latest_language())
                 output = controller.update(sample)
                 if output.reason:
                     message = output.reason
@@ -266,6 +296,7 @@ def parse_args():
         help="initial recipient device; recipient can also be changed by eye",
     )
     parser.add_argument("--smoothing-window", type=int, default=7)
+    parser.add_argument("--language", choices=("en", "bn"), default="en")
     parser.add_argument("--offline", action="store_true")
     return parser.parse_args()
 
