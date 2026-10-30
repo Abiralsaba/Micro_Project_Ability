@@ -100,6 +100,7 @@ const char *MODULE_ID = "braille_01";
 const char *TOPIC_CLOUD_INPUT = "ability/v1/braille_01/input";
 const char *TOPIC_CLOUD_DISPLAY = "ability/v1/braille_01/output";
 const char *TOPIC_CLOUD_STATUS = "ability/v1/braille_01/status";
+const char *TOPIC_CLOUD_CONTROL = "ability/v1/braille_01/control";
 
 #define MAX_CLOUD_PATTERNS 64
 #define CLOUD_STATUS_INTERVAL 10000UL
@@ -237,10 +238,13 @@ uint8_t charToBraille(char c) {
 
 // Decode: 6-bit Braille pattern → character (for keyboard input)
 char brailleTable[64];
+String banglaBrailleTable[64];
+String keyboardLanguage = "en";
 
 void buildBrailleTable() {
   for (int i = 0; i < 64; i++) {
     brailleTable[i] = '\0';
+    banglaBrailleTable[i] = "";
   }
   brailleTable[0b000001] = 'A';
   brailleTable[0b000011] = 'B';
@@ -268,6 +272,58 @@ void buildBrailleTable() {
   brailleTable[0b101101] = 'X';
   brailleTable[0b111101] = 'Y';
   brailleTable[0b110101] = 'Z';
+
+  // Standard Bharati Braille (Bangla), using the same dot-bit order.
+  banglaBrailleTable[0b000001] = "অ"; // 1
+  banglaBrailleTable[0b011100] = "আ"; // 345
+  banglaBrailleTable[0b001010] = "ই"; // 24
+  banglaBrailleTable[0b010100] = "ঈ"; // 35
+  banglaBrailleTable[0b100101] = "উ"; // 136
+  banglaBrailleTable[0b110011] = "ঊ"; // 1256
+  banglaBrailleTable[0b010001] = "এ"; // 15
+  banglaBrailleTable[0b001100] = "ঐ"; // 34
+  banglaBrailleTable[0b010101] = "ও"; // 135
+  banglaBrailleTable[0b101010] = "ঔ"; // 246
+  banglaBrailleTable[0b000101] = "ক"; // 13
+  banglaBrailleTable[0b101000] = "খ"; // 46
+  banglaBrailleTable[0b011011] = "গ"; // 1245
+  banglaBrailleTable[0b100011] = "ঘ"; // 126
+  banglaBrailleTable[0b101100] = "ঙ"; // 346
+  banglaBrailleTable[0b001001] = "চ"; // 14
+  banglaBrailleTable[0b100001] = "ছ"; // 16
+  banglaBrailleTable[0b011010] = "জ"; // 245
+  banglaBrailleTable[0b110100] = "ঝ"; // 356
+  banglaBrailleTable[0b010010] = "ঞ"; // 25
+  banglaBrailleTable[0b111110] = "ট"; // 23456
+  banglaBrailleTable[0b111010] = "ঠ"; // 2456
+  banglaBrailleTable[0b101011] = "ড"; // 1246
+  banglaBrailleTable[0b111111] = "ঢ"; // 123456
+  banglaBrailleTable[0b111100] = "ণ"; // 3456
+  banglaBrailleTable[0b011110] = "ত"; // 2345
+  banglaBrailleTable[0b111001] = "থ"; // 1456
+  banglaBrailleTable[0b011001] = "দ"; // 145
+  banglaBrailleTable[0b101110] = "ধ"; // 2346
+  banglaBrailleTable[0b011101] = "ন"; // 1345
+  banglaBrailleTable[0b001111] = "প"; // 1234
+  banglaBrailleTable[0b001011] = "ফ"; // 124
+  banglaBrailleTable[0b000011] = "ব"; // 12
+  banglaBrailleTable[0b011000] = "ভ"; // 45
+  banglaBrailleTable[0b001101] = "ম"; // 134
+  banglaBrailleTable[0b111101] = "য"; // 13456
+  banglaBrailleTable[0b010111] = "র"; // 1235
+  banglaBrailleTable[0b000111] = "ল"; // 123
+  banglaBrailleTable[0b101001] = "শ"; // 146
+  banglaBrailleTable[0b101111] = "ষ"; // 12346
+  banglaBrailleTable[0b001110] = "স"; // 234
+  banglaBrailleTable[0b010011] = "হ"; // 125
+  banglaBrailleTable[0b100010] = "য়"; // 26
+}
+
+String decodeKeyboardPattern(uint8_t pattern) {
+  if (keyboardLanguage == "bn")
+    return banglaBrailleTable[pattern & 0x3F];
+  char letter = brailleTable[pattern & 0x3F];
+  return letter == '\0' ? String("") : String(letter);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -323,6 +379,13 @@ unsigned long actionPressStartTime = 0;
 
 uint8_t pendingPattern = 0; // Bits 0..5 for active dots staged for next letter
 String kbInputBuffer = "";  // Accumulated typed letters / words
+uint8_t kbPatternBuffer[MAX_CLOUD_PATTERNS];
+uint8_t kbPatternCount = 0;
+
+void rememberKeyboardPattern(uint8_t pattern) {
+  if (kbPatternCount < MAX_CLOUD_PATTERNS)
+    kbPatternBuffer[kbPatternCount++] = pattern & 0x3F;
+}
 
 // ══════════════════════════════════════════════════════════════
 // WEB UI — HTML PAGE
@@ -670,6 +733,7 @@ void publishCloudStatus(const char *eventName, const char *messageId) {
   doc["event"] = eventName;
   doc["status"] = currentStatus;
   doc["rssi"] = WiFi.RSSI();
+  doc["language"] = keyboardLanguage;
   if (messageId != nullptr && messageId[0] != '\0')
     doc["message_id"] = messageId;
 
@@ -693,6 +757,7 @@ void publishCloudInput(const String &text) {
   doc["source"] = MODULE_ID;
   doc["type"] = "text";
   doc["text"] = text;
+  doc["language"] = keyboardLanguage;
   doc["timestamp"] = static_cast<unsigned long>(time(nullptr));
 
   char buffer[512];
@@ -704,9 +769,6 @@ void publishCloudInput(const String &text) {
 }
 
 void cloudMqttCallback(char *topic, byte *payload, unsigned int length) {
-  if (strcmp(topic, TOPIC_CLOUD_DISPLAY) != 0)
-    return;
-
   JsonDocument doc;
   DeserializationError error = deserializeJson(doc, payload, length);
   if (error) {
@@ -714,6 +776,22 @@ void cloudMqttCallback(char *topic, byte *payload, unsigned int length) {
     Serial.println(error.c_str());
     return;
   }
+
+  if (strcmp(topic, TOPIC_CLOUD_CONTROL) == 0) {
+    const char *language = doc["language"] | "";
+    if (strcmp(language, "bn") == 0 || strcmp(language, "en") == 0) {
+      keyboardLanguage = language;
+      pendingPattern = 0;
+      kbInputBuffer = "";
+      kbPatternCount = 0;
+      Serial.print("[Cloud] Keyboard language → ");
+      Serial.println(keyboardLanguage);
+      publishCloudStatus("language_changed", "");
+    }
+    return;
+  }
+  if (strcmp(topic, TOPIC_CLOUD_DISPLAY) != 0)
+    return;
 
   const char *messageId = doc["message_id"] | "unknown";
   if (cloudHasPending) {
@@ -815,8 +893,11 @@ void connectCloudMqtt() {
   if (connected) {
     Serial.println(" connected.");
     mqtt.subscribe(TOPIC_CLOUD_DISPLAY, 1);
+    mqtt.subscribe(TOPIC_CLOUD_CONTROL, 1);
     Serial.print("[Cloud] Subscribed: ");
     Serial.println(TOPIC_CLOUD_DISPLAY);
+    Serial.print("[Cloud] Subscribed: ");
+    Serial.println(TOPIC_CLOUD_CONTROL);
     publishCloudStatus("connected", "");
   } else {
     Serial.print(" failed, MQTT state=");
@@ -956,9 +1037,10 @@ void commitPendingPattern() {
     Serial.println("\"");
     return;
   }
-  char letter = brailleTable[pendingPattern];
-  if (letter != '\0') {
+  String letter = decodeKeyboardPattern(pendingPattern);
+  if (letter.length() > 0) {
     kbInputBuffer += letter;
+    rememberKeyboardPattern(pendingPattern);
     Serial.print("[KB] Button 7 (1 Click) → Merged dots [");
     printDots(pendingPattern);
     Serial.print("] → Committed '");
@@ -978,13 +1060,15 @@ void commitPendingPattern() {
 void insertSpace() {
   // Commit any staged dots first
   if (pendingPattern != 0) {
-    char letter = brailleTable[pendingPattern];
-    if (letter != '\0') {
+    String letter = decodeKeyboardPattern(pendingPattern);
+    if (letter.length() > 0) {
       kbInputBuffer += letter;
+      rememberKeyboardPattern(pendingPattern);
     }
     pendingPattern = 0;
   }
   kbInputBuffer += ' ';
+  rememberKeyboardPattern(0);
   Serial.print("[KB] Button 7 (2 Clicks) → SPACE inserted | Buffer: \"");
   Serial.print(kbInputBuffer);
   Serial.println("\"");
@@ -994,9 +1078,10 @@ void insertSpace() {
 void sendFullBufferToServos() {
   // If dots are pending, commit them first
   if (pendingPattern != 0) {
-    char letter = brailleTable[pendingPattern];
-    if (letter != '\0') {
+    String letter = decodeKeyboardPattern(pendingPattern);
+    if (letter.length() > 0) {
       kbInputBuffer += letter;
+      rememberKeyboardPattern(pendingPattern);
     }
     pendingPattern = 0;
   }
@@ -1007,8 +1092,12 @@ void sendFullBufferToServos() {
     Serial.println("\"");
     publishCloudInput(kbInputBuffer);
     currentStatus = "KB → Display: " + kbInputBuffer;
-    displayWord(kbInputBuffer);
+    if (keyboardLanguage == "bn")
+      displayCloudPatterns(kbPatternBuffer, kbPatternCount, "keyboard-preview");
+    else
+      displayWord(kbInputBuffer);
     kbInputBuffer = "";
+    kbPatternCount = 0;
   } else {
     Serial.println("[KB] Button 7 (3 Clicks) → Buffer is empty. Nothing to display.");
   }
@@ -1044,8 +1133,8 @@ void readKeyboard() {
             Serial.print(i + 1);
             Serial.print(") pressed → Active dots: ");
             printDots(pendingPattern);
-            char preview = brailleTable[pendingPattern];
-            if (preview != '\0') {
+            String preview = decodeKeyboardPattern(pendingPattern);
+            if (preview.length() > 0) {
               Serial.print(" [Preview: '");
               Serial.print(preview);
               Serial.print("']");
@@ -1084,6 +1173,7 @@ void readKeyboard() {
       actionClickCount = 0;
       pendingPattern = 0;
       kbInputBuffer = "";
+      kbPatternCount = 0;
       Serial.println("[KB] Button 7 (Long Press >1.2s) → Buffer and pending dots CLEARED!");
     }
   }
@@ -1450,6 +1540,7 @@ void processInput(String text) {
     testSingleModule(3);
   } else if (text.equalsIgnoreCase("clear")) {
     kbInputBuffer = "";
+    kbPatternCount = 0;
     Serial.println("[KB] Buffer cleared.");
   } else if (text.equalsIgnoreCase("send_kb")) {
     // Display whatever was typed via keyboard buttons
@@ -1458,8 +1549,12 @@ void processInput(String text) {
       currentStatus = "KB → Display: " + kbInputBuffer;
       Serial.print("[KB → Display] ");
       Serial.println(kbInputBuffer);
-      displayWord(kbInputBuffer);
+      if (keyboardLanguage == "bn")
+        displayCloudPatterns(kbPatternBuffer, kbPatternCount, "keyboard-preview");
+      else
+        displayWord(kbInputBuffer);
       kbInputBuffer = "";
+      kbPatternCount = 0;
     } else {
       Serial.println("[KB] Buffer is empty — nothing to display.");
     }
