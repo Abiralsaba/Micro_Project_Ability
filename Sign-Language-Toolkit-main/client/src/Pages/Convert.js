@@ -14,9 +14,10 @@ import xbotPic from "../Models/xbot/xbot.png";
 import ybotPic from "../Models/ybot/ybot.png";
 import * as words from "../Animations/words";
 import * as alphabets from "../Animations/alphabets";
+import { banglaSignTokens } from "../Animations/bangla";
 import { defaultPose } from "../Animations/defaultPose";
 
-function signTokens(value) {
+function englishSignTokens(value) {
   const inputWords = String(value || "").toUpperCase().match(/[A-Z]+/g) || [];
   const phrases = words.wordList
     .map(key => ({ key, parts: key.split("_") }))
@@ -27,10 +28,17 @@ function signTokens(value) {
       item.parts.every((part, offset) => inputWords[index + offset] === part)
     );
     if (phrase) {
-      tokens.push({ animation: phrase.key, label: phrase.parts.join(" ") });
+      tokens.push({ animation: phrase.key, label: `${phrase.parts.join(" ")} `, sequence: "" });
       index += phrase.parts.length;
     } else {
-      tokens.push({ animation: null, label: inputWords[index] });
+      const label = inputWords[index];
+      [...label].forEach((character, characterIndex) => {
+        tokens.push({
+          animation: null,
+          label: characterIndex === label.length - 1 ? `${character} ` : character,
+          sequence: character
+        });
+      });
       index += 1;
     }
   }
@@ -45,14 +53,17 @@ function Convert({ navigate }) {
   const [pause, setPause] = useState(800);
   const [connected, setConnected] = useState(false);
   const [liveMessage, setLiveMessage] = useState(null);
+  const [language, setLanguage] = useState("en");
 
   const engineRef = useRef({});
   const speedRef = useRef(speed);
   const pauseRef = useRef(pause);
   const seenMessageIds = useRef(new Set());
+  const languageRef = useRef(language);
 
   useEffect(() => { speedRef.current = speed; }, [speed]);
   useEffect(() => { pauseRef.current = pause; }, [pause]);
+  useEffect(() => { languageRef.current = language; }, [language]);
 
   useEffect(() => {
     const ref = engineRef.current;
@@ -153,7 +164,7 @@ function Convert({ navigate }) {
       ref.animationFrame = requestAnimationFrame(ref.animate);
     };
 
-    ref.enqueueText = (value) => {
+    ref.enqueueText = (value, requestedLanguage = languageRef.current) => {
       const cleanText = String(value || "").trim();
       if (!cleanText) return;
       if (!ref.avatar) {
@@ -164,14 +175,17 @@ function Convert({ navigate }) {
       const wasPending = ref.pending;
       ref.pending = true;
       ref.animations.push(["start-message"]);
-      for (const token of signTokens(cleanText)) {
+      const tokens = requestedLanguage === "bn"
+        ? banglaSignTokens(cleanText)
+        : englishSignTokens(cleanText);
+      for (const token of tokens) {
         if (token.animation && words[token.animation]) {
-          ref.animations.push(["add-text", `${token.label} `]);
+          ref.animations.push(["add-text", token.label]);
           words[token.animation](ref);
         } else {
-          [...token.label].forEach((character, index) => {
+          ref.animations.push(["add-text", token.label]);
+          [...token.sequence].forEach(character => {
             if (!alphabets[character]) return;
-            ref.animations.push(["add-text", index === token.label.length - 1 ? `${character} ` : character]);
             alphabets[character](ref);
           });
         }
@@ -205,11 +219,13 @@ function Convert({ navigate }) {
 
   useEffect(() => {
     const socket = io({ path: "/socket.io" });
+    const ref = engineRef.current;
+    ref.socket = socket;
     const playMessage = (message) => {
       if (!message || !message.text || seenMessageIds.current.has(message.id)) return;
       seenMessageIds.current.add(message.id);
       setLiveMessage(message);
-      engineRef.current.enqueueText(message.text);
+      engineRef.current.enqueueText(message.text, message.language || languageRef.current);
     };
 
     socket.on("connect", () => {
@@ -218,15 +234,30 @@ function Convert({ navigate }) {
     });
     socket.on("disconnect", () => setConnected(false));
     socket.on("sign_message", playMessage);
-    socket.on("sign_state", data => playMessage(data && data.message));
-    return () => socket.disconnect();
+    socket.on("sign_state", data => {
+      if (data && (data.language === "en" || data.language === "bn")) {
+        languageRef.current = data.language;
+        setLanguage(data.language);
+      }
+      playMessage(data && data.message);
+    });
+    socket.on("module_language_state", state => {
+      if (state && (state.sign === "en" || state.sign === "bn")) {
+        languageRef.current = state.sign;
+        setLanguage(state.sign);
+      }
+    });
+    return () => {
+      if (ref.socket === socket) ref.socket = null;
+      socket.disconnect();
+    };
   }, []);
 
   const translateManualText = () => {
     const text = inputText.trim();
     if (!text) return;
     setLiveMessage({ sender_name: "Manual preview", text });
-    engineRef.current.enqueueText(text);
+    engineRef.current.enqueueText(text, languageRef.current);
     setInputText("");
   };
 
@@ -253,6 +284,24 @@ function Convert({ navigate }) {
           <label>Animation progress</label>
           <div className="translated-output">{translatedText || "—"}</div>
 
+          <label htmlFor="avatarLanguage">Avatar language</label>
+          <select
+            id="avatarLanguage"
+            className="sign-language-select"
+            value={language}
+            onChange={event => {
+              const nextLanguage = event.target.value;
+              languageRef.current = nextLanguage;
+              setLanguage(nextLanguage);
+              if (engineRef.current.socket) {
+                engineRef.current.socket.emit("set_module_language", { module: "sign", language: nextLanguage });
+              }
+            }}
+          >
+            <option value="en">English</option>
+            <option value="bn">বাংলা</option>
+          </select>
+
           <label htmlFor="manualText">Manual preview</label>
           <textarea id="manualText" rows={3} value={inputText} onChange={event => setInputText(event.target.value)} placeholder="Type text to preview…" />
           <button className="sign-action-button" onClick={translateManualText}>Translate text</button>
@@ -271,7 +320,9 @@ function Convert({ navigate }) {
           <h2>Avatar</h2>
           <button className={bot === xbot ? "selected" : ""} onClick={() => setBot(xbot)}><img src={xbotPic} alt="Select XBOT" /></button>
           <button className={bot === ybot ? "selected" : ""} onClick={() => setBot(ybot)}><img src={ybotPic} alt="Select YBOT" /></button>
-          <p>Known words use full signs. Other A–Z text is fingerspelled.</p>
+          <p>{language === "bn"
+            ? "বাংলা অক্ষর existing calibrated A–Z avatar poses দিয়ে synchronized হয়।"
+            : "Known words use full signs. Other A–Z text is fingerspelled."}</p>
         </aside>
       </section>
     </main>
