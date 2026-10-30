@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ABILITY // 8-BIT RETRO ASSISTIVE MESH</title>
 
 <!-- Retro 8-bit & Arcade Fonts -->
@@ -11,8 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 
 <!-- Three.js for 3D Voxel Hardware Visualization -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="/vendor/three.min.js"></script>
+<script src="/vendor/socket.io.min.js"></script>
 
 <style>
 /* ════════════════════════════════════════════════════════════════════
@@ -169,6 +169,50 @@ body {
   gap: 10px;
 }
 
+.module-language-panel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  margin-right: 10px;
+  padding: 5px 7px;
+  background: var(--c-cream-light);
+  border: 3px solid var(--c-purple-deep);
+  box-shadow: 2px 2px 0 var(--c-purple-deep);
+}
+
+.module-language-title {
+  font-family: var(--font-pixel-head);
+  font-size: 7px;
+  color: var(--c-purple-mid);
+  white-space: nowrap;
+}
+
+.module-language-control {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.module-language-control label {
+  font-family: var(--font-terminal);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.module-language-select {
+  height: 27px;
+  padding: 1px 4px;
+  background: var(--c-neon-gold);
+  border: 2px solid var(--c-purple-deep);
+  color: var(--c-purple-deep);
+  font-family: var(--font-pixel-body);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .mqtt-arcade-pill {
   display: flex;
   align-items: center;
@@ -240,6 +284,10 @@ body {
   display: flex;
   gap: 12px;
   min-height: 0;
+}
+
+.mobile-view-switch {
+  display: none;
 }
 
 /* ── Left Sidebar (Cream & Warm Orange) ─────────────────────── */
@@ -1220,9 +1268,136 @@ body {
 }
 
 @media (max-width: 900px) {
-  .arcade-app { padding: 6px; }
-  .pixel-sidebar { width: 280px; }
-  .arcade-chat-flow { padding: 12px; }
+  body {
+    height: 100dvh;
+    overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  button, select, input, textarea { touch-action: manipulation; }
+
+  .arcade-app {
+    height: 100dvh;
+    padding: max(5px, env(safe-area-inset-top)) max(5px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom)) max(5px, env(safe-area-inset-left));
+    gap: 6px;
+  }
+
+  .arcade-header {
+    flex-wrap: wrap;
+    padding: 5px 7px;
+    gap: 6px;
+    box-shadow: 3px 3px 0 var(--c-purple-deep);
+  }
+
+  .brand-marquee { width: 100%; gap: 7px; }
+  .brand-badge { font-size: 8px; padding: 4px 6px; }
+  .brand-marquee h1 { font-size: 11px; line-height: 1.3; }
+  .brand-marquee p { display: none; }
+
+  .module-language-panel {
+    order: 2;
+    width: 100%;
+    margin: 0;
+    padding: 4px 5px;
+    justify-content: space-between;
+    gap: 4px;
+    box-shadow: 1px 1px 0 var(--c-purple-deep);
+  }
+
+  .module-language-title { display: none; }
+  .module-language-control { flex: 1; justify-content: center; gap: 2px; }
+  .module-language-control label { font-size: 11px; }
+  .module-language-select { min-width: 58px; height: 30px; font-size: 13px; }
+
+  .header-retro-controls {
+    order: 3;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  .header-retro-controls > * {
+    min-width: 0;
+    min-height: 32px;
+    justify-content: center;
+  }
+
+  .mqtt-arcade-pill { padding: 3px 6px; font-size: 14px; }
+  .retro-btn { padding: 5px 6px; font-size: 8px; }
+
+  .mobile-view-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex-shrink: 0;
+    border: 3px solid var(--c-purple-deep);
+    box-shadow: 2px 2px 0 var(--c-purple-deep);
+  }
+
+  .mobile-view-button {
+    min-height: 38px;
+    border: 0;
+    background: var(--c-cream-light);
+    color: var(--c-purple-deep);
+    font: 700 14px var(--font-pixel-body);
+  }
+
+  .mobile-view-button + .mobile-view-button { border-left: 3px solid var(--c-purple-deep); }
+  .mobile-view-button.active { background: var(--c-orange-main); color: #fff; }
+
+  .arcade-workspace {
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .pixel-sidebar {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    box-shadow: 4px 4px 0 var(--c-purple-deep);
+  }
+
+  .arcade-main-stage { display: none; height: 100%; box-shadow: 4px 4px 0 var(--c-purple-deep); }
+  .arcade-workspace.mobile-chat-active .pixel-sidebar { display: none; }
+  .arcade-workspace.mobile-chat-active .arcade-main-stage { display: flex; }
+
+  .my-profile-panel { padding: 7px 9px; gap: 6px; }
+  .my-profile-header { font-size: 7px; }
+  .hero-avatar-frame { width: 40px; height: 40px; }
+  .my-profile-text h3 { font-size: 9px; }
+  .hero-select-dropdown, .retro-voice-input, .voice-language-select,
+  .retro-main-input, .module-language-select { font-size: 16px; }
+
+  .hero-contacts-scroll { padding: 7px; }
+  .hero-contact-card { min-height: 66px; padding: 8px 10px; }
+  .sidebar-voice-dock { padding: 7px; }
+
+  .stage-character-banner { padding: 6px 8px; gap: 5px; }
+  .animated-hero-stage { width: 42px; height: 42px; }
+  .stage-hero-profile { gap: 7px; min-width: 0; }
+  .stage-hero-titles { min-width: 0; }
+  .stage-hero-titles h2 { font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stage-hero-titles p { font-size: 11px; display: block; }
+  .stage-status-badge { font-size: 12px; }
+  .btn-open-3d-hud { padding: 6px; font-size: 0; }
+  .btn-open-3d-hud span:first-child { font-size: 17px; }
+
+  .arcade-chat-flow { padding: 14px 9px; gap: 10px; }
+  .pixel-dialogue-wrap { max-width: 90%; }
+  .pixel-dialogue-bubble { padding: 9px 11px; font-size: 15px; }
+  .bubble-reaction-deck { display: none; }
+  .pixel-date-marker { max-width: 94%; padding: 4px 7px; font-size: 7px; text-align: center; line-height: 1.5; }
+
+  .arcade-bottom-panel { padding: 7px; gap: 6px; }
+  .input-console-row { gap: 5px; }
+  .retro-main-input { min-width: 0; padding: 9px; }
+  .retro-send-btn { padding: 11px 9px; font-size: 8px; }
+  .quick-macros-belt { gap: 6px; }
+
+  .voxel-3d-drawer { top: 58px; width: 100%; }
+  .ai-chat-drawer { width: 100vw; border-left: 0; }
+  .ai-chat-actions { flex-wrap: wrap; }
 }
 </style>
 </head>
@@ -1249,6 +1424,31 @@ body {
       </div>
     </div>
 
+    <div class="module-language-panel" aria-label="Accessibility module languages">
+      <span class="module-language-title">LANGUAGE</span>
+      <div class="module-language-control">
+        <label for="brailleLanguage">BRAILLE</label>
+        <select id="brailleLanguage" class="module-language-select" data-module-language="braille">
+          <option value="en">ENG</option>
+          <option value="bn">বাংলা</option>
+        </select>
+      </div>
+      <div class="module-language-control">
+        <label for="signLanguage">AVATAR</label>
+        <select id="signLanguage" class="module-language-select" data-module-language="sign">
+          <option value="en">ENG</option>
+          <option value="bn">বাংলা</option>
+        </select>
+      </div>
+      <div class="module-language-control">
+        <label for="gazeLanguage">GAZE</label>
+        <select id="gazeLanguage" class="module-language-select" data-module-language="gaze">
+          <option value="en">ENG</option>
+          <option value="bn">বাংলা</option>
+        </select>
+      </div>
+    </div>
+
     <div class="header-retro-controls">
       <!-- MQTT Connection Status -->
       <div class="mqtt-arcade-pill offline" id="mqttPill">
@@ -1271,8 +1471,13 @@ body {
     </div>
   </header>
 
+  <nav class="mobile-view-switch" aria-label="Mobile application view">
+    <button type="button" class="mobile-view-button active" id="mobileContactsButton" aria-pressed="true">👥 CONTACTS</button>
+    <button type="button" class="mobile-view-button" id="mobileChatButton" aria-pressed="false">💬 CHAT</button>
+  </nav>
+
   <!-- ── 2. Main Workspace ──────────────────────────────────── -->
-  <div class="arcade-workspace">
+  <div class="arcade-workspace" id="arcadeWorkspace">
 
     <!-- ── Left Sidebar (Cream & Warm Orange) ───────────────── -->
     <aside class="pixel-sidebar">
@@ -1319,6 +1524,7 @@ body {
             <option value="en">EN</option>
           </select>
           <button class="retro-mic-btn" id="btnMicTrigger" title="Speak Voice Command">🎙</button>
+          <input type="file" id="mobileAudioInput" accept="audio/*" capture="microphone" hidden>
         </div>
         <div class="voice-feedback-banner" id="voiceFeedbackBanner"></div>
       </div>
@@ -1853,8 +2059,23 @@ let users = {};
 let conversations = {};
 let unreadCounts = {};
 let contactSelectionVersion = 0;
+const mobileLayoutQuery = window.matchMedia("(max-width: 900px)");
 
 const socket = io();
+
+function setMobileView(view) {
+  const workspace = document.getElementById("arcadeWorkspace");
+  const contactsButton = document.getElementById("mobileContactsButton");
+  const chatButton = document.getElementById("mobileChatButton");
+  if (!workspace || !contactsButton || !chatButton) return;
+
+  const showChat = mobileLayoutQuery.matches && view === "chat";
+  workspace.classList.toggle("mobile-chat-active", showChat);
+  contactsButton.classList.toggle("active", !showChat);
+  chatButton.classList.toggle("active", showChat);
+  contactsButton.setAttribute("aria-pressed", showChat ? "false" : "true");
+  chatButton.setAttribute("aria-pressed", showChat ? "true" : "false");
+}
 
 socket.on("connect", () => {
   console.log("Socket.IO connected to backend");
@@ -1870,6 +2091,13 @@ socket.on("mqtt_status", (data) => {
     pill.classList.add("offline");
     txt.textContent = "MQTT: OFFLINE";
   }
+});
+
+socket.on("module_language_state", (state) => {
+  document.querySelectorAll("[data-module-language]").forEach(select => {
+    const value = state && state[select.dataset.moduleLanguage];
+    if (value === "en" || value === "bn") select.value = value;
+  });
 });
 
 socket.on("user_status", (list) => {
@@ -2052,6 +2280,7 @@ function selectContact(uid) {
   // This keeps the header/log/input atomic even if an optional effect fails.
   openConversation(uid);
   renderContacts();
+  setMobileView("chat");
   socket.emit("set_recipient", { user_id: selectedByUser, target_id: uid }, (response) => {
     // Ignore acknowledgements from older clicks or a previous identity.
     if (!response || !response.ok || selectionVersion !== contactSelectionVersion ||
@@ -2323,6 +2552,7 @@ document.getElementById("voiceCmdInput").addEventListener("keydown", (e) => {
 const micBtn = document.getElementById("btnMicTrigger");
 let activeMediaRecorder = null;
 let activeRecorderButton = null;
+let mobileAudioCallback = null;
 
 function showVoiceFeedback(message) {
   const banner = document.getElementById("voiceFeedbackBanner");
@@ -2332,7 +2562,17 @@ function showVoiceFeedback(message) {
 
 async function transcribeRecording(blob) {
   const form = new FormData();
-  const extension = blob.type.includes("mp4") ? "mp4" : "webm";
+  const originalName = blob.name || "";
+  const originalExtension = originalName.includes(".") ? originalName.split(".").pop() : "";
+  const mimeExtensions = {
+    "audio/mp4": "m4a",
+    "audio/x-m4a": "m4a",
+    "audio/wav": "wav",
+    "audio/x-wav": "wav",
+    "audio/ogg": "ogg",
+    "audio/webm": "webm"
+  };
+  const extension = originalExtension || mimeExtensions[blob.type] || "webm";
   form.append("audio", blob, `recording.${extension}`);
   form.append("language", document.getElementById("voiceLanguage").value);
   const response = await fetch("/api/transcribe", { method: "POST", body: form });
@@ -2346,8 +2586,10 @@ async function toggleWhisperRecording(button, onTranscript) {
     activeMediaRecorder.stop();
     return;
   }
-  if (!navigator.mediaDevices || !window.MediaRecorder) {
-    showVoiceFeedback("This browser cannot record microphone audio.");
+  if (!window.isSecureContext || !navigator.mediaDevices || !window.MediaRecorder) {
+    mobileAudioCallback = onTranscript;
+    document.getElementById("mobileAudioInput").click();
+    showVoiceFeedback("SELECT OR RECORD AUDIO FOR LOCAL WHISPER…");
     return;
   }
 
@@ -2392,6 +2634,22 @@ async function toggleWhisperRecording(button, onTranscript) {
     showVoiceFeedback(`MICROPHONE ERROR: ${error.message}`);
   }
 }
+
+document.getElementById("mobileAudioInput").addEventListener("change", async event => {
+  const file = event.target.files && event.target.files[0];
+  const callback = mobileAudioCallback;
+  mobileAudioCallback = null;
+  event.target.value = "";
+  if (!file || !callback) return;
+  showVoiceFeedback("LOCAL WHISPER: TRANSCRIBING MOBILE AUDIO…");
+  try {
+    const text = await transcribeRecording(file);
+    showVoiceFeedback(`WHISPER: ${text}`);
+    callback(text);
+  } catch (error) {
+    showVoiceFeedback(`VOICE ERROR: ${error.message}`);
+  }
+});
 
 micBtn.addEventListener("click", () => {
   toggleWhisperRecording(micBtn, text => {
@@ -2499,6 +2757,37 @@ document.getElementById("btnSoundToggle").addEventListener("click", () => {
   document.getElementById("btnSoundToggle").textContent = retroAudio.enabled ? "🔊 FX: ON" : "🔇 FX: OFF";
 });
 
+document.getElementById("mobileContactsButton").addEventListener("click", () => {
+  setMobileView("contacts");
+  retroAudio.playClick();
+});
+
+document.getElementById("mobileChatButton").addEventListener("click", () => {
+  setMobileView("chat");
+  retroAudio.playClick();
+});
+
+mobileLayoutQuery.addEventListener?.("change", event => {
+  setMobileView(event.matches && activeContactId ? "chat" : "contacts");
+});
+
+document.querySelectorAll("[data-module-language]").forEach(select => {
+  select.addEventListener("change", () => {
+    const module = select.dataset.moduleLanguage;
+    const language = select.value;
+    select.disabled = true;
+    socket.emit("set_module_language", { module, language }, response => {
+      select.disabled = false;
+      if (!response || !response.ok) {
+        showVoiceFeedback("LANGUAGE UPDATE FAILED");
+        return;
+      }
+      showVoiceFeedback(`${module.toUpperCase()}: ${language === "bn" ? "বাংলা" : "ENGLISH"}`);
+      retroAudio.playClick();
+    });
+  });
+});
+
 document.getElementById("btnOpenSignDisplay").addEventListener("click", () => {
   // Reusing the named second-screen window is convenient, but opening the
   // exact same URL can leave an older compiled avatar bundle running there.
@@ -2511,6 +2800,7 @@ window.addEventListener("DOMContentLoaded", () => {
   initPixelSunsetBackground();
   init3DVoxelStage();
   refreshAIStatus();
+  setMobileView("contacts");
 });
 </script>
 </body>
