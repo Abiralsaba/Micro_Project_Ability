@@ -3,8 +3,9 @@
 `glove_cloud.ino` is the EMQX/TLS version of
 `../glove_flex_imu/glove_flex_imu.ino`.
 
-The flex pins, BNO055 pins, ten-second calibration, 400 ms gesture
-confirmation, and classifier are unchanged. In particular, the open-hand
+The flex pins, BNO055 pins, 400 ms gesture confirmation, and classifier are
+unchanged. Flex readings use the measured fully-open and fully-closed values
+stored in `FLEX_OPEN_MV` and `FLEX_CLOSED_MV`. In particular, the open-hand
 orientation still classifies as `5`; cloud commands do not replace signs.
 
 The reference glove has no physical send button, so a sentence is published
