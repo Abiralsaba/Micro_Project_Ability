@@ -1,8 +1,9 @@
 /*
  * Project Ability — Secure Cloud Glove
  *
- * Sensor pins, calibration, confirmation timing, debug output, and the
- * complete classifier are kept from glove_flex_imu/glove_flex_imu.ino.
+ * Sensor pins, confirmation timing, debug output, and the complete classifier
+ * are kept from glove_flex_imu/glove_flex_imu.ino. Flex calibration uses the
+ * measured fully-open and fully-closed glove values below.
  * Cloud-only additions are TLS MQTT presence/input/output plus an idle send
  * boundary because the reference glove has no physical SEND button.
  *
@@ -17,8 +18,8 @@
 #include <ArduinoJson.h>
 #include <time.h>
 
-#include "../braille_cloud/emqx_ca.h"
-#include "../braille_cloud/secrets.h"
+#include "emqx_ca.h"
+#include "secrets.h"
 
 // Secure cloud MQTT — same broker and credentials as the Braille module.
 const char* MQTT_SERVER = "z91cfe11.ala.asia-southeast1.emqxsl.com";
@@ -38,6 +39,12 @@ const char* TOPIC_OUTPUT = "ability/v1/glove_01/output";
 const int FLEX_PIN[5] = {1, 2, 3, 4, 5};
 const char* FNAME[5] = {"Th", "Ix", "Md", "Rg", "Pk"};
 
+// Fixed calibration captured from this glove, in millivolts.
+// Order: Thumb, Index, Middle, Ring, Pinky.
+const int FLEX_OPEN_MV[5]   = {92, 260, 541, 579, 240};
+const int FLEX_CLOSED_MV[5] = {29, 150, 497, 283, 161};
+const int FLEX_SAMPLES = 4;
+
 // BNO055 raw I2C
 #define BNO_ADDR  0x28
 #define BNO_CHIP  0x00
@@ -55,10 +62,7 @@ const char* FNAME[5] = {"Th", "Ix", "Md", "Rg", "Pk"};
 bool imuOK = false;
 int rawMV[5];
 int bend[5];
-int calHi[5] = {0, 0, 0, 0, 0};
-int calLo[5] = {3300, 3300, 3300, 3300, 3300};
-bool autoCalDone = false;
-unsigned long autoCalStart = 0;
+bool autoCalDone = true;
 
 float heading = 0, roll_a = 0, pitch_a = 0;
 
@@ -91,6 +95,25 @@ void bnoWr(uint8_t reg, uint8_t val) {
   Wire.write(reg);
   Wire.write(val);
   Wire.endTransmission();
+}
+
+int readFlexMilliVolts(int pin) {
+  uint32_t total = 0;
+  for (int sample = 0; sample < FLEX_SAMPLES; sample++) {
+    total += analogReadMilliVolts(pin);
+    delay(2);
+  }
+  return total / FLEX_SAMPLES;
+}
+
+int flexBendPercent(int finger, int millivolts) {
+  if (FLEX_OPEN_MV[finger] == FLEX_CLOSED_MV[finger]) return 0;
+
+  // Works whether voltage rises or falls when the finger bends.
+  long percent = map(millivolts,
+                     FLEX_OPEN_MV[finger], FLEX_CLOSED_MV[finger],
+                     0, 100);
+  return constrain((int)percent, 0, 100);
 }
 
 void connectWiFi() {
@@ -237,8 +260,16 @@ void setup() {
   lastWiFiAttempt = millis() - WIFI_RETRY_INTERVAL;
   connectWiFi();
 
-  Serial.println("Move fingers flat<->bent to calibrate\n");
-  autoCalStart = millis();
+  Serial.println("Using saved flex calibration:");
+  for (int i = 0; i < 5; i++) {
+    Serial.print(FNAME[i]);
+    Serial.print(" open=");
+    Serial.print(FLEX_OPEN_MV[i]);
+    Serial.print("mV closed=");
+    Serial.print(FLEX_CLOSED_MV[i]);
+    Serial.print("mV  ");
+  }
+  Serial.println("\n");
 }
 
 void loop() {
@@ -246,27 +277,8 @@ void loop() {
 
   // Read flex sensors
   for (int i = 0; i < 5; i++) {
-    rawMV[i] = analogReadMilliVolts(FLEX_PIN[i]);
-    if (rawMV[i] > calHi[i]) calHi[i] = rawMV[i];
-    if (rawMV[i] < calLo[i]) calLo[i] = rawMV[i];
-    if (calHi[i] != calLo[i]) {
-      bend[i] = map(rawMV[i], calHi[i], calLo[i], 0, 100);
-      bend[i] = constrain(bend[i], 0, 100);
-    }
-  }
-
-  if (!autoCalDone && millis() - autoCalStart > 10000) {
-    autoCalDone = true;
-    Serial.println("\n--- Calibration ---");
-    for (int i = 0; i < 5; i++) {
-      Serial.print(FNAME[i]);
-      Serial.print(":");
-      Serial.print(calLo[i]);
-      Serial.print("-");
-      Serial.print(calHi[i]);
-      Serial.print("  ");
-    }
-    Serial.println("\n");
+    rawMV[i] = readFlexMilliVolts(FLEX_PIN[i]);
+    bend[i] = flexBendPercent(i, rawMV[i]);
   }
 
   // Read IMU
