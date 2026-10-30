@@ -31,13 +31,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from chat_config import (
     USERS, DEVICE_TO_USER,
     MQTT_HOST, MQTT_PORT, MQTT_USERNAME, MQTT_PASSWORD, MQTT_USE_TLS,
-    TOPIC_STATUS, TOPIC_OUTPUT, TOPIC_INPUT,
+    TOPIC_STATUS, TOPIC_OUTPUT, TOPIC_INPUT, TOPIC_CONTROL,
     TOPIC_LOCAL_GLOVE_TEXT, TOPIC_LOCAL_GLOVE_STATUS,
     TOPIC_LOCAL_BRAILLE_DISPLAY, TOPIC_LOCAL_BRAILLE_STATUS,
     TOPIC_CHAT_MESSAGE,
     WEB_HOST, WEB_PORT,
 )
 from ai_services import AIServiceError, GeminiClient, WhisperCppTranscriber
+from language_maps import normalize_language, text_to_braille
 
 # ═══════════════════════════════════════════════════════════
 # LOGGING
@@ -64,7 +65,8 @@ whisper_transcriber = WhisperCppTranscriber()
 gemini_client = GeminiClient()
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SIGN_BUILD_DIR = PROJECT_ROOT / "Sign-Language-Toolkit-main" / "client" / "build"
+SIGN_CLIENT_DIR = PROJECT_ROOT / "Sign-Language-Toolkit-main" / "client"
+SIGN_BUILD_DIR = SIGN_CLIENT_DIR / "build"
 
 # ═══════════════════════════════════════════════════════════
 # APPLICATION STATE
@@ -79,6 +81,42 @@ active_recipient = {}
 
 # Message history per conversation pair (sorted key tuple → list of messages)
 message_history = {}
+
+MODULE_LANGUAGE_PATH = Path(__file__).with_name("module_languages.local.json")
+DEFAULT_MODULE_LANGUAGES = {
+    "braille": "en",
+    "sign": "en",
+    "gaze": "en",
+}
+
+
+def load_module_languages():
+    """Load local choices while rejecting unknown modules/values."""
+    result = dict(DEFAULT_MODULE_LANGUAGES)
+    try:
+        saved = json.loads(MODULE_LANGUAGE_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError):
+        return result
+    if isinstance(saved, dict):
+        for module in result:
+            if saved.get(module) in ("en", "bn"):
+                result[module] = saved[module]
+    return result
+
+
+def save_module_languages():
+    try:
+        MODULE_LANGUAGE_PATH.write_text(
+            json.dumps(module_languages, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    except OSError as error:
+        log.warning("Could not persist module languages: %s", error)
+
+
+# Output/input language for modules that expose a language-specific interface.
+# The glove sensor path is intentionally absent and remains unchanged.
+module_languages = load_module_languages()
 
 # ═══════════════════════════════════════════════════════════
 # TTS (Text-to-Speech) — uses macOS 'say' command
@@ -173,7 +211,28 @@ def emit_message(msg):
         })
     if receiver.get("device_type") == "glove":
         # The sign display receives the exact same message object/text as chat.
-        socketio.emit("sign_message", msg)
+        socketio.emit("sign_message", {
+            **msg,
+            "language": module_languages["sign"],
+        })
+
+
+def publish_module_language(module):
+    """Publish a retained language setting to a physical module, if any."""
+    device_by_module = {"braille": "braille_01", "gaze": "gaze_01"}
+    device = device_by_module.get(module)
+    if not device or not mqtt_client.is_connected():
+        return False
+    payload = json.dumps({
+        "type": "language",
+        "module": module,
+        "language": module_languages[module],
+        "timestamp": int(time.time()),
+    })
+    result = mqtt_client.publish(
+        TOPIC_CONTROL.format(device=device), payload, qos=1, retain=True
+    )
+    return result.rc == mqtt.MQTT_ERR_SUCCESS
 
 
 # ═══════════════════════════════════════════════════════════
@@ -220,6 +279,10 @@ def on_mqtt_connect(client, userdata, flags, reason_code, properties):
     # Subscribe to chat message topics
     client.subscribe("ability/v1/chat/+/message", qos=1)
     log.info("  Subscribed: ability/v1/chat/+/message")
+
+    # Re-publish retained interface settings whenever the hub reconnects.
+    for module in ("braille", "gaze"):
+        publish_module_language(module)
 
     # Notify web UI
     socketio.emit("mqtt_status", {"connected": True})
@@ -367,7 +430,9 @@ def deliver_to_device(target_user_id, text, source_user_id):
     if device_type == "braille":
         # Braille module listens on ability/v1/braille_01/output
         # It accepts {"text":"..."} or {"braille":[...]}
-        # Send as text — the module handles display
+        language = module_languages["braille"]
+        all_patterns = text_to_braille(text, language)
+        patterns = all_patterns[:64]
         payload = json.dumps({
             "version": 1,
             "message_id": str(uuid.uuid4()),
@@ -375,11 +440,14 @@ def deliver_to_device(target_user_id, text, source_user_id):
             "target": device,
             "type": "text",
             "text": text,
+            "language": language,
+            "braille": patterns,
+            "truncated": len(all_patterns) > 64,
             "timestamp": int(time.time()),
-        })
+        }, ensure_ascii=False)
         topic = TOPIC_OUTPUT.format(device=device)
         mqtt_client.publish(topic, payload, qos=1)
-        log.info("  → Delivered to Braille: %s", text)
+        log.info("  → Delivered to Braille (%s, %d cells): %s", language, len(patterns), text)
 
         # Also announce via TTS on laptop
         speak(f"New message from {source_name}")
@@ -403,8 +471,9 @@ def deliver_to_device(target_user_id, text, source_user_id):
             "target": device,
             "type": "text",
             "text": text,
+            "language": module_languages["gaze"],
             "timestamp": int(time.time()),
-        })
+        }, ensure_ascii=False)
         topic = TOPIC_OUTPUT.format(device=device)
         mqtt_client.publish(topic, payload, qos=1)
         log.info("  → Delivered to Gaze keyboard: %s", text)
@@ -558,6 +627,24 @@ def sign_assets(asset_path):
     return send_from_directory(SIGN_BUILD_DIR, asset_path)
 
 
+@app.route("/vendor/socket.io.min.js")
+def local_socket_io_client():
+    """Serve the browser client locally so phones do not depend on a CDN."""
+    return send_from_directory(
+        SIGN_CLIENT_DIR / "node_modules" / "socket.io-client" / "dist",
+        "socket.io.min.js",
+    )
+
+
+@app.route("/vendor/three.min.js")
+def local_three_client():
+    """Serve Three.js locally for the mobile hardware preview."""
+    return send_from_directory(
+        SIGN_CLIENT_DIR / "node_modules" / "three" / "build",
+        "three.min.js",
+    )
+
+
 @app.route("/api/ai/status")
 def ai_status():
     return jsonify({
@@ -616,6 +703,7 @@ def handle_connect():
     """Client connected — send current state."""
     emit("user_status", get_all_user_status())
     emit("mqtt_status", {"connected": mqtt_client.is_connected()})
+    emit("module_language_state", module_languages)
     log.info("Web client connected")
 
 
@@ -623,6 +711,28 @@ def handle_connect():
 def handle_get_status():
     """Client requests current user/device status."""
     emit("user_status", get_all_user_status())
+
+
+@socketio.on("set_module_language")
+def handle_set_module_language(data):
+    """Set English/Bangla independently for Braille, sign avatar, or gaze."""
+    if not isinstance(data, dict):
+        return {"ok": False, "error": "invalid request"}
+    module = str(data.get("module", "")).lower().strip()
+    requested = str(data.get("language", "")).lower().strip()
+    if module not in module_languages or requested not in {
+        "en", "eng", "english", "bn", "bd", "bangla", "bengali", "বাংলা"
+    }:
+        return {"ok": False, "error": "unsupported module or language"}
+
+    language = normalize_language(requested)
+    module_languages[module] = language
+    save_module_languages()
+    socketio.emit("module_language_state", dict(module_languages))
+    if module in ("braille", "gaze"):
+        publish_module_language(module)
+    log.info("Language: %s → %s", module, language)
+    return {"ok": True, "module": module, "language": language}
 
 
 @socketio.on("select_user")
@@ -697,7 +807,11 @@ def handle_get_sign_state():
         for msg in messages
         if USERS.get(msg["receiver_id"], {}).get("device_type") == "glove"
     ]
-    emit("sign_state", {"message": max(received, key=lambda msg: msg["timestamp"]) if received else None})
+    latest = max(received, key=lambda msg: msg["timestamp"]) if received else None
+    emit("sign_state", {
+        "message": ({**latest, "language": module_languages["sign"]} if latest else None),
+        "language": module_languages["sign"],
+    })
 
 
 @socketio.on("voice_command")
